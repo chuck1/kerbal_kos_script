@@ -6,10 +6,13 @@
 // mode = "latlong"
 // PARAMETER hop_dest
 
-run get_body_info.
+
+set get_highest_peak_body to ship:body.
+run get_highest_peak.
+
 
 if hop_mode = "latlong" {
-	set jump_altitude to body_info[0].
+	set jump_altitude to get_highest_peak_ret.
 	run jump.
 }
 
@@ -39,7 +42,7 @@ lock hop_g to ship:body:mu
 if hop_mode = "latlong" {
 	set calc_latlong_to_vector_lat  to hop_dest[0].
 	set calc_latlong_to_vector_long to hop_dest[1].
-	set calc_latlong_to_vector_alt  to body_info[0].
+	set calc_latlong_to_vector_alt  to get_highest_peak_ret.
 	run calc_latlong_to_vector.
 
 	set hop_hor_dir to heading(calc_latlong_to_vector_brng, 0):vector.

@@ -54,14 +54,14 @@ until (err / err_start) < precision {
 		),
 		0).
 	
+	clearscreen.
+	print "BURN TO".
+	print "===================================".
+	print "alt target " + burn_to_altitude.
+	print "err        " + err.
 	
-	set counter to counter + 1.
-	if counter = 10 {
-		print "err " + err.
-		set counter to 0.
-	}
-
-
+	
+	
 	set err_min to min(err_min, err).
 	
 	if err > err_min {
@@ -69,7 +69,7 @@ until (err / err_start) < precision {
 		break.
 	}
 	
-	wait 0.1.
+	wait 0.05.
 }
 
 lock throttle to 0.

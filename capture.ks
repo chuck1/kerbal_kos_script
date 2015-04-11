@@ -9,6 +9,8 @@ if capture_altitude = 0 {
 print "CAPTURE ----------------------------------".
 print "burn to:    " + capture_altitude.
 
+lock accel_max to ship:maxthrust / ship:mass.
+
 set aop to ship:obt:argumentofperiapsis.
 
 lock aop_change to abs(aop - ship:obt:argumentofperiapsis).
@@ -39,29 +41,35 @@ if ship:obt:hasnextpatch {
 	
 	print "perform capture".
 	
-	run deltav(periapsis, apoapsis, capture_altitude).
+	set deltav_alt  to periapsis.
+	set deltav_alt1 to apoapsis.
+	set deltav_alt2 to capture_altitude.
 	
-	run calc_burn_time(dv).
+	set v0 to ship:velocity:orbit:mag.
+	lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
+	lock est_rem_burn to abs(dv_rem / accel_max).
 	
 	if eta:periapsis > 0 { // not yet reached periapsis
 		set warp_string to "per".
-		set warp_sub to (burn_time_return/2 + 11).
+		set warp_sub to (est_rem_burn/2 + 11).
 		run warp.
 	}
 	
 	lock steering to retrograde.
 	run wait_orient.
-
-	lock throttle to 1.
 	
-	wait until not (ship:obt:hasnextpatch).
+	set th to 0.
+	lock throttle to th.
+	until not (ship:obt:hasnextpatch) {
+		set th to (est_rem_burn / 5 + 0.1).
+	}
+	
 	print "captured".
-
+	
 	wait until apoapsis < (capture_alt * 1.1) or aop_change > 180.
 	print "burn complete".
 	
 	lock throttle to 0.
-
 	print "cooldown".
 	wait 5.
 }

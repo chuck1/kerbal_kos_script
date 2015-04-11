@@ -1,18 +1,20 @@
-// PARAM transfer_ip_body_2
+// PARAM transfer_ip_target
 
-set target to transfer_ip_body_2.
+run transfer_to_planet.
+
+set target to transfer_ip_target.
 
 if ship:body = sun {
-} else if ship:body = transfer_ip_body_2 {
+} else if ship:body = transfer_ip_target {
 } else {
 
 	// get into stable circular orbit around planet.
 	run transfer_to_planet.
 
 	set body_1 to ship:body.
-	set body_2 to transfer_ip_body_2.
+	set body_2 to transfer_ip_target.
 
-	set calc_transfer_ip_body_2 to transfer_ip_body_2.
+	set calc_transfer_ip_target to transfer_ip_target.
 	run calc_transfer_ip.
 
 	set wait_for_angle_body_1    to body_1.
@@ -22,7 +24,7 @@ if ship:body = sun {
 	run wait_for_angle.
 
 
-	set match_inc_body to body_2.
+	set match_inc_target to body_2.
 	run match_inc.
 
 
@@ -44,23 +46,23 @@ if ship:body = sun {
 	run warp_time.
 }
 
-if ship:body = transfer_ip_body_2 {
+if ship:body = transfer_ip_target {
 } else {
 
 // long distance approach
 
-set get_capture_alt_body to transfer_ip_body_2.
+set get_capture_alt_body to transfer_ip_target.
 run get_capture_alt.
 
 until 0 {
-	if ship:body = transfer_ip_body_2 {
+	if ship:body = transfer_ip_target {
 		if abs((ship:obt:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
 			print "satisfactory capture altitude".
 			wait 5.
 			break.
 		}
 	} else if ship:obt:hasnextpatch {
-		if not (ship:obt:nextpatch:body = transfer_ip_body_2) {
+		if not (ship:obt:nextpatch:body = transfer_ip_target) {
 			print "ERROR: nextpatch body is not target body".
 			print neverset.
 		}
@@ -71,13 +73,13 @@ until 0 {
 		}
 	}
 
-	set node_search_target     to transfer_ip_body_2.
+	set node_search_target     to transfer_ip_target.
 	set node_search_use_normal to true.
 	set node_search_alt        to get_capture_alt_ret.
 	run node_search.
 	run node_burn.
 
-	if ship:body = transfer_ip_body_2 {
+	if ship:body = transfer_ip_target {
 		if abs((ship:obt:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
 			print "satisfactory capture altitude".
 			wait 5.
@@ -86,7 +88,7 @@ until 0 {
 		// quarter the distance to periapsis
 		set t to (eta:periapsis / 4).
 	} else if ship:obt:hasnextpatch {
-		if not (ship:obt:nextpatch:body = transfer_ip_body_2) {
+		if not (ship:obt:nextpatch:body = transfer_ip_target) {
 			print "ERROR: nextpatch body is not target body".
 			print neverset.
 		}
@@ -119,7 +121,7 @@ until 0 {
 }
 
 
-if ship:body = transfer_ip_body_2 {
+if ship:body = transfer_ip_target {
 } else {
 	set warp_string to "trans".
 	set warp_sub to 0.

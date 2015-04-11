@@ -14,7 +14,7 @@ if ship:body = sun {
 		set launch_altitude to 0.
 		run launch.
 
-		set match_inc_body to ship:body:obt:body.
+		set match_inc_target to ship:body:obt:body.
 		run match_inc.
 
 		set burn_to_encounter_body to ship:body:obt:body.

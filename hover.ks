@@ -2,10 +2,7 @@
 // PARAMETER hover_dest
 // PARAMETER 
 
-if hover_hor_mode = "latlong" {
-	set hover_lat  to hover_dest[0].
-	set hover_long to hover_dest[1].
-}
+
 
 sas off.
 rcs on.
@@ -42,14 +39,9 @@ set ki0 to 0.01.
 
 set I0 to 0.
 
-if hover_alt_mode = "agl" {
-	lock P0 to hover_alt - alt:radar.
-} else if hover_alt_mode = "asl" {
-	lock P0 to hover_alt - altitude.
-} else {
-	print "ERROR".
-	wait until 0.
-}
+set P0 to 0.
+
+
 
 
 lock D0 to 0 - ship:verticalspeed.
@@ -90,8 +82,8 @@ if hover_hor_mode = "speed" {
 	set P1_mag_0 to 0.
 	set dLLEdt to 0.
 
-	lock lat_error  to hover_lat  - latitude.
-	lock long_error to hover_long - longitude.
+	lock lat_error  to hover_dest[0]:lat  - latitude.
+	lock long_error to hover_dest[0]:lng - longitude.
 	
 	lock P1 to north:vector * lat_error - east:vector * long_error.
 
@@ -190,6 +182,18 @@ until 0 {
 	set dt to time:seconds - t0.
 	set t0 to time:seconds.	
 
+	if hover_alt_mode = "agl" {
+		lock P0 to hover_alt - alt:radar.
+	} else if hover_alt_mode = "asl" {
+		if alt:radar < 100 {
+			lock P0 to 100 - alt:radar.
+		} else {
+			lock P0 to (hover_alt - altitude).
+		}
+	} else {
+		print "ERROR invalid mode".
+		print neverset.
+	}
 
 	if alt_error > 0 {
 		set vs_target to sqrt(2 * g * alt_error).

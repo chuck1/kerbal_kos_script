@@ -1,19 +1,22 @@
-
 // PARAMETER go_to_dest.
 
 run global_var.
-run get_body_info.
 
-set calc_latlong_to_vector_dest to go_to_dest.
-set calc_latlong_to_vector_alt  to body_info[0].
-run calc_latlong_to_vector.
+set get_highest_peak_body to ship:body.
+run get_highest_peak.
+
+//set calc_latlong_to_vector_dest to go_to_dest.
+//set calc_latlong_to_vector_alt  to get_highest_peak_ret.
+//run calc_latlong_to_vector.
 
 
 
 until 0 {
-	run calc_latlong_to_vector.
+	//run calc_latlong_to_vector.
 
-	if calc_latlong_to_vector_distance < 15000 {
+	//if calc_latlong_to_vector_distance < 15000 {
+	
+	if go_to_dest[0]:distance {
 		break.
 	}
 
@@ -25,7 +28,7 @@ until 0 {
 
 set hover_alt_mode to "asl".
 set hover_hor_mode to "latlong".
-set hover_alt      to mun_arch[2].
+set hover_alt      to mun_arch[1].
 set hover_dest     to mun_arch.
 run hover.
 

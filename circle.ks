@@ -23,13 +23,20 @@ set mvr_adjust_altitude to circle_altitude.
 until error_max < precision {
 	
 	print "altitude error: " + (error_max*100) + "%".
+
+	run mvr_safe_periapsis.
+
+	if ship:verticalspeed > 0 {
+		run mvr_adjust_at_apoapsis.
+	} else if ship:verticalspeed < 0 {
+		run mvr_adjust_at_periapsis.
+	}
 	
-	run mvr_adjust.
 }
 
 print "orbit is circularized".
 
-
+unset circle_altitude.
 
 
 

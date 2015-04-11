@@ -7,6 +7,7 @@ print "body:       " + deorbit_body.
 print "angle:      " + deorbit_angle.
 print "periapsis:  " + periapsis.
 print "apoapsis:   " + apoapsis.
+wait 4.
 
 if periapsis > 10000 {
 
@@ -14,11 +15,12 @@ if periapsis > 10000 {
 
 	if periapsis < (ship:body:radius / 4) {
 		print "periapsis is below (radius/4)".
-		set circle_alt to periapsis.
+		set circle_altitude to periapsis.
 		run circle.
 	} else {
 		print "periapsis is above (radius/4)".
-		set circle_alt to ship:body:radius / 4.
+		wait 4.
+		set circle_altitude to ship:body:radius / 4.
 		run circle.
 	}
 
@@ -26,8 +28,10 @@ if periapsis > 10000 {
 
 	print "periapsis target = " + peri_target.
 
-	set wait_for_angle_body  to deorbit_body.
-	set wait_for_angle_angle to deorbit_angle.
+	set wait_for_angle_body_1    to ship.
+	set wait_for_angle_body_2    to deorbit_body.
+	set wait_for_angle_body_axis to ship:body.
+	set wait_for_angle_angle     to deorbit_angle.
 	run wait_for_angle.
 
 	lock steering to retrograde.
@@ -39,4 +43,6 @@ if periapsis > 10000 {
 
 	wait 5.
 }
+
+
 

@@ -1,11 +1,16 @@
 sas off.
 rcs on.
 
-run get_body_info.
+set debug to 0.
+
+set get_highest_peak_body to ship:body.
+run get_highest_peak.
 
 // ================================
 
-set pitch_limit to 45.
+
+
+set down_angle_limit to 135.
 
 set stage_0_alt to 500.
 
@@ -24,7 +29,7 @@ set slope_sum     to 0.
 
 lock slope_avg  to 0.
 
-when shope_size > slope_n then {
+when slope_size > slope_n then {
 	lock slope_avg  to slope_sum / slope_n.
 }
 
@@ -97,20 +102,19 @@ when alt:radar < 100 then {
 
 set g to ship:body:mu / ship:body:radius^2.
 
-lock pitch to vang(ship:facing:vector, up:vector).
+lock down_angle to vang(ship:facing:vector, up:vector).
 
-lock pitch_vel to arctan2(vs, ship:surfacespeed).
+lock down_angle_vel to 90 - arctan2(vs, ship:surfacespeed).
 
-lock pitch_vel_limit_exceeded to abs(pitch_vel) < pitch_limit.
+lock down_angle_vel_limit_exceeded to abs(down_angle_vel) < down_angle_limit.
 
 // =======================================================
 
-// general purpose PID
-set Y to 0.
-
 lock v_hori to vxcl(up:vector, ship:velocity:surface).
-lock v_vert to ship:velocity:surface - v_hori - slope_avg * up:vector.
+//lock v_vert to ship:velocity:surface - v_hori - slope_avg * up:vector.
+lock v_vert to ship:velocity:surface - v_hori.
 
+lock v to v_hori + v_vert.
 
 lock q to v_vert:mag^2 + 4 * (0.5 * g) * alt:radar.
 
@@ -119,35 +123,26 @@ lock t_to_impact_2 to (-1 * v_vert:mag - sqrt(q)) / a.
 
 
 
-if altitude > body_info[0] {
-	lock tar_vert_mag to -0.1 * (alt:radar - body_info[0]).
-} else {
-	lock tar_vert_mag to -0.1 * alt:radar - 0.5.
-}
 
-when altitude < stage_0_alt then {
-	lock tar_vert_mag to -0.1 * alt:radar - 0.5.
-	preserve.
-}
-
-
+lock vs_target to -0.1 * alt:radar - 0.5.
 
 // ====================================================
 // target velocity
 
 // vertical 
 
-lock tar_vert to tar_vert_mag * up:vector.
+lock tar_vert to vs_target * up:vector.
 
 // horizontal
 
 lock v_hori_scale to
 	min(
 		v_hori:mag,
-		v_vert:mag / tan(pitch_limit)
+		v_vert:mag / tan(90 - down_angle_limit)
 	).
 
 lock tar_hori to v_hori:normalized * v_hori_scale.
+lock tar_hori to v_hori.
 
 lock tar to tar_vert + tar_hori.
 
@@ -183,38 +178,53 @@ lock throttle_2 to throttle_2_vert + throttle_2_hori.
 
 // ===================================================
 
-lock throttle to Y.
+lock P0 to (vs_target - vs).
 
-lock P to v_burn:mag.
 
-set I to 0.
-set D to 0.
-set P0 to 0.
+set P0_0 to 0.
+set D0   to 0.
+set I0   to 0.
 
-set Kp to 0.05.
-set Ki to 0.0.
-set Kd to 0.06.
+set Kp0 to 0.10.
+set Ki0 to 0.00.
+set Kd0 to 0.005.
 
-lock dthrott to Kp * P + Ki * I + Kd * D.
+lock thrott0 to Kp0 * P0 + Ki0 * I0 + Kd0 * D0.
+
+
 
 set thrott to 0.
 
+
+// ===========================================
+
+if debug = 0 {
 lock throttle to thrott.
+lock steering to steer.
+}
 
 set t0 to time:seconds.
 
 // ==========================================
 
-lock steer to up.
+lock myretro_vec_vert to -1 * cos(down_angle_vel) * up:vector.
 
-lock steering to (steer:vector + ship:facing:vector):direction.
-//lock steering to steer.
+lock myretro_vec_surf to -1 * sin(down_angle_vel) * v_hori:normalized.
+
+lock myretro to (myretro_vec_vert + myretro_vec_surf):direction.
+
+// ==========================================
+
+lock steer to R(
+	myretro:pitch,
+	myretro:yaw,
+	ship:facing:roll).
 
 print "wait for pitch up".
 wait until ship:facing:pitch > 0.
 
 when ship:surfacespeed < 0.1 then {
-	lock steering to R(
+	lock steer to R(
 		up:pitch,
 		up:yaw,
 		ship:facing:roll).
@@ -230,32 +240,13 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	
 	
 	
-	if abs(pitch_vel) > pitch_limit {
-		lock steer to R(
-			ship:srfretrograde:pitch,
-			ship:srfretrograde:yaw,
-			ship:facing:roll).
-	} else {
-		if v_burn_mag = 0 {
-			//lock steer to R(
-			//	up:pitch,
-			//	up:yaw,
-			//	ship:facing:roll).
-			lock steer to R(
-				ship:srfretrograde:pitch,
-				ship:srfretrograde:yaw,
-				ship:facing:roll).
-		} else {
-			lock steer to R(
-				v_burn:direction:pitch,
-				v_burn:direction:yaw,
-				ship:facing:roll).
-		}
-	}
+	
 	
 	
 	if ship:surfacespeed < 0.1 {
 		set ship:control:translation to ship:facing:inverse * (-1 * v_hori).
+	} else {
+		set ship:control:translation to V(0,0,0).
 	}
 
 	
@@ -283,17 +274,16 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 
 		// =============================
 
-		set I to I + P * dt.
-		set D to (P - P0) / dt.
+		set I0 to I0 + P0 * dt.
+		set D0 to (P0 - P0_0) / dt.
 
-		if Ki > 0 {
-			set I to min(1.0/Ki, max(-1.0/Ki, I)).
+		if Ki0 > 0 {
+			set I0 to min(1.0/Ki0, max(-1.0/Ki0, I0)).
 		}
 
-		set P0 to P.
+		set P0_0 to P0.
 		
-		//set thrott to max(0, min(1, thrott + dthrott)).
-		set thrott to max(0, min(1, dthrott)).
+		set thrott to min(1, max(0, thrott0 / cos(down_angle))).
 	}
 
 	// =====================================================
@@ -305,7 +295,7 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	{
 		print "ABORT LANDING: severse slope".
 		set facing_0 to ship:facing.
-		lock steering to facing_0.
+		lock steer to facing_0.
 		lock throttle to th_g.
 		wait 3.
 		lock throttle to 0.
@@ -315,7 +305,7 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	// =====================================================
 	if v_burn_mag = 0 {
 
-		//lock steering to R(
+		//lock steer to R(
 		//	up:pitch,
 		//	up:yaw,
 		//	ship:facing:roll).
@@ -336,13 +326,13 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	clearscreen.
 	print "POWER LAND FINAL".
 	print "----------------".
-	print "    P                 " + P.
-	print "    I                 " + I.
-	print "    D                 " + D.
-	print "    P * kp            " + P * kp.
-	print "    I * ki            " + I * ki.
-	print "    D * kd            " + D * kd.
-	print "    dthrottle         " + dthrott.
+	print "    P0                " + P0.
+	print "    I0                " + I0.
+	print "    D0                " + D0.
+	print "    P0 * kp0          " + P0 * kp0.
+	print "    I0 * ki0          " + I0 * ki0.
+	print "    D0 * kd0          " + D0 * kd0.
+	print "    throttle up       " + thrott0.
 	print "    throttle          " + thrott.
 	print "    throttle_vert     " + thrott_vert.	
 	print "    throttle_hori     " + thrott_hori.
@@ -350,9 +340,11 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	print "    v burn vert       " + v_burn_vert:mag.
 	print "    v burn hori       " + v_burn_hori:mag.
 	print "    alt:radar         " + alt:radar.
+	print "    slope             " + slope_avg.
 	print "    vert speed        " + vs.
-	print "    vert speed target " + tar_vert_mag.
+	print "    vert speed target " + vs_target.
 	print "    hori speed        " + ship:surfacespeed.
+	print "    down angle (vel)  " + down_angle_vel.
 
 	// =======================================	
 
@@ -378,17 +370,19 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	}
 
 	// =======================================
+	// orientation criteria
 
 	if vdot(ship:facing:vector, v_burn_vert) < 0 {
 
 		print "reorienting vert".
 		lock v_burn_vert to V(0,0,0).
+		
 	} else {
 		lock v_burn_vert to v_burn_vert_1.
 	}
 	
 	lock ship_facing_hori to vxcl(up:vector, ship:facing:vector).
-
+	
 	if vang(ship_facing_hori, v_burn_hori) > 2
 	and alt:radar > 100 {
 		print "reorienting hori".
@@ -397,6 +391,12 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 		lock v_burn_hori to v_burn_hori_1.
 	}
 	
+	if vang(ship:facing:vector, steering:vector) > 2 {
+		lock throttle to 0.
+	} else {
+		lock throttle to thrott.
+	}
+
 	// =======================================
 
 	if thrott = 1 {
@@ -413,7 +413,7 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	set vd_tar:vector to tar.
 
 	set vd_steering:start  to ship:position.
-	set vd_steering:vector to steering:vector * 10.
+	set vd_steering:vector to steer:vector * 10.
 
 	set vd_v_burn:start  to ship:position.
 	set vd_v_burn:vector to v_burn.
@@ -428,8 +428,10 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	set vd_throttle_2:vector to throttle_2 * 10.
 }
 
+if debug = 0 {
 lock throttle to 0.
-
+set ship:control:translation to V(0,0,0).
+}
 
 print "cooldown".
 wait 5.

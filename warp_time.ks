@@ -38,5 +38,7 @@ if ship:body:atm:exists and ship:altitude < ship:body:atm:height {
 
 }
 
+set warp to 0.
+
 unset warp_time_tspan.
 

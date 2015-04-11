@@ -1,6 +1,7 @@
 //declare parameter mvr_adjust_altitude.
 
-
+// prereq
+run mvr_safe_periapsis.
 
 set precision to 0.02.
 
@@ -40,17 +41,11 @@ if apoapsis < 0 {
 	}
 }
 
-if mode = 0 {
-	print "approaching periapsis " + periapsis.
-	lock alt to apoapsis.
-	set alt_burn to periapsis.
-	set e_s to "per".
-} else if mode = 1 {
-	print "approaching apoapsis " + apoapsis.
-	lock alt to periapsis.
-	set alt_burn to apoapsis.
-	set e_s to "apo".
-}
+// mode = 0
+print "approaching periapsis " + periapsis.
+lock alt to apoapsis.
+set alt_burn to periapsis.
+set e_s to "per".
 
 
 set deltav_alt  to alt_burn.
@@ -91,11 +86,9 @@ run wait_orient.
 
 // ============================================================
 
-if mode = 0 {
-	lock e to eta:periapsis.
-} else if mode = 1 {
-	lock e to eta:apoapsis.
-}
+
+lock e to eta:periapsis.
+
 
 
 // use argument of periapsis to detect flip
@@ -103,13 +96,10 @@ set aop0 to ship:obt:argumentofperiapsis.
 
 when abs(aop0 - ship:obt:argumentofperiapsis) > 90 then {
 	print "flip! aop = " + ship:obt:argumentofperiapsis.
-	if mode = 0 {
-		lock alt to periapsis.
-		set mode to 1.
-	} else if mode = 1 {
-		lock alt to apoapsis.
-		set mode to 0.
-	}
+	
+	lock alt to periapsis.
+	set mode to 1.
+	
 }
 
 
@@ -145,7 +135,7 @@ set err_start to err.
 until (err / err_start) < precision {
 	
 	clearscreen.
-	print "MVR ADJUST".
+	print "MVR ADJUST AT PERIAPSIS".
 	print "=======================================".
 	print "    alt target   " + mvr_adjust_altitude.
 	print "    alt          " + alt.
@@ -191,22 +181,13 @@ wait 5.
 // ===================================================
 // ensure burn extrema has passed
 print "let extrema pass".
-if mode = 0 {
-	if eta:periapsis < eta:apoapsis {
-		set warp_string to "per".
-		set warp_sub to 0.		
-		run warp.
-	}
-} else if mode = 1 {
-	if eta:periapsis > eta:apoapsis {
-		set warp_string to "apo".
-		set warp_sub to 0.
-		run warp.
-	}
+
+if 0 {
+if eta:periapsis < eta:apoapsis {
+	set warp_string to "per".
+	set warp_sub to 0.		
+	run warp.
 }
-
-
-
-
+}
 
 

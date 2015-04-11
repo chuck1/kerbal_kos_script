@@ -25,7 +25,7 @@ if ship:body:atm:exists and ship:altitude < ship:body:atm:height {
 } else {
 
 	until e < 1 {
-		if e > 100000 * t and warp_limit > 6 {
+		if e > 100000 * warp_t and warp_limit > 6 {
 			set warp to 7.
 		} else if e > 10000 * warp_t {
 			set warp to 6.

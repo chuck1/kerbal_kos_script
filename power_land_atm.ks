@@ -18,8 +18,9 @@ print "orient retro".
 lock steering to R(ship:srfretrograde:pitch, ship:srfretrograde:yaw, 180).
 
 // ===============================================================
-print "wait for descent and altitude < 10000". 
-wait until ship:altitude < 10000 and ship:verticalspeed < 0.
+
+print "wait for descent".
+wait until ship:verticalspeed < 0.
 
 lock a0 to vang(up:forevector, ship:srfretrograde:forevector).
 
@@ -29,7 +30,6 @@ lock throttle to 0.
 // do not burn until pitched up
 print "wait for pitch up".
 wait until vdot(ship:facing:vector, up:vector) > 0.
-
 
 
 

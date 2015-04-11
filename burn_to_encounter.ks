@@ -1,3 +1,5 @@
+
+
 print "BURN TO ENCOUNTER -------------------------------".
 print "WARNING: assumes burning prograde".
 print "         will result in encounter".

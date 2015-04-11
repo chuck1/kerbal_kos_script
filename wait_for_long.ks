@@ -1,35 +1,67 @@
-print "WAIT FOR ANGLE ----------------------------------".
-print "long:      " + wait_for_angle_angle.
+// PARAM wait_for_long_long
 
-lock norm to vcrs(
+set circle_altitude to apoapsis.
+run circle.
+
+
+
+
+
+lock h to vcrs(
 	ship:position - ship:body:position,
 	ship:velocity:orbit - ship:body:velocity:orbit).
 
 
-
-lock v0 to ship:position - ship:body:position.
-
-lock d to vdot(norm, up:vector).
+lock d to vdot(h, V(0,-1,0)).
 
 lock d_sign to d / abs(d).
 
-lock diff_0 to d_sign * longitude - wait_for_angle_angle.
+lock omega to d_sign * 360 / ship:obt:period.
 
-if diff_0 < 0 {
-	lock diff to 360 + diff_0.
-} else {
-	lock diff to diff_0.
+
+
+
+	set error to wait_for_long_long - longitude.
+	if error < 0 {
+		set error to 360 + wait_for_long_long - longitude.
+	}
+
+	set eta to error / omega.
+
+
+
+
+if eta > 60 {
+	set warp_time_tspan to eta.
+	run warp_time.
+}
+
+until error < 1 {
+	
+	set error to wait_for_long_long - longitude.
+	if error < 0 {
+		set error to 360 + wait_for_long_long - longitude.
+	}
+
+	set eta to error / omega.
+	
+	
+	clearscreen.
+	print "WAIT FOR LONGITUDE".
+	print "============================".
+	print "lng current     " + longitude.
+	print "lng target      " + wait_for_long_long.
+	print "error           " + error.
+	print "omega           " + omega.
+	print "eta             " + eta.
+
+	print "h " + h.
+
+	wait 0.01.
 }
 
 
-set warp_time_tspan to
-	(diff / (360 - ship:obt:trueanomaly) * eta:periapsis - 30).
-
-run warp_time.
-
-lock e to abs((a - wait_for_angle_angle) / a).
 
 
-wait until e < 0.01.
 
 
