@@ -2,6 +2,8 @@
 
 // default values
 
+set circle_altitude  to 0.
+
 set launch_altitude  to 0.
 
 set capture_altitude to 0.
@@ -12,5 +14,8 @@ set deorbit_angle    to 120.
 // other stuff
 
 run global_var.
+
+
+
 
 

@@ -1,10 +1,18 @@
 //declare parameter circle_altitue.
 //declare parameter precision.
 
+if circle_altitude = 0 {
+	run calc_closest_stable_altitude.
+	set circle_altitude to calc_closest_stable_altitude_ret.
+}
+
+
 print "CIRCLE -----------------------------------".
 print "altitue:         " + circle_altitude.
 print "periapsis:       " + periapsis.
 print "apoapsis:        " + apoapsis.
+
+
 
 set precision to 0.05.
 //set mvr_adjustcle_precision
@@ -36,7 +44,8 @@ until error_max < precision {
 
 print "orbit is circularized".
 
-unset circle_altitude.
+// reset default
+set circle_altitude to 0.
 
 
 

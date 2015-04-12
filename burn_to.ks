@@ -73,11 +73,8 @@ until (err / err_start) < precision {
 }
 
 lock throttle to 0.
-print "burn complete".
 
-
-// ensure acceleration is over
-print "wait for cooldown".
+print "cooldown".
 wait 5.
 
 

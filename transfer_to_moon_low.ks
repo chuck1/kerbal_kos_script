@@ -28,8 +28,8 @@ if ship:body = transfer_to_moon_target {
 
 }
 
-run circle.
+run circle_low.
 
-
+unset transfer_to_moon_target.
 
 

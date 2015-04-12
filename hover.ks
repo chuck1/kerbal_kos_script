@@ -140,25 +140,19 @@ on ag7 {
 // desired direction
 
 
-
-//lock pit to 
-//	min(
-//		arctan2(Y1:mag, max(0.1,Y0)),
-//		hover_pitch_limit
-//	).
 lock pit to 
 	min(
 		arctan2(Y1:mag, Y0),
 		hover_pitch_limit
 	).
 
-//lock pit to arctan2(Y1:mag, Y0).
 
-lock dir to up:vector * cos(pit) + Y1:normalized * sin(pit).
+
+
 
 lock a_dir to vang(up:vector, dir).
 
-lock steering to R(dir:direction:pitch, dir:direction:yaw, ship:facing:roll).
+
 
 
 set th to 0.
@@ -179,6 +173,15 @@ set vd_y1:show to true.
 set t0 to time:seconds.
 
 until 0 {
+
+
+	set dir to up:vector * cos(pit) + Y1:normalized * sin(pit).
+
+
+
+
+
+
 	set dt to time:seconds - t0.
 	set t0 to time:seconds.	
 

@@ -9,7 +9,20 @@ if abs((apoapsis - periapsis) / periapsis) < precision {
 	run burn_to.
 }
 
+// ==================================================
 
+set altitiude_lst to list().
+set altitiude_lst_i      to  0.
+set altitiude_lst_n      to 20.
+set altitiude_lst_length to  0.
+until altitiude_lst_i = altitiude_lst_n {
+	altitiude_lst:add(0).
+	set altitiude_lst_i to altitiude_lst_i + 1.
+}
+
+lock altitiude_lst_avg to 0.
+when 
+lock altitiude_lst_avg to 0.
 
 // ==================================================
 // preliminaries
