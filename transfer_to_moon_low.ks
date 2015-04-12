@@ -1,7 +1,8 @@
 // PARAM transfer_to_moon_target
 
-print "TRANSFER TO MOON".
-wait 2.
+set add_line_line to "TRANSFER TO MOON LOW".
+run add_line.
+set lines_indent to lines_indent + 1.
 
 if ship:body = transfer_to_moon_target {
 } else {

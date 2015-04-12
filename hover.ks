@@ -168,7 +168,7 @@ set vd_dir:color to red.
 set vd_y1 to vecdraw().
 set vd_y1:show to true.
 
-
+set radar_limit to 100.
 
 set t0 to time:seconds.
 
@@ -185,11 +185,16 @@ until 0 {
 	set dt to time:seconds - t0.
 	set t0 to time:seconds.	
 
+	// ==========================================
+	// altitude error
+
 	if hover_alt_mode = "agl" {
 		lock P0 to hover_alt - alt:radar.
 	} else if hover_alt_mode = "asl" {
-		if alt:radar < 100 {
-			lock P0 to 100 - alt:radar.
+		if alt:radar < radar_limit {
+			lock P0 to max(
+				radar_limit - alt:radar,
+				hover_alt - altitude).
 		} else {
 			lock P0 to (hover_alt - altitude).
 		}
@@ -197,6 +202,8 @@ until 0 {
 		print "ERROR invalid mode".
 		print neverset.
 	}
+
+
 
 	if alt_error > 0 {
 		set vs_target to sqrt(2 * g * alt_error).
@@ -213,9 +220,14 @@ until 0 {
 
 	// =======================================================
 	// end conditions
+
 	if hover_hor_mode = "latlong" {
 		if abs(P0) < 5 and P1:mag < 5e-4 {
-			break.
+			if radar_limit = 100 {
+				set radar_limit to 20.
+			} else {
+				break.
+			}
 		}
 	} else if hover_hor_mode = "none" {
 		if abs(P0) < 1 {
@@ -228,7 +240,8 @@ until 0 {
 	lock thrust_ship to ship:facing:inverse * Y1.
 
 	if P1:mag < 0.1 {
-		lock steering to R(up:pitch, up:yaw, ship:facing:roll).
+		lock steering to up.
+		//lock steering to R(up:pitch, up:yaw, ship:facing:roll).
 	
 		set ship:control:translation to thrust_ship.
 	} else {
@@ -278,6 +291,7 @@ until 0 {
 	// ======================================
 	// print
 	clearscreen.
+	run print_lines.
 	print "HOVER".
 	print "==================================================".
 	

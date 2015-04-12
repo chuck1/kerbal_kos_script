@@ -1,4 +1,6 @@
 
+set lines to list().
+set lines_indent to 0.
 
 // default values
 

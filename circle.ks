@@ -14,7 +14,8 @@ print "apoapsis:        " + apoapsis.
 
 
 
-set precision to 0.05.
+set precision to 0.2.
+
 //set mvr_adjustcle_precision
 
 lock error_max to max(

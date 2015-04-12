@@ -1,9 +1,13 @@
 // PARAMETER launch_altitude
 
+set warp to 0.
+sas off.
+rcs off.
+
 set get_stable_orbits_body to ship:body.
 run get_stable_orbits.
 
-rcs off.
+
 
 if launch_altitude = 0 {
 	set launch_altitude to ship:body:radius / 5.

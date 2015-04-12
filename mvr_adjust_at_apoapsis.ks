@@ -15,19 +15,20 @@ set altitiude_lst to list().
 set altitiude_lst_i      to  0.
 set altitiude_lst_n      to 20.
 set altitiude_lst_length to  0.
+set altitiude_lst_sum    to  0.
 until altitiude_lst_i = altitiude_lst_n {
 	altitiude_lst:add(0).
 	set altitiude_lst_i to altitiude_lst_i + 1.
 }
 
 lock altitiude_lst_avg to 0.
-when 
-lock altitiude_lst_avg to 0.
+when altitiude_lst_length > altitiude_lst_n then {
+	lock altitiude_lst_avg to altitiude_lst_sum / altitiude_lst_n.
+}
 
 // ==================================================
 // preliminaries
 sas off.
-rcs on.
 set warp to 0.
 lock throttle to 0.
 
@@ -69,17 +70,28 @@ set warp_string to "apo".
 set warp_sub to est_rem_burn/2 + 30.
 run warp.
 
+lock r to ship:position - ship:body:position.
+
+lock h to vcrs(r, ship:velocity:orbit).
+
+lock v_tang to vxcl(r, ship:velocity:orbit).
+
+lock myprograde   to (     v_tang:normalized):direction.
+lock myretrograde to (-1 * v_tang:normalized):direction.
+
+
+
 if dv < 0 {
 	lock steering to R(
-		retrograde:pitch,
-		retrograde:yaw,
+		myretrograde:pitch,
+		myretrograde:yaw,
 		ship:facing:roll).
 
 	lock err to alt - mvr_adjust_altitude.
 } else {
 	lock steering to R(
-		prograde:pitch,
-		prograde:yaw,
+		myprograde:pitch,
+		myprograde:yaw,
 		ship:facing:roll).
 
 	lock err to mvr_adjust_altitude - alt.

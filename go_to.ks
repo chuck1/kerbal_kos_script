@@ -1,22 +1,31 @@
 // PARAMETER go_to_dest.
 
-run global_var.
+set add_line_line to "GO TO DEST".
+run add_line.
+set lines_indent to lines_indent + 1.
+
+if ship:body = go_to_dest[2] and ship:verticalspeed < 0.01 and alt_radar < 10 {
+	// landed on body
+} else {
+
+	set transfer_to_moon_target to go_to_dest[2].
+	run transfer_to_moon_low.
+
+	set mvr_flyover_gc to go_to_dest[0].
+	run mvr_flyover.
+
+}
+
+
 
 set get_highest_peak_body to ship:body.
 run get_highest_peak.
 
-//set calc_latlong_to_vector_dest to go_to_dest.
-//set calc_latlong_to_vector_alt  to get_highest_peak_ret.
-//run calc_latlong_to_vector.
-
 
 
 until 0 {
-	//run calc_latlong_to_vector.
-
-	//if calc_latlong_to_vector_distance < 15000 {
 	
-	if go_to_dest[0]:distance {
+	if go_to_dest[0]:distance < 15000 {
 		break.
 	}
 
@@ -33,5 +42,7 @@ set hover_dest     to mun_arch.
 run hover.
 
 run power_land_final.
+
+set lines_indent to lines_indent - 1.
 
 

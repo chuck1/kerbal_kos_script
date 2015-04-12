@@ -2,9 +2,14 @@ sas off.
 rcs on.
 
 set debug to 0.
+set visual to 0.
 
 set get_highest_peak_body to ship:body.
 run get_highest_peak.
+
+// modes
+// 0 default
+// 1 surface speed low: steer up, use rcs for surf speed
 
 // ================================
 
@@ -44,51 +49,52 @@ until i = slope_n {
 lock vs to ship:verticalspeed - slope_avg.
 
 // ==================================
-set vd_v_hori to vecdraw().
-set vd_v_hori:show  to true.
-set vd_v_hori:color to green.
-set vd_v_hori:label to "v_hori".
+if visual = 1 {
+	set vd_v_hori to vecdraw().
+	set vd_v_hori:show  to true.
+	set vd_v_hori:color to green.
+	set vd_v_hori:label to "v_hori".
 
-set vd_v_vert to vecdraw().
-set vd_v_vert:show  to true.
-set vd_v_vert:color to green.
-set vd_v_vert:label to "v_vert".
+	set vd_v_vert to vecdraw().
+	set vd_v_vert:show  to true.
+	set vd_v_vert:color to green.
+	set vd_v_vert:label to "v_vert".
 
-set vd_v_burn to vecdraw().
-set vd_v_burn:show  to true.
-set vd_v_burn:color to red.
-set vd_v_burn:label to "v_burn".
+	set vd_v_burn to vecdraw().
+	set vd_v_burn:show  to true.
+	set vd_v_burn:color to red.
+	set vd_v_burn:label to "v_burn".
 
-set vd_v_burn_vert to vecdraw().
-set vd_v_burn_vert:show  to true.
-set vd_v_burn_vert:color to red.
-set vd_v_burn_vert:label to "v_burn_vert".
+	set vd_v_burn_vert to vecdraw().
+	set vd_v_burn_vert:show  to true.
+	set vd_v_burn_vert:color to red.
+	set vd_v_burn_vert:label to "v_burn_vert".
 
-set vd_v_burn_hori to vecdraw().
-set vd_v_burn_hori:show  to true.
-set vd_v_burn_hori:color to red.
-set vd_v_burn_hori:label to "v_burn_hori".
+	set vd_v_burn_hori to vecdraw().
+	set vd_v_burn_hori:show  to true.
+	set vd_v_burn_hori:color to red.
+	set vd_v_burn_hori:label to "v_burn_hori".
 
-set vd_throttle_2 to vecdraw().
-set vd_throttle_2:show  to true.
-set vd_throttle_2:color to white.
-set vd_throttle_2:label to "throttle_2".
+	set vd_throttle_2 to vecdraw().
+	set vd_throttle_2:show  to true.
+	set vd_throttle_2:color to white.
+	set vd_throttle_2:label to "throttle_2".
 
-set vd_throttle_2_hori to vecdraw().
-set vd_throttle_2_hori:show  to true.
-set vd_throttle_2_hori:color to white.
-set vd_throttle_2_hori:label to "throttle_2_hori".
+	set vd_throttle_2_hori to vecdraw().
+	set vd_throttle_2_hori:show  to true.
+	set vd_throttle_2_hori:color to white.
+	set vd_throttle_2_hori:label to "throttle_2_hori".
 
-set vd_tar to vecdraw().
-set vd_tar:show  to true.
-set vd_tar:color to blue.
-set vd_tar:label to "tar".
+	set vd_tar to vecdraw().
+	set vd_tar:show  to true.
+	set vd_tar:color to blue.
+	set vd_tar:label to "tar".
 
-set vd_steering to vecdraw().
-set vd_steering:show  to true.
-set vd_steering:color to magenta.
-set vd_steering:label to "steering".
-
+	set vd_steering to vecdraw().
+	set vd_steering:show  to true.
+	set vd_steering:color to magenta.
+	set vd_steering:label to "steering".
+}
 // ===================================
 // deploy legs and turn on lights
 when alt:radar < 100 then {
@@ -123,8 +129,8 @@ lock t_to_impact_2 to (-1 * v_vert:mag - sqrt(q)) / a.
 
 
 
+set vs_target to 0.
 
-lock vs_target to -0.1 * alt:radar - 0.5.
 
 // ====================================================
 // target velocity
@@ -207,9 +213,12 @@ set t0 to time:seconds.
 
 // ==========================================
 
-lock myretro_vec_vert to -1 * cos(down_angle_vel) * up:vector.
+// do not let node fall below 45 down angle
+lock down_angle_limited to max(down_angle_vel, down_angle_limit).
 
-lock myretro_vec_surf to -1 * sin(down_angle_vel) * v_hori:normalized.
+lock myretro_vec_vert to -1 * cos(down_angle_limited) * up:vector.
+
+lock myretro_vec_surf to -1 * sin(down_angle_limited) * v_hori:normalized.
 
 lock myretro to (myretro_vec_vert + myretro_vec_surf):direction.
 
@@ -237,16 +246,26 @@ when ship:surfacespeed < 0.1 then {
 until ship:verticalspeed > -0.1 and alt:radar < 20 {
 
 	set v_burn_mag to v_burn:mag.
+		
+	// ====================================
+	// dont do final descent until surface speed is low
+	// "surface speed is low" is judged by ship pitch
+
 	
+	if vang(ship:facing:vector, up:vector) > 1 {
+		set vs_target to -0.1 * (alt:radar - 50).
+	} else {
+		set vs_target to -0.1 * alt:radar - 0.1.
+	}
 	
-	
-	
-	
-	
+	// ====================================	
+
 	if ship:surfacespeed < 0.1 {
+		set mode to 1.
 		set ship:control:translation to ship:facing:inverse * (-1 * v_hori).
 	} else {
 		set ship:control:translation to V(0,0,0).
+		set mode to 0.
 	}
 
 	
@@ -283,6 +302,7 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 
 		set P0_0 to P0.
 		
+		// set thrott according to how much vertical thrust we want
 		set thrott to min(1, max(0, thrott0 / cos(down_angle))).
 	}
 
@@ -317,11 +337,8 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 		set thrott_hori to v_burn_hori:mag / v_burn_mag * thrott.
 	}
 	
-	// cut throttle if error is zero and vs is up
-	if vs > 0 and v_burn_mag = 0 {
-		set thrott to 0.
-	}
-	
+
+
 
 	clearscreen.
 	print "POWER LAND FINAL".
@@ -348,7 +365,6 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 
 	// =======================================	
 
-	
 	if v_burn_mag = 0 {
 		set throttle_2_vert_mag to 0.
 		set throttle_2_hori_mag to 0.
@@ -374,7 +390,7 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 
 	if vdot(ship:facing:vector, v_burn_vert) < 0 {
 
-		print "reorienting vert".
+		//print "reorienting vert".
 		lock v_burn_vert to V(0,0,0).
 		
 	} else {
@@ -385,47 +401,78 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	
 	if vang(ship_facing_hori, v_burn_hori) > 2
 	and alt:radar > 100 {
-		print "reorienting hori".
+		//print "reorienting hori".
 		lock v_burn_hori to V(0,0,0).
 	} else {
 		lock v_burn_hori to v_burn_hori_1.
 	}
 	
-	if vang(ship:facing:vector, steering:vector) > 2 {
+
+
+
+
+
+
+	// =======================================
+
+	lock dot_vert to vdot(ship:facing:vector, myretro_vec_vert).
+	lock dot_surf to vdot(ship:facing:vector, myretro_vec_surf).
+	
+	lock reorienting_vert to (dot_vert < 0).
+	lock reorienting_surf to (dot_surf < 0) and (mode = 0).
+	
+	if reorienting_vert and reorienting_surf {
+		print "throttle cut: recorienting vert and surf " + vang(ship:facing:vector, steering:vector).
+		lock throttle to 0.
+	} else if reorienting_vert {
+		print "throttle cut: recorienting vert " + vang(ship:facing:vector, steering:vector).
+		lock throttle to 0.
+	} else if reorienting_surf {
+		print "throttle cut: recorienting surf " + vang(ship:facing:vector, steering:vector).
 		lock throttle to 0.
 	} else {
 		lock throttle to thrott.
 	}
+
+
+
+	//if vang(ship:facing:vector, steering:vector) > 2 {
+	//
+	//} else {
+	//	lock throttle to thrott.
+	//}
 
 	// =======================================
 
 	if thrott = 1 {
 		print "throttle maxed out".
 	}
-
-	set vd_v_hori:start  to ship:position.
-	set vd_v_hori:vector to v_hori.
 	
-	set vd_v_vert:start  to ship:position.
-	set vd_v_vert:vector to v_vert.
+	if visual = 1 {
+		set vd_v_hori:start  to ship:position.
+		set vd_v_hori:vector to v_hori.
 	
-	set vd_tar:start  to ship:position.
-	set vd_tar:vector to tar.
+		set vd_v_vert:start  to ship:position.
+		set vd_v_vert:vector to v_vert.
+	
+		set vd_tar:start  to ship:position.
+		set vd_tar:vector to tar.
 
-	set vd_steering:start  to ship:position.
-	set vd_steering:vector to steer:vector * 10.
+		set vd_steering:start  to ship:position.
+		set vd_steering:vector to steer:vector * 10.
 
-	set vd_v_burn:start  to ship:position.
-	set vd_v_burn:vector to v_burn.
+		set vd_v_burn:start  to ship:position.
+		set vd_v_burn:vector to v_burn.
 
-	set vd_v_burn_vert:start  to ship:position.
-	set vd_v_burn_vert:vector to v_burn_vert_0.
+		set vd_v_burn_vert:start  to ship:position.
+		set vd_v_burn_vert:vector to v_burn_vert_0.
 
-	set vd_v_burn_hori:start  to ship:position.
-	set vd_v_burn_hori:vector to v_burn_hori_0.
+		set vd_v_burn_hori:start  to ship:position.
+		set vd_v_burn_hori:vector to v_burn_hori_0.
 
-	set vd_throttle_2:start  to ship:position.
-	set vd_throttle_2:vector to throttle_2 * 10.
+		set vd_throttle_2:start  to ship:position.
+		set vd_throttle_2:vector to throttle_2 * 10.
+	}
 }
 
 if debug = 0 {
@@ -438,7 +485,7 @@ wait 5.
 print "landing complete".
 
 
-
+if visual = 1 {
 set vd_v_hori:show  to false.
 set vd_v_vert:show  to false.
 set vd_v_burn:show  to false.
@@ -448,7 +495,7 @@ set vd_throttle_2:show  to false.
 set vd_throttle_2_hori:show  to false.
 set vd_tar:show  to false.
 set vd_steering:show  to false.
-
+}
 
 
 
