@@ -39,7 +39,12 @@ lock error_max to max(
 	abs((apoapsis  - mvr_adjust_altitude)/mvr_adjust_altitude),
 	abs((periapsis - mvr_adjust_altitude)/mvr_adjust_altitude)).
 
-lock accel_max to ship:maxthrust / ship:mass.
+set accel_max to ship:maxthrust / ship:mass.
+until accel_max > 0 {
+	stage.
+	set accel_max to ship:maxthrust / ship:mass.
+}
+
 
 // ===========================================
 // mode = 1
@@ -60,7 +65,7 @@ set v0 to ship:velocity:orbit:mag.
 
 lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 
-lock est_rem_burn to abs(dv_rem / accel_max).
+set est_rem_burn to abs(dv_rem / accel_max).
 
 
 
@@ -127,6 +132,8 @@ set counter to 0.
 set th to 0.
 lock throttle to th.
 
+
+
 lock mvr_eta to e - est_rem_burn/2.
 
 if mvr_eta < 0 {
@@ -142,7 +149,28 @@ set mvr_adjust_stage to 0.
 
 
 until (err / err_start) < precision {
+
+	set accel_max to ship:maxthrust / ship:mass.
+	until accel_max > 0 {
+		stage.
+		set accel_max to ship:maxthrust / ship:mass.
+		
+	}
 	
+	set est_rem_burn to abs(dv_rem / accel_max).
+	
+
+	
+	// ===============================
+	// STAGING
+	list engines in el.
+	for engine in el {
+		if engine:flameout {
+			stage.
+			break.
+		}
+	}
+
 	clearscreen.
 	print "MVR ADJUST AT APOAPSIS".
 	print "=======================================".

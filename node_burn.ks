@@ -1,4 +1,5 @@
-rcs on.
+rcs off.
+sas off.
 
 set warp_string to "node".
 set warp_sub    to 60.
