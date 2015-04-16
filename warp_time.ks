@@ -3,7 +3,7 @@
 
 set t0 to TIME:seconds.
 
-lock e to (warp_time_tspan - (time:seconds - t0)).
+lock warp_time_eta to (warp_time_tspan - (time:seconds - t0)).
 
 set t to 1.
 
@@ -11,20 +11,20 @@ set warp_limit to 7.
 
 if ship:body:atm:exists and ship:altitude < ship:body:atm:height {
 } else {
-	until e < 1 {
-		if e > 100000 * t and warp_limit > 6 {
+	until warp_time_eta < 1 {
+		if warp_time_eta > 100000 * t and warp_limit > 6 {
 			set warp to 7.
-		} else if e > 10000 * t {
+		} else if warp_time_eta > 10000 * t {
 			set warp to 6.
-		} else if e > 1000 * t {
+		} else if warp_time_eta > 1000 * t {
 			set warp to 5.
-		} else if e > 100 * t {
+		} else if warp_time_eta > 100 * t {
 			set warp to 4.	
-		} else if e > 50 * t {
+		} else if warp_time_eta > 50 * t {
 			set warp to 3.	
-		} else if e > 10 * t {
+		} else if warp_time_eta > 10 * t {
 			set warp to 2.
-		} else if e > (5 * t) {
+		} else if warp_time_eta > (5 * t) {
 			set warp to 1.
 		}
 
@@ -32,13 +32,16 @@ if ship:body:atm:exists and ship:altitude < ship:body:atm:height {
 		print "WARP TIME".
 		print "===================".
 		print "    warp " + warp.
-		print "    eta  " + e.
+		print "    eta  " + warp_time_eta.
 		print "    time " + warp_time_tspan.
 	}
 
 }
 
 set warp to 0.
+
+unlock warp_time_eta.
+unset warp_time_eta.
 
 unset warp_time_tspan.
 

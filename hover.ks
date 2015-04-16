@@ -6,6 +6,7 @@
 
 sas off.
 rcs on.
+lights on.
 
 lock east to vcrs(north:vector, up:vector):direction.
 
@@ -17,7 +18,7 @@ if ship:maxthrust = 0 {
 	stage.
 }
 
-set hover_pitch_limit to 15.
+set hover_down_angle_limit to 15.
 
 lock g to ship:body:mu / (ship:body:radius + altitude)^2.
 
@@ -40,8 +41,6 @@ set ki0 to 0.01.
 set I0 to 0.
 
 set P0 to 0.
-
-
 
 
 lock D0 to 0 - ship:verticalspeed.
@@ -134,25 +133,16 @@ on ag7 {
 	preserve.
 }
 
-
-
 // ===================================================
 // desired direction
 
+lock down_angle_actual to vang(ship:facing:vector, up:vector).
 
-lock pit to 
+lock down_angle to 
 	min(
-		arctan2(Y1:mag, Y0),
-		hover_pitch_limit
+		arctan2(Y1:mag, -Y0),
+		hover_down_angle_limit
 	).
-
-
-
-
-
-lock a_dir to vang(up:vector, dir).
-
-
 
 
 set th to 0.
@@ -160,27 +150,14 @@ set th to 0.
 lock throttle to th.
 
 // ========================================================
-// vis
-set vd_dir to vecdraw().
-set vd_dir:show to true.
-set vd_dir:color to red.
 
-set vd_y1 to vecdraw().
-set vd_y1:show to true.
-
-set radar_limit to 100.
+set radar_limit to 20.
 
 set t0 to time:seconds.
 
 until 0 {
 
-
-	set dir to up:vector * cos(pit) + Y1:normalized * sin(pit).
-
-
-
-
-
+	set dir to up:vector * cos(down_angle) + Y1:normalized * sin(down_angle).
 
 	set dt to time:seconds - t0.
 	set t0 to time:seconds.	
@@ -206,25 +183,38 @@ until 0 {
 
 
 	if alt_error > 0 {
+		// ascend
 		set vs_target to sqrt(2 * g * alt_error).
 	} else {
+		// descend
 		//lock vs_target to -1 * sqrt(2 * g * alt_error).
-		set vs_target to -100.
+
+		if ship:verticalspeed < 0 {
+		
+			set a to (0 - ship:verticalspeed^2) / (2 * alt_error) + g.
+			set t to a / accel_max.
+			if t > 0.8 {
+				set vs_target to -10.
+			}
+			set vs_target to -100.
+		} else {
+			set vs_target to -100.
+		}
 	}
 
 	if alt:radar > 2000 {
-		set hover_pitch_limit to 180.
+		set hover_down_angle_limit to 30.
 	} else {
-		set hover_pitch_limit to 30.
+		set hover_down_angle_limit to 15.
 	}
 
 	// =======================================================
 	// end conditions
 
 	if hover_hor_mode = "latlong" {
-		if abs(P0) < 5 and P1:mag < 5e-4 {
-			if radar_limit = 100 {
-				set radar_limit to 20.
+		if abs(ship:verticalspeed < 0.1) and abs(P0) < 5 and P1:mag < 5e-4 {
+			if radar_limit > 10 {
+				set radar_limit to 10.
 			} else {
 				break.
 			}
@@ -237,15 +227,21 @@ until 0 {
 	
 	// =========================================================
 	
-	lock thrust_ship to ship:facing:inverse * Y1.
+	lock thrust_ship to ship:facing:inverse * Y1 * 4.
 
 	if P1:mag < 0.1 {
 		lock steering to up.
-		//lock steering to R(up:pitch, up:yaw, ship:facing:roll).
+
+		rcs on.
 	
 		set ship:control:translation to thrust_ship.
 	} else {
-		lock steering to R(dir:direction:pitch, dir:direction:yaw, ship:facing:roll).
+		lock steering to R(
+			dir:direction:pitch,
+			dir:direction:yaw,
+			ship:facing:roll).
+
+		rcs off.
 
 		set ship:control:translation to V(0,0,0).
 	}
@@ -285,44 +281,51 @@ until 0 {
 		// pid control
 		//set th to Y0.
 		// analytical control
-		set th to max(0, min(1, (vs_error / 2) / accel_max)).
+		
+		set th_vert to (vs_error / 2) / accel_max.
+		
+		
+		
+		set th to max(0, min(1, th_vert / cos(down_angle_actual))).
 	}
 	
 	// ======================================
 	// print
-	clearscreen.
-	run print_lines.
+	run lines_print_and_clear.
 	print "HOVER".
 	print "==================================================".
 	
-	print "hover alt     = " + hover_alt.
-	print "v_srf:mag     = " + v_srf:mag.
-	print "vs error      = " + vs_error.
-	print "P0            = " + P0.
-	print "I0            = " + I0.
-	print "D0            = " + D0.
-	print "Y0            = " + Y0.
-	print "Y1:mag        = " + Y1:mag.
-	print "D1:mag        = " + D1:mag.
-	print "P1:mag        = " + P1:mag.
-	print "I1:mag        = " + I1:mag.
-	print "dP1dt:mag     = " + dP1dt:mag.
-	print "pit           = " + pit.
-	print "pit0          = " + arctan2(Y1:mag, Y0).
-	print "sin(pit)      = " + sin(pit).
-	print "cos(pit)      = " + cos(pit).
+	print "hover alt       " + hover_alt.
+	print "altitude        " + altitude.
+	print "alt:radar       " + alt:radar.
+	print "radar limit     " + radar_limit.
+	print "v_srf:mag       " + v_srf:mag.
+	print "vs error        " + vs_error.
+	print "vs target       " + vs_target.
+	print "thrust ship     " + thrust_ship:mag.
+	//print "P0            = " + P0.
+	//print "I0            = " + I0.
+	//print "D0            = " + D0.
+	//print "Y0            = " + Y0.
+	//print "Y1:mag        = " + Y1:mag.
+	//print "D1:mag        = " + D1:mag.
+	//print "P1:mag        = " + P1:mag.
+	//print "I1:mag        = " + I1:mag.
+	print "dP1dt:mag       " + dP1dt:mag.
+	print "down angle act  " + down_angle_actual.
+	print "down angle      " + down_angle.
+	//print "down angle0     " + arctan2(Y1:mag, Y0).
 	
 	if hover_hor_mode = "latlong" {
-	print "lat           = " + latitude.
-	print "long          = " + longitude.
-	print "lat error     = " + lat_error.
-	print "long error    = " + long_error.
-	print "dLLEdt        = " + dLLEdt.
+	print "distance        " + hover_dest[0]:distance.
+	print "lat             " + latitude.
+	print "long            " + longitude.
+	print "latlng error    " + round(P1:mag * 10^3,3) + "E-3".
+	print "dLLEdt          " + dLLEdt.
 	}
 	
 	// =========================================
-
-	if vang(ship:facing:vector, steering:vector) > 2 and alt:radar > 10 {
+	if vang(ship:facing:vector, steering:vector) > 2 and alt:radar > 50 {
 		lock throttle to 0.
 		print "reorienting".		
 	} else {
@@ -333,13 +336,7 @@ until 0 {
 		print "rcs maxed out".
 	}
 
-	//set vd_dir:start to ship:position.
-	//set vd_dir:vector to dir * 10.
-
-	//set vd_y1:start to ship:position.
-	//set vd_y1:vector to Y1 * 100.
-
-	
+	wait 0.1.
 }
 
 set ship:control:translation to V(0,0,0).

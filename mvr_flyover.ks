@@ -1,7 +1,10 @@
 // PARAM mvr_flyover_gc
 
-print "MVR FLYOVER".
-wait 2.
+run log("mvr_flyover " + mvr_flyover_gc).
+
+set lines_add_line to "MVR FLYOVER " + ship:body + " " + mvr_flyover_gc.
+run lines_add.
+set lines_indent to lines_indent + 1.
 
 // useful vats
 lock g to ship:body:mu / (ship:body:radius + altitude)^2.
@@ -16,14 +19,6 @@ set mvr_flyover_highest_peak to get_highest_peak_ret.
 
 // prereq: low orbit for better accuracy
 run circle_low.
-
-
-clearscreen.
-print "MVR FLYOVER".
-print "    latlng          " + mvr_flyover_gc.
-print "    latlng:distance " + mvr_flyover_gc:distance.
-print "    latlng:bearing  " + mvr_flyover_gc:bearing.
-
 
 // calc bearing to latlong
 
@@ -55,209 +50,116 @@ lock dv_rem to 2 * ship:velocity:orbit:mag * sin(inc_change / 2).
 
 
 if abs(inc_change) > 0.1 {
-	// ====================================
-	// reorient
-
-	set inc_sign_0 to inc_sign.
-
-	if inc_sign < 0 {
-		lock steering to R(
-			h:direction:pitch,
-			h:direction:yaw,
-			ship:facing:roll).
-	} else {
-		lock steering to R(
-			(-1 * h):direction:pitch,
-			(-1 * h):direction:yaw,
-			ship:facing:roll).
-	}
-	run wait_orient.
 
 	// ====================================
-	// wait for phase of 90
+	// 10 wait for phase of 90
+	// 20 inc change burn
+	// 30 wait for phase of 45
 
-	until abs(phase - 90) < 1 {
+	set mode to 10.
 
-		if (90 - phase) > 0 or (90 - phase) < -5 {
-			set warp to 2.
-		} else {
-			set warp to 0.
-		}
 
-		clearscreen.
-		run print_lines.
+	until 0 {
+
+		run lines_print_and_clear.
 		print "MVR FLYOVER".
 		print "===========================================".
-		print "wait for phase of 90".
-		print "phase " + phase.
-		wait 0.01.
-	}
+	
+		if mode = 10 {
+			// status line
+			print "wait for phase of 90".
 
-	// ====================================
-	// inc change burn
+			// end condition
+			if abs(phase - 90) < 1 {
+				// transition to mode 1
 
-	until inc_change < 0.1 {
+				set inc_sign_0 to inc_sign.
 
-		if accel_max > 0 {
-			set est_rem_burn to dv_rem / accel_max.
-		} else {
-			stage.
-			wait 1.
-			set est_rem_burn to 0.
+				set mode to 20.
+			}
+
+			// other stuff
+			if (90 - phase) > 0 or (90 - phase) < -5 {
+				set warp to 2.
+			} else {
+				set warp to 0.
+			}
+		} else if mode = 20 {
+			// status line
+
+			// end conditions
+			if (inc_change < 0.1) or ((inc_sign * inc_sign_0) < 0) {
+
+				lock throttle to 0.
+				print "cooldown".
+				wait 5.
+
+				set mode to 30.
+				break.
+			}
+			
+			// orientation
+			if inc_sign < 0 {
+				lock steering to R(
+					h:direction:pitch,
+					h:direction:yaw,
+					ship:facing:roll).
+			} else {
+				lock steering to R(
+					(-1 * h):direction:pitch,
+					(-1 * h):direction:yaw,
+					ship:facing:roll).
+			}
+
+			// other stuff
+			if accel_max > 0 {
+				set est_rem_burn to dv_rem / accel_max.
+			} else {
+				stage.
+				wait 1.
+				set est_rem_burn to 0.
+			}
+
+			if vang(steering:vector, ship:facing:vector) > 3 {
+				print "change inclination (reorient)".
+				lock throttle to 0.
+			} else {
+				print "change inclination".
+				lock throttle to ((est_rem_burn / 5) + 0.01).
+			}
+		} else if mode = 30 {
+			print "wait for phase of 45".
+			
+			if (45 - phase) > 0 or (45 - phase) < -5 {
+				if not (warp = 3) {
+					set warp to 3.
+				}
+			} else {
+				if not (warp = 0) {
+					set warp to 0.
+				}
+			}
+
+			if (abs(phase - 45) < 1) {
+				break.
+			}
 		}
-		
-		clearscreen.
-		run print_lines.
-		print "MVR FLYOVER".
+
 		print "===========================================".
-		print "change inclination".
+		print "    phase      " + phase.
 		print "    inc change " + inc_change.
 
-		if vang(steering:vector, ship:facing:vector) > 3 {
-			print "reorienting" + vang(steering:vector, ship:facing:vector).
-			lock throttle to 0.
-		} else {
-			lock throttle to ((est_rem_burn / 5) + 0.01).
-		}
-
-
-		if (inc_sign * inc_sign_0) < 0 {
-			print "inc sign flipped".
-			break.
-		}
+		wait 0.1.
 	}
 
-	lock throttle to 0.
-	print "cooldown".
-	wait 5.
 }
 
+set mvr_flyover_deorbit_gc to mvr_flyover_gc.
+run mvr_flyover_deorbit.
 
 
-lock steering to R(
-	retrograde:pitch,
-	retrograde:yaw,
-	ship:facing:roll).
-
-run wait_orient.
-
-
-
-// ====================================
-// wait for phase of 45
-
-until abs(phase - 45) < 1 {
-
-	if (45 - phase) > 0 or (45 - phase) < -5 {
-		set warp to 2.
-	} else {
-		set warp to 0.
-	}
-
-	clearscreen.
-	run print_lines.
-	print "MVR FLYOVER".
-	print "=======================================".
-	print "wait for phase of 45".
-	print "phase " + phase.
-	wait 0.01.
-}
-
-// search for land position
-
-set  t_l to time:seconds.
-lock p_l to positionat(ship, t_l).
-lock r_l to p_l - ship:body:position.
-
-// horizontal distance to latlng at t_l
-lock d_l to vxcl(r_l, p_l - mvr_flyover_gc:position).
-
-lock alt_l to r_l:mag - ship:body:radius.
-
-// find time at which ship passes below highest peak
-
-
-
-set d_l_min to 10000000000000.
-
-until 0 {
-	lock throttle to th_g.
-
-	clearscreen.
-	run print_lines.
-	print "MVR FLYOVER".
-	print "=======================================".
-	print "deorbit".
-	print "    distance to lz " + round(d_l_min,0).
-
-	set t_l to time:seconds.
-	until 0 {
-		if alt_l < mvr_flyover_highest_peak {
-			break.
-		}
-		set t_l to t_l + 1.
-	}
-
-	if d_l:mag > d_l_min {
-		break.
-	}
-
-	set d_l_min to min(d_l_min, d_l:mag).
-}
-lock throttle to 0.
-
-print "distance to target when passing".
-print "through " + round(mvr_flyover_highest_peak, 0) +
-	" altitude is " + round(d_l_min, 0).
-
-// could use time here to adjust for body rotation
-
-// should be deorbuting now
-// wait until actual horizontal distance increases
-// or hit landing limit
-
-set d_min to mvr_flyover_gc:distance + 100.
-
-lock time_to_arrest_surf_speed to ship:surfacespeed / accel_max.
-
-lock distance_to_arrest_surf_speed to ship:surfacespeed * time_to_arrest_surf_speed - 0.5 * accel_max * time_to_arrest_surf_speed^2.
-
-until 0 {
-	clearscreen.
-	print "MVR FLYOVER".
-	print "=======================================".
-	print "wait for closest approach to LZ or".
-	print "alt:radar below 2000".
-	print "    phase                         " + phase.
-	print "    distance                      " + mvr_flyover_gc:distance.
-	print "    d min                         " + d_min.
-	print "    alt:radar                     " + alt:radar.
-	print "    distance to arrest surf speed " + distance_to_arrest_surf_speed.
-	print "    time to arrest surf speed     " + time_to_arrest_surf_speed.
-	
-	if mvr_flyover_gc:distance > d_min {
-		run power_land_arrest_srf_velocity.
-		break.
-	}
-
-	if mvr_flyover_gc:distance < distance_to_arrest_surf_speed {
-		run power_land_arrest_srf_velocity.
-		break.
-	}
-	
-	set d_min to min(d_min, mvr_flyover_gc:distance).
-
-	if alt:radar < 2000 {
-		break.
-	}
-
-	wait 0.01.
-}
-
-
-
-
-
+// cleanup
+set lines_indent to lines_indent - 1.
 
 
 

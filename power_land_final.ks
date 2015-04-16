@@ -48,61 +48,12 @@ until i = slope_n {
 
 lock vs to ship:verticalspeed - slope_avg.
 
-// ==================================
-if visual = 1 {
-	set vd_v_hori to vecdraw().
-	set vd_v_hori:show  to true.
-	set vd_v_hori:color to green.
-	set vd_v_hori:label to "v_hori".
-
-	set vd_v_vert to vecdraw().
-	set vd_v_vert:show  to true.
-	set vd_v_vert:color to green.
-	set vd_v_vert:label to "v_vert".
-
-	set vd_v_burn to vecdraw().
-	set vd_v_burn:show  to true.
-	set vd_v_burn:color to red.
-	set vd_v_burn:label to "v_burn".
-
-	set vd_v_burn_vert to vecdraw().
-	set vd_v_burn_vert:show  to true.
-	set vd_v_burn_vert:color to red.
-	set vd_v_burn_vert:label to "v_burn_vert".
-
-	set vd_v_burn_hori to vecdraw().
-	set vd_v_burn_hori:show  to true.
-	set vd_v_burn_hori:color to red.
-	set vd_v_burn_hori:label to "v_burn_hori".
-
-	set vd_throttle_2 to vecdraw().
-	set vd_throttle_2:show  to true.
-	set vd_throttle_2:color to white.
-	set vd_throttle_2:label to "throttle_2".
-
-	set vd_throttle_2_hori to vecdraw().
-	set vd_throttle_2_hori:show  to true.
-	set vd_throttle_2_hori:color to white.
-	set vd_throttle_2_hori:label to "throttle_2_hori".
-
-	set vd_tar to vecdraw().
-	set vd_tar:show  to true.
-	set vd_tar:color to blue.
-	set vd_tar:label to "tar".
-
-	set vd_steering to vecdraw().
-	set vd_steering:show  to true.
-	set vd_steering:color to magenta.
-	set vd_steering:label to "steering".
-}
 // ===================================
 // deploy legs and turn on lights
 when alt:radar < 100 then {
 	set legs to true.
 	lights on.
 }
-
-
 
 // ======================================================
 
@@ -251,11 +202,10 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 	// dont do final descent until surface speed is low
 	// "surface speed is low" is judged by ship pitch
 
-	
 	if vang(ship:facing:vector, up:vector) > 1 {
 		set vs_target to -0.1 * (alt:radar - 50).
 	} else {
-		set vs_target to -0.1 * alt:radar - 0.1.
+		set vs_target to -0.1 * (alt:radar - 5) - 0.1.
 	}
 	
 	// ====================================	
@@ -473,6 +423,8 @@ until ship:verticalspeed > -0.1 and alt:radar < 20 {
 		set vd_throttle_2:start  to ship:position.
 		set vd_throttle_2:vector to throttle_2 * 10.
 	}
+
+	wait 0.1.
 }
 
 if debug = 0 {

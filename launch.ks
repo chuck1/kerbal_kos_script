@@ -1,5 +1,10 @@
 // PARAMETER launch_altitude
 
+set lines_add_line to "LAUNCH " + ship:body.
+run lines_add.
+set lines_indent to lines_indent + 1.
+
+
 set warp to 0.
 sas off.
 rcs off.
@@ -23,6 +28,7 @@ if periapsis > get_stable_orbits_ret[0][0] {
 	}
 }
 
+if 0 { // removed to implement boot_run
 if apoapsis > launch_altitude {
 	set circle_altitude to apoapsis.
 	run circle.
@@ -30,6 +36,9 @@ if apoapsis > launch_altitude {
 	set circle_altitude to launch_altitude.
 	run circle.
 }
+}
 
-
+// cleanup
+set lines_indent to lines_indent + 1.
+unset launch_altitude.
 

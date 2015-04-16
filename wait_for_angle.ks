@@ -4,6 +4,13 @@
 // parameter wait_for_angle_angle.
 
 
+set lines_add_line to "WAIT FOR ANGLE " +
+	wait_for_angle_body_1 + " " +
+	wait_for_angle_body_2 + " " +
+	wait_for_angle_body_axis + " " +
+	wait_for_angle_angle.
+run lines_add.
+set lines_indent to lines_indent + 1.
 
 lock r1 to (wait_for_angle_body_1:position - wait_for_angle_body_axis:position).
 lock r2 to (wait_for_angle_body_2:position - wait_for_angle_body_axis:position).
@@ -143,11 +150,11 @@ until wait_for_angle_e < 0.01 {
 	print "omega_sign    " + omega_sign.
 
 	//print "sign          " + d_sign.
-	print "v1            " + v1m.
-	print "v2            " + v2m.
-	print "va            " + wait_for_angle_body_axis:velocity:orbit:mag.
-	print "r1            " + r1:mag.
-	print "r2            " + r2:mag.
+	//print "v1            " + v1m.
+	//print "v2            " + v2m.
+	//print "va            " + wait_for_angle_body_axis:velocity:orbit:mag.
+	//print "r1            " + r1:mag.
+	//print "r2            " + r2:mag.
 	print "omega 1       " + omega_1.
 	print "omega 2       " + omega_2.
 	
@@ -160,14 +167,14 @@ until wait_for_angle_e < 0.01 {
 	wait 0.1.
 }
 
+// cleanup
 
 unset wait_for_angle_body_1.
 unset wait_for_angle_body_2.
 unset wait_for_angle_body_axis.
 unset wait_for_angle_angle.
 
-
-
+set lines_indent to lines_indent + 1.
 
 
 

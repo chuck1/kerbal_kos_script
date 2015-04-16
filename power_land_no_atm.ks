@@ -97,8 +97,8 @@ if ship:velocity:surface:mag < 0.01 {
 			} else {
 				lock throttle to 0.
 			}
-	
-
+			
+			wait 0.1.
 		}
 
 	}

@@ -1,8 +1,7 @@
 
 
-print "BURN TO ENCOUNTER -------------------------------".
-print "WARNING: assumes burning prograde".
-print "         will result in encounter".
+run log("burn_to_encounter " + burn_to_encounter_body).
+
 
 set r1 to ship:altitude + ship:body:radius.
 set r2 to burn_to_encounter_body:altitude + ship:body:radius.
@@ -38,8 +37,16 @@ lock alt_diff_frac to abs((apoapsis - burn_to_encounter_body:altitude) / burn_to
 set th to 0.
 lock throttle to th.
 until ship:obt:hasnextpatch {
+
+	run lines_print_and_clear.
+	print "BURN TO ENCOUNTER".
+	print "============================".
+	print "    apoapsis  " + apoapsis.
+	print "    periapsis " + periapsis.
 		
-	set th to max(min(alt_diff_frac * 10, 1), 0).
+	set th to max(0, min(1, 
+		alt_diff_frac * 10 + 0.05
+		)).
 	
 	wait 0.1.
 }

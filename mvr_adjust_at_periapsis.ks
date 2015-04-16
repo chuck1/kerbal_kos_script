@@ -1,7 +1,9 @@
 //declare parameter mvr_adjust_altitude.
 
+run log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
+
 // prereq
-run mvr_safe_periapsis.
+//run mvr_safe_periapsis.
 
 set precision to 0.02.
 
@@ -15,6 +17,7 @@ if abs((apoapsis - periapsis) / periapsis) < precision {
 // ==================================================
 // preliminaries
 sas off.
+rcs off.
 lock throttle to 0.
 
 // ==================================================
@@ -45,7 +48,6 @@ if apoapsis < 0 {
 print "approaching periapsis " + periapsis.
 lock alt to apoapsis.
 set alt_burn to periapsis.
-set e_s to "per".
 
 
 set deltav_alt  to alt_burn.
@@ -62,8 +64,7 @@ lock est_rem_burn to abs(dv_rem / accel).
 
 
 
-
-set warp_string to e_s.
+set warp_string to "per".
 set warp_sub to est_rem_burn/2 + 30.
 run warp.
 
@@ -134,7 +135,7 @@ set err_start to err.
 
 until (err / err_start) < precision {
 	
-	clearscreen.
+	run lines_print_and_clear.
 	print "MVR ADJUST AT PERIAPSIS".
 	print "=======================================".
 	print "    alt target   " + mvr_adjust_altitude.
@@ -168,6 +169,8 @@ until (err / err_start) < precision {
 			break.
 		}
 	}
+
+	wait 0.1.
 }
 
 lock throttle to 0.

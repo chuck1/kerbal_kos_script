@@ -1,5 +1,6 @@
 // preliminaries
 sas off.
+rcs off.
 lock throttle to 0.
 
 set deorbit_body  to sun.
@@ -15,14 +16,17 @@ lock timetostop to -1.0 * ship:verticalspeed / (a - g).
 
 // ===============================================================
 print "orient retro".
-lock steering to R(ship:srfretrograde:pitch, ship:srfretrograde:yaw, 180).
+lock steering to R(
+	ship:srfretrograde:pitch,
+	ship:srfretrograde:yaw,
+	ship:facing:roll).
 
 // ===============================================================
 
 print "wait for descent".
 wait until ship:verticalspeed < 0.
 
-lock a0 to vang(up:forevector, ship:srfretrograde:forevector).
+lock a0 to vang(up:vector, ship:srfretrograde:forevector).
 
 lock throttle to 0.
 
@@ -30,8 +34,6 @@ lock throttle to 0.
 // do not burn until pitched up
 print "wait for pitch up".
 wait until vdot(ship:facing:vector, up:vector) > 0.
-
-
 
 
 set scal1 to 1.0.
@@ -64,7 +66,8 @@ until alt:radar < 2000 {
 		set meth to 1.
 	} else {
 		// going to reach term
-		set timetoimpact to timetoterm + (alt:radar - disttoterm) / ship:termvelocity.
+		set timetoimpact to timetoterm +
+			(alt:radar - disttoterm) / ship:termvelocity.
 		set meth to 2.
 	}
 
@@ -77,8 +80,6 @@ until alt:radar < 2000 {
 
 	wait 0.2.
 }
-
-run power_land_arrest_srf_velocity.
 
 run power_land_final.
 

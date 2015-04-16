@@ -1,0 +1,40 @@
+
+x' > 0
+y' < 0
+
+
+x'' =    - a_0 * x' / sqrt((x')^2 + (y')^2)
+
+y'' = -g - a_0 * y' / sqrt((x')^2 + (y')^2)
+
+
+
+x''     = - a_0 * x' / sqrt((x')^2 + (y')^2)
+
+y'' + g = - a_0 * y' / sqrt((x')^2 + (y')^2)
+
+
+
+x'' / (y'' + g) =  x' /  y'
+
+x'' / x' = (y'' + g) /  y'
+
+x'' / x' = y'' /  y' + g /  y'
+
+v' / v = u' / u + g / u
+
+v' = u' + g
+v      u
+
+integrate
+
+(dv/dt) / v = (du/dt) / u + g / u
+
+dv / v = du / u + g / u * dt
+
+dv = du + g * dt
+--   --   ------
+v    u      u
+
+
+

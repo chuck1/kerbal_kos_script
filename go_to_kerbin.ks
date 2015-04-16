@@ -3,6 +3,8 @@ run kos_init.
 
 if ship:body = kerbin {
 } else {
+	set transfer_to_target to kerbin.
+	
 	if ship:obt:hasnextpatch {
 	} else {
 		run launch.
@@ -19,7 +21,6 @@ if ship:body = kerbin {
 	set warp_sub to 0.
 	run warp("trans", 0).
 }
-
 
 
 run power_land_atm.

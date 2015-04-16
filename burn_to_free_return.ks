@@ -18,6 +18,10 @@ set peri_min to 10000000000000000.
 until 0 {
 	lock throttle to 0.1.
 
+	print "BURN TO FREE RETURN".
+	print "==============================".
+	print "    return periapsis " + ship:obt:nextpatch:nextpatch:periapsis.
+
 	if ship:obt:nextpatch:nextpatch:periapsis < ship:body:atm:height * 0.8 {
 		break.
 	}
@@ -27,6 +31,8 @@ until 0 {
 	}
 
 	set peri_min to min(peri_min, ship:obt:nextpatch:nextpatch:periapsis).
+
+	wait 0.1.
 }
 
 lock throttle to 0.

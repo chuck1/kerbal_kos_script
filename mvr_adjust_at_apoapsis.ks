@@ -1,5 +1,7 @@
 // parameter mvr_adjust_altitude.
 
+run log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
+
 set precision to 0.02.
 
 // when apoapsis and periapsis are close,
@@ -67,12 +69,12 @@ lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 
 set est_rem_burn to abs(dv_rem / accel_max).
 
-
+run calc_burn_duration(abs(dv)).
 
 
 
 set warp_string to "apo".
-set warp_sub to est_rem_burn/2 + 30.
+set warp_sub to calc_burn_duration_ret / 2 + 30.
 run warp.
 
 lock r to ship:position - ship:body:position.
@@ -112,7 +114,6 @@ lock e to eta:apoapsis.
 // use argument of periapsis to detect flip
 set aop0 to ship:obt:argumentofperiapsis.
 
-
 when abs(aop0 - ship:obt:argumentofperiapsis) > 90 then {
 	print "flip! aop = " + ship:obt:argumentofperiapsis.
 	lock alt to apoapsis.
@@ -125,16 +126,11 @@ set v0        to ship:velocity:orbit:mag.
 set err_min   to err.
 set err_start to err.
 
-lock frac to abs(err / err_start).
+// get more accurate burn_duration
+run calc_burn_duration(abs(dv)).
 
-set counter to 0.
-
-set th to 0.
-lock throttle to th.
-
-
-
-lock mvr_eta to e - est_rem_burn/2.
+//lock mvr_eta to e - est_rem_burn/2.
+lock mvr_eta to e - calc_burn_duration_ret/2.
 
 if mvr_eta < 0 {
 	print "ERROR: missed burn start time".
@@ -147,6 +143,10 @@ set mvr_eta_0 to mvr_eta.
 // 1 burning
 set mvr_adjust_stage to 0.
 
+// loop
+
+set th to 0.
+lock throttle to th.
 
 until (err / err_start) < precision {
 
@@ -159,8 +159,6 @@ until (err / err_start) < precision {
 	
 	set est_rem_burn to abs(dv_rem / accel_max).
 	
-
-	
 	// ===============================
 	// STAGING
 	list engines in el.
@@ -171,40 +169,44 @@ until (err / err_start) < precision {
 		}
 	}
 
-	clearscreen.
+	run lines_print_and_clear.
 	print "MVR ADJUST AT APOAPSIS".
 	print "=======================================".
 	print "    alt target   " + mvr_adjust_altitude.
-	print "    alt          " + alt.
+	print "    apoapsis     " + apoapsis.
+	print "    periapsis    " + periapsis.
 	print "    alt burn     " + alt_burn.
 	print "    err          " + err.
 	print "    err_min      " + err_min.
-	print "    dv           " + dv.
-	print "    ship accel   " + accel_max.
+	print "    dv           " + round(dv,1).
+	print "    dv rem       " + round(dv_rem,1).
+	print "    accel max    " + accel_max.
 	print "    est rem burn " + est_rem_burn.
-	print "    throttle     " + round(max(0, min(1, est_rem_burn / 10 + 0.01)),3).
-	print "    v mag 0      " + v0.
-	print "    v mag        " + ship:velocity:orbit:mag.
-	print "    dv rem       " + dv_rem.
-	print " ".
+	print "    throttle     " + round(th,3).
+	print "    v mag 0      " + round(v0,1).
+	print "    v mag        " + round(ship:velocity:orbit:mag,1).
+	print "    burn dur     " + calc_burn_duration_ret.
 	
 	
-
-	if mvr_eta > 0 and mvr_eta < mvr_eta_0 and mvr_adjust_stage = 0 {
+	if mvr_eta > 0 and
+	mvr_eta < mvr_eta_0 and
+	mvr_adjust_stage = 0 {
 		print "burn in t-" + round(mvr_eta,1).
 
-		set v0        to ship:velocity:orbit:mag.
+		set v0 to ship:velocity:orbit:mag.
 	} else {
 	
 		set th to max(0, min(1, est_rem_burn / 10 + 0.01)).
 
 		set err_min to min(err_min, err).
 	
-		if err > (err_min + 10) {
+		if abs(err) > abs(err_min + 10) {
 			print "abort: error increasing!".
 			break.
 		}
 	}
+
+	wait 0.1.
 }
 
 lock throttle to 0.
@@ -234,7 +236,8 @@ if mode = 0 {
 }
 }
 
-
+//cleanup
+unlock steering.
 
 
 

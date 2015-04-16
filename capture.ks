@@ -44,7 +44,8 @@ if ship:obt:hasnextpatch {
 	set deltav_alt  to periapsis.
 	set deltav_alt1 to apoapsis.
 	set deltav_alt2 to capture_altitude.
-	
+	run deltav.
+
 	set v0 to ship:velocity:orbit:mag.
 	lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 	lock est_rem_burn to abs(dv_rem / accel_max).
@@ -61,6 +62,13 @@ if ship:obt:hasnextpatch {
 	set th to 0.
 	lock throttle to th.
 	until not (ship:obt:hasnextpatch) {
+		
+		run lines_print_and_clear.
+		print "CAPTURE".
+		print "================================".
+		print "    apoapsis     " + apoapsis.
+		print "    est rem burn " + est_rem_burn.
+		
 		set th to (est_rem_burn / 5 + 0.1).
 	}
 	

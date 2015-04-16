@@ -1,6 +1,4 @@
-run kos_init.
+run boot_run("go_to_mun_arch_0").
 
-set go_to_dest to mun_arch.
-run go_to.
 
 

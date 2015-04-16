@@ -1,15 +1,13 @@
 //declare parameter burn_to_altitude.
 //declare parameter precision.
 
-print "BURN TO ----------------------------------".
-
 if burn_to_altitude > ship:altitude {
-	set alt to apoapsis.
+	lock alt to apoapsis.
 	
 	lock steering to prograde.
 	run wait_orient.
 } else {
-	set alt to periapsis.
+	lock alt to periapsis.
 
 	lock steering to retrograde.
 	run wait_orient.
@@ -18,6 +16,11 @@ if burn_to_altitude > ship:altitude {
 lock accel to ship:maxthrust / ship:mass.
 
 set alt_burn to altitude.
+
+set deltav_alt  to altitude.
+set deltav_alt1 to altitude.
+set deltav_alt2 to burn_to_altitude.
+run deltav.
 
 set v0 to ship:velocity:orbit:mag.
 lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
@@ -39,27 +42,27 @@ set counter to 0.
 set th to 0.
 lock throttle to th.
 
-print "alt          " + alt.
-print "target       " + burn_to_altitude.
-print "initial err  " + err.
-print "est rem burn " + est_rem_burn.
+//print "alt          " + alt.
+//print "target       " + burn_to_altitude.
+//print "initial err  " + err.
+//print "est rem burn " + est_rem_burn.
 
 set err_min to err.
 
 until (err / err_start) < precision {
-	set th to max(
-		min(
-			min(frac * 10, 1),
-			min(est_rem_burn / 5, 1)
-		),
-		0).
+	set th to
+		max(0,
+		min(1,
+		min(est_rem_burn / 5, 1)
+		)).
 	
-	clearscreen.
+	run lines_print_and_clear.
 	print "BURN TO".
 	print "===================================".
 	print "alt target " + burn_to_altitude.
+	print "alt        " + alt.
 	print "err        " + err.
-	
+	print "thortt     " + th.
 	
 	
 	set err_min to min(err_min, err).
@@ -69,7 +72,7 @@ until (err / err_start) < precision {
 		break.
 	}
 	
-	wait 0.05.
+	wait 0.1.
 }
 
 lock throttle to 0.
