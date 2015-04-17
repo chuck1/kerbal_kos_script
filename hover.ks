@@ -2,7 +2,7 @@
 // PARAMETER hover_dest
 // PARAMETER 
 
-
+run log("hover").
 
 sas off.
 rcs on.
@@ -133,6 +133,12 @@ on ag7 {
 	preserve.
 }
 
+// ==============================================
+// for descending
+
+lock hover_arrest_descent_accel to (0 - ship:verticalspeed^2) / (2 * alt_error) + g.
+lock hover_arrest_descent_thrott to hover_arrest_descent_accel / accel_max.
+
 // ===================================================
 // desired direction
 
@@ -191,12 +197,11 @@ until 0 {
 
 		if ship:verticalspeed < 0 {
 		
-			set a to (0 - ship:verticalspeed^2) / (2 * alt_error) + g.
-			set t to a / accel_max.
-			if t > 0.8 {
+			if hover_arrest_descent_thrott > 0.5 {
 				set vs_target to -10.
+			} else {
+				set vs_target to -100.
 			}
-			set vs_target to -100.
 		} else {
 			set vs_target to -100.
 		}
@@ -302,6 +307,8 @@ until 0 {
 	print "v_srf:mag       " + v_srf:mag.
 	print "vs error        " + vs_error.
 	print "vs target       " + vs_target.
+	print "arrest desc a   " + hover_arrest_descent_accel.
+	print "arrest desc th  " + hover_arrest_descent_thrott.
 	print "thrust ship     " + thrust_ship:mag.
 	//print "P0            = " + P0.
 	//print "I0            = " + I0.

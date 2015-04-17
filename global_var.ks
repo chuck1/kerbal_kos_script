@@ -1,6 +1,8 @@
 
 set mun_arch to list().
-mun_arch:add(latlng(2.46373581886292, 81.5251212255859)).
+mun_arch:add(latlng(
+	 2.46373581886292 - -0.000401258468623045,
+	81.5251212255859  -  0.000195993652312154)).
 mun_arch:add(4900.0).
 mun_arch:add(mun).
 mun_arch:add("mun_arch").

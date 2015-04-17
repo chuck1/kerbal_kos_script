@@ -38,8 +38,8 @@ if ship:body = go_to_dest[2] {
 		run power_land_final.
 		
 		
-		print "lat error " + abs(go_to_dest[0]:lat - latitude).
-		print "lng error " + abs(go_to_dest[0]:lng - longitude).
+		run log("lat error " + (go_to_dest[0]:lat - latitude)).
+		run log("lng error " + (go_to_dest[0]:lng - longitude)).
 		
 		set go_to_complete to true.
 	
@@ -69,20 +69,22 @@ if ship:body = go_to_dest[2] {
 		run power_land_final.
 		
 		
-		print "lat error " + abs(go_to_dest[0]:lat - latitude).
-		print "lng error " + abs(go_to_dest[0]:lng - longitude).
+		print "lat error " + (go_to_dest[0]:lat - latitude).
+		print "lng error " + (go_to_dest[0]:lng - longitude).
 		
 		set go_to_complete to true.
 
 
-
-	} else if (orbit_type = "circular") or (orbit_type = "elliptic") {
-
+	} else if (orbit_type = "elliptic") {
+		run circle_low.
+	} else if (orbit_type = "circular") {
+		
 		run circle_low.
 
-		set mvr_flyover_gc to go_to_dest[0].
-		run mvr_flyover.
-
+		if circle_ret = 0 {
+			set mvr_flyover_gc to go_to_dest[0].
+			run mvr_flyover.
+		}
 	} else {
 		print "invalid obt type: " + orbit_type.
 		print neverset.

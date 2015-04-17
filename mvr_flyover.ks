@@ -54,7 +54,6 @@ if abs(inc_change) > 0.1 {
 	// ====================================
 	// 10 wait for phase of 90
 	// 20 inc change burn
-	// 30 wait for phase of 45
 
 	set mode to 10.
 
@@ -94,7 +93,6 @@ if abs(inc_change) > 0.1 {
 				print "cooldown".
 				wait 5.
 
-				set mode to 30.
 				break.
 			}
 			
@@ -126,22 +124,6 @@ if abs(inc_change) > 0.1 {
 			} else {
 				print "change inclination".
 				lock throttle to ((est_rem_burn / 5) + 0.01).
-			}
-		} else if mode = 30 {
-			print "wait for phase of 45".
-			
-			if (45 - phase) > 0 or (45 - phase) < -5 {
-				if not (warp = 3) {
-					set warp to 3.
-				}
-			} else {
-				if not (warp = 0) {
-					set warp to 0.
-				}
-			}
-
-			if (abs(phase - 45) < 1) {
-				break.
 			}
 		}
 

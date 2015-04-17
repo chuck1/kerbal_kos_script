@@ -33,19 +33,40 @@ if ship:obt:hasnextpatch {
 
 set mvr_adjust_altitude to circle_altitude.
 
+set circle_error_apoapsis  to abs((apoapsis  - circle_altitude) / (ship:obt:semimajoraxis)).
+set circle_error_periapsis to abs((periapsis - circle_altitude) / (ship:obt:semimajoraxis)).
+
+set circle_ret to 1.
 
 //until error_max < precision {
-if error_max < precision {
+if		(ship:obt:eccentricity < 0.1) and
+		(circle_error_apoapsis < 0.1) and
+		(circle_error_periapsis < 0.1) {
 	print "orbit is circular".
-	wait 5.
+	set circle_ret to 0.
 } else {
 	
 	run mvr_safe_periapsis.
-
+	
+	print "eta:apoapsis  " + eta:apoapsis.
+	print "eta:periapsis " + eta:periapsis.
+	
 	if ship:verticalspeed > 0 {
-		run mvr_adjust_at_apoapsis.
+		
+		if (circle_error_periapsis < 0.05) {
+			run mvr_adjust_at_periapsis.
+		} else {
+			run mvr_adjust_at_apoapsis.
+		}
+		
 	} else if ship:verticalspeed < 0 {
-		run mvr_adjust_at_periapsis.
+
+		if (circle_error_apoapsis < 0.05) {
+			run mvr_adjust_at_apoapsis.
+		} else {
+			run mvr_adjust_at_periapsis.
+		}
+
 	}
 	
 }

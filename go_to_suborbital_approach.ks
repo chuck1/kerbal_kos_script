@@ -1,5 +1,6 @@
 declare parameter go_to_suborbital_approach_dest.
 
+set g to ship:body:mu / ship:body:radius^2.
 
 // velocity components
 
@@ -84,9 +85,9 @@ set kthrott to 0.2.
 
 lock arrest_descent_accel to -1 * ship:verticalspeed / 2.
 
-lock arrest_descent_pitch_sin to arrest_descent_accel / accel_max.
+lock arrest_descent_pitch_sin to min(arrest_descent_accel, accel_max) / accel_max.
 
-lock arrest_descent_pitch to arcsin(arrest_descent_accel / accel_max).
+lock arrest_descent_pitch to arcsin(arrest_descent_pitch_sin).
 
 lock arrest_descent_steering to (
 	up:vector * arrest_descent_pitch_sin +
@@ -190,11 +191,17 @@ until 0 {
 			set thrott to 0.
 		} else {
 
-			if (alt:radar < 1000) and (ship:verticalspeed < 0) {
+			if 		((ship:verticalspeed^2 / 2 / alt:radar + g) > (accel_max / 2)) or
+					((alt:radar < 1000) and (ship:verticalspeed < 0)) {
 				print "burn x (arrest descent)".
 				// if ship is decending below alt:radar of 1000
 				// arrest descent
-				lock steering to arrest_descent_throttle.
+
+				print arrest_descent_accel.
+				print arrest_descent_pitch.
+				print arrest_descent_steering.
+
+				lock steering to arrest_descent_steering.
 				
 				set thrott to 1.
 			} else {
@@ -238,6 +245,7 @@ until 0 {
 		print neverset.
 	}
 
+	print "=====================================".
 	//print "    phase                         " + phase.
 	print "    distance                      " + round(go_to_suborbital_approach_dest[0]:distance,1).
 	print "    distance surf                 " + round(rt:mag,1).

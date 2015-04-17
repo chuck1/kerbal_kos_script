@@ -4,6 +4,8 @@ set lines_indent to 0.
 
 // default values
 
+set mission_complete to false.
+
 set circle_altitude  to 0.
 
 set launch_altitude  to 0.

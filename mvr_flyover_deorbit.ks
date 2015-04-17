@@ -65,33 +65,75 @@ lock alt_l to r_l:mag - ship:body:radius.
 
 // find time at which ship passes below highest peak
 
+// mode
+// 10 wait for phase of 45
+// 20 burn
 
+set mode to 10.
 
 set d_l_min to 10000000000000.
 
+set counter to 0.
+
 until 0 {
-	lock throttle to th_g.
 
 	run lines_print_and_clear.
 	print "MVR FLYOVER".
 	print "=======================================".
-	print "deorbit".
+
+	if mode = 10 {
+		print "wait for phase of 45".
+		
+		if (45 - phase) > 0 or (45 - phase) < -5 {
+			if not (warp = 3) {
+				set warp to 3.
+			}
+		} else {
+			if not (warp = 0) {
+				set warp to 0.
+			}
+		}
+
+		if (abs(phase - 45) < 1) {
+			if not (warp = 0) {
+				set warp to 0.
+			}
+		
+			lock throttle to th_g.
+			set mode to 20.
+		}
+	} else if mode = 20 {
+
+		print "deorbit".
+
+		set t_l to time:seconds.
+		until 0 {
+			//if alt_l < mvr_flyover_deorbit_gc:terrainheight + 2000 {
+			if alt_l < mvr_flyover_deorbit_highest_peak {
+				break.
+			}
+			set t_l to t_l + 1.
+		}
+	
+
+		if d_l:mag > d_l_min {
+			lock throttle to th_g / 2.
+			
+			// anti-jitter
+			set counter to counter + 1.
+			if counter = 10 {
+				lock throttle to 0.
+				break.
+			}
+		}
+
+		set d_l_min to min(d_l_min, d_l:mag).
+	}
+
+	print "==============================".
 	print "    distance to lz " + round(d_l_min,0).
 
-	set t_l to time:seconds.
-	until 0 {
-		//if alt_l < mvr_flyover_deorbit_gc:terrainheight + 2000 {
-		if alt_l < mvr_flyover_deorbit_highest_peak {
-			break.
-		}
-		set t_l to t_l + 1.
-	}
-
-	if d_l:mag > d_l_min {
-		break.
-	}
-
-	set d_l_min to min(d_l_min, d_l:mag).
+	wait 0.1.
 }
 lock throttle to 0.
 
