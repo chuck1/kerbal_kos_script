@@ -17,6 +17,10 @@ set deorbit_angle    to 120.
 
 set power_land_arrest_srf_velocity_accel to 0.
 
+set hover_hor_mode   to "none".
+set hover_vert_mode  to "agl".
+set hover_alt        to 15.
+
 // other stuff
 
 run global_var.

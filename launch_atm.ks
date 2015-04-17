@@ -30,7 +30,17 @@ lock down_angle_vel to vang(up:vector, ship:velocity:surface).
 
 // with FAR mod, kOS returns approx 3x terminal velocity
 
-lock speed_target to (ship:termvelocity/12).
+lock term_speed_scale to 12.
+
+lock g to ship:body:mu / (ship:body:radius + altitude)^2.
+lock pres to ship:body:atm:sealevelpressure * ( constant():e ^ ( -1 * ship:altitude / (ship:body:atm:scale*1000) ) ).
+
+set ship_k to 0.006.
+
+//lock term_speed to ship:termvelocity / term_speed_scale).
+lock term_speed to sqrt(2 * ship:mass * g / pres / ship_k).
+
+lock speed_target to term_speed.
 
 lock launch_atm_p to speed_target - ship:velocity:surface:mag.
 set th to 0.
@@ -38,7 +48,6 @@ lock throttle to th.
 
 set launch_atm_kp to 0.01.
 
-lock pres to ship:body:atm:sealevelpressure * ( constant():e ^ ( -1 * ship:altitude / (ship:body:atm:scale*1000) ) ).
 
 set pres_stage to 0.14.
 
@@ -125,9 +134,10 @@ until 0 {
 	if mode = 20 {
 	print "    wait for pres       " + pres_stage.
 	print "    pres                " + pres.
+	print "                        " + sqrt(ship:body:atm:sealevelpressure - pres).
 	}
 	if mode < 40 {
-	print "    term vel            " + round(ship:termvelocity, 1).
+	print "    term vel            " + round(term_speed, 1).
 	print "    vel                 " + round(ship:velocity:surface:mag, 1).
 	}
 	print "    th                  " + th.

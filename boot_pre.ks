@@ -1,4 +1,6 @@
 
+run kos_init.
+
 run calc_classify_obt.
 
 if orbit_type = "prelaunch" {

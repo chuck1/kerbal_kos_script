@@ -171,9 +171,9 @@ until 0 {
 	// ==========================================
 	// altitude error
 
-	if hover_alt_mode = "agl" {
+	if hover_vert_mode = "agl" {
 		lock P0 to hover_alt - alt:radar.
-	} else if hover_alt_mode = "asl" {
+	} else if hover_vert_mode = "asl" {
 		if alt:radar < radar_limit {
 			lock P0 to max(
 				radar_limit - alt:radar,
@@ -198,7 +198,7 @@ until 0 {
 		if ship:verticalspeed < 0 {
 		
 			if hover_arrest_descent_thrott > 0.5 {
-				set vs_target to -10.
+				set vs_target to -1.
 			} else {
 				set vs_target to -100.
 			}
@@ -225,15 +225,16 @@ until 0 {
 			}
 		}
 	} else if hover_hor_mode = "none" {
-		if abs(P0) < 1 {
-			break.
-		}
+		//if abs(P0) < 1 {
+		//	break.
+		//}
 	}
 	
 	// =========================================================
 	
 	lock thrust_ship to ship:facing:inverse * Y1 * 4.
 
+	if not (hover_hor_mode = "none") {
 	if P1:mag < 0.1 {
 		lock steering to up.
 
@@ -250,7 +251,7 @@ until 0 {
 
 		set ship:control:translation to V(0,0,0).
 	}
-	
+	}
 	
 	
 	if dt > 0 {
@@ -287,9 +288,7 @@ until 0 {
 		//set th to Y0.
 		// analytical control
 		
-		set th_vert to (vs_error / 2) / accel_max.
-		
-		
+		set th_vert to vs_error / accel_max.
 		
 		set th to max(0, min(1, th_vert / cos(down_angle_actual))).
 	}
@@ -332,13 +331,14 @@ until 0 {
 	}
 	
 	// =========================================
+	if 0 {	
 	if vang(ship:facing:vector, steering:vector) > 2 and alt:radar > 50 {
 		lock throttle to 0.
 		print "reorienting".		
 	} else {
 		lock throttle to th.
 	}
-
+	}
 	if thrust_ship:mag > 1 {
 		print "rcs maxed out".
 	}
