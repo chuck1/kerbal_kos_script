@@ -18,7 +18,7 @@ if ship:maxthrust = 0 {
 	stage.
 }
 
-set hover_down_angle_limit to 15.
+set hover_down_angle_limit to 45.
 
 lock g to ship:body:mu / (ship:body:radius + altitude)^2.
 
@@ -50,7 +50,6 @@ lock Y0 to P0 * kp0 + D0 * kd0 + I0 * ki0.
 // ==================================================
 // alternate altitude control
 
-lock alt_error to P0.
 
 set vs_target to 0.
 
@@ -65,17 +64,17 @@ set dP1dt to V(0,0,0).
 if hover_hor_mode = "speed" {
 
 	set kp1 to 0.10.
-	set kd1 to 0.10.
+	set kd1 to 1.00.
 	set ki1 to 0.
 
 	lock P1 to v - v_srf.
 
 	lock D1 to dP1dt.
 
-} else if hover_hor_mode = "latlong" {
+} else if hover_hor_mode = "latlng" {
 
-	set kp1 to 20.0.
-	set kd1 to  0.25.
+	set kp1 to  0.01.
+	set kd1 to  0.05.
 	set ki1 to  0.0.
 
 	set P1_mag_0 to 0.
@@ -83,10 +82,26 @@ if hover_hor_mode = "speed" {
 
 	lock lat_error  to hover_dest[0]:lat  - latitude.
 	lock long_error to hover_dest[0]:lng - longitude.
+
+
+	lock hover_latlng_p to hover_dest[0]:position - ship:position.
 	
-	lock P1 to north:vector * lat_error - east:vector * long_error.
+	lock hover_latlng_p_surf to vxcl(up:vector, hover_latlng_p).
+
+	//lock P1 to north:vector * lat_error - east:vector * long_error.
+
+	lock P1 to hover_latlng_p_surf.
+
+	// vector from ship to target
+	
+	//lock v_surf_target_perp to vxcl(hover_latlng_p_surf, v_srf).
+	//lock v_surf_target to v_srf - v_surf_target_perp.
 
 	lock D1 to -1 * v_srf.
+	//lock D1 to -1 * v_surf_target.
+} else {
+	print "invalid surface mode: " + hover_hor_mode.
+	print neverset.
 }
 
 set P1_0 to V(0,0,0).
@@ -136,7 +151,7 @@ on ag7 {
 // ==============================================
 // for descending
 
-lock hover_arrest_descent_accel to (0 - ship:verticalspeed^2) / (2 * alt_error) + g.
+lock hover_arrest_descent_accel to (0 - ship:verticalspeed^2) / (2 * P0) + g.
 lock hover_arrest_descent_thrott to hover_arrest_descent_accel / accel_max.
 
 // ===================================================
@@ -144,9 +159,14 @@ lock hover_arrest_descent_thrott to hover_arrest_descent_accel / accel_max.
 
 lock down_angle_actual to vang(ship:facing:vector, up:vector).
 
+//lock down_angle to 
+//	min(
+//		arctan2(Y1:mag, -Y0),
+//		hover_down_angle_limit
+//	).
 lock down_angle to 
 	min(
-		arctan2(Y1:mag, -Y0),
+		arctan2(Y1:mag, -1),
 		hover_down_angle_limit
 	).
 
@@ -182,18 +202,18 @@ until 0 {
 			lock P0 to (hover_alt - altitude).
 		}
 	} else {
-		print "ERROR invalid mode".
+		print "invalid vert mode: " + hover_vert_mode.
 		print neverset.
 	}
 
 
 
-	if alt_error > 0 {
+	if P0 > 0 {
 		// ascend
-		set vs_target to sqrt(2 * g * alt_error).
+		set vs_target to sqrt(2 * g * P0).
 	} else {
 		// descend
-		//lock vs_target to -1 * sqrt(2 * g * alt_error).
+		//lock vs_target to -1 * sqrt(2 * g * P0).
 
 		if ship:verticalspeed < 0 {
 		
@@ -210,14 +230,14 @@ until 0 {
 	if alt:radar > 2000 {
 		set hover_down_angle_limit to 30.
 	} else {
-		set hover_down_angle_limit to 15.
+		set hover_down_angle_limit to 30.
 	}
 
 	// =======================================================
 	// end conditions
 
-	if hover_hor_mode = "latlong" {
-		if abs(ship:verticalspeed < 0.1) and abs(P0) < 5 and P1:mag < 5e-4 {
+	if hover_hor_mode = "latlng" {
+		if abs(ship:verticalspeed < 0.1) and abs(P0) < 5 and P1:mag < 0.01 {
 			if radar_limit > 10 {
 				set radar_limit to 10.
 			} else {
@@ -228,14 +248,19 @@ until 0 {
 		//if abs(P0) < 1 {
 		//	break.
 		//}
+	} else {
+		print "invalid surface mode: " + hover_hor_mode.
+		print neverset.
 	}
 	
 	// =========================================================
+	// when close to target, switch to rcs for surface control
 	
-	lock thrust_ship to ship:facing:inverse * Y1 * 4.
+	lock thrust_ship to ship:facing:inverse * Y1 * 50.
+
 
 	if not (hover_hor_mode = "none") {
-	if P1:mag < 0.1 {
+	if (P1:mag < 100) and (D1:mag < 5) {
 		lock steering to up.
 
 		rcs on.
@@ -253,6 +278,8 @@ until 0 {
 	}
 	}
 	
+
+	// update control vars
 	
 	if dt > 0 {
 
@@ -265,20 +292,18 @@ until 0 {
 		}
 
 
+		set dP1dt_0 to dP1dt.
 		set dP1dt to (P1 - P1_0) / dt.
 		set P1_0 to P1.
 
-		if hover_hor_mode = "latlong" {
+		if hover_hor_mode = "latlng" {
 			// start integral control when close
 			if P1:mag < 1 {
 				set I1 to I1 + P1 * dt.
 			}
 
-			set dLLEdt_0 to dLLEdt.
-			set dLLEdt to (P1:mag - P1_mag_0) / dt.
-			set P1_mag_0 to P1:mag.
 
-			if (dLLEdt_0 * dLLEdt) < 0 {
+			if (dP1dt_0 * dP1dt) < 0 {
 				// error rate flip
 				set I1 to V(0,0,0).
 			}
@@ -300,8 +325,10 @@ until 0 {
 	print "==================================================".
 	
 	print "hover alt       " + hover_alt.
+	print "hover vert mode " + hover_vert_mode.
 	print "altitude        " + altitude.
 	print "alt:radar       " + alt:radar.
+	print "alt error       " + P0.
 	print "radar limit     " + radar_limit.
 	print "v_srf:mag       " + v_srf:mag.
 	print "vs error        " + vs_error.
@@ -313,7 +340,7 @@ until 0 {
 	//print "I0            = " + I0.
 	//print "D0            = " + D0.
 	//print "Y0            = " + Y0.
-	//print "Y1:mag        = " + Y1:mag.
+	print "Y1              " + vdot(Y1, hover_latlng_p_surf:normalized).
 	//print "D1:mag        = " + D1:mag.
 	//print "P1:mag        = " + P1:mag.
 	//print "I1:mag        = " + I1:mag.
@@ -322,12 +349,11 @@ until 0 {
 	print "down angle      " + down_angle.
 	//print "down angle0     " + arctan2(Y1:mag, Y0).
 	
-	if hover_hor_mode = "latlong" {
+	if hover_hor_mode = "latlng" {
 	print "distance        " + hover_dest[0]:distance.
+	print "distance surf   " + hover_latlng_p_surf:mag.
 	print "lat             " + latitude.
 	print "long            " + longitude.
-	print "latlng error    " + round(P1:mag * 10^3,3) + "E-3".
-	print "dLLEdt          " + dLLEdt.
 	}
 	
 	// =========================================

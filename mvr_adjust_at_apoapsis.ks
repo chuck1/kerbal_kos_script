@@ -148,7 +148,8 @@ set mvr_adjust_stage to 0.
 set th to 0.
 lock throttle to th.
 
-until (err / err_start) < precision {
+//until (err / err_start) < precision {
+until 0 {
 
 	set accel_max to ship:maxthrust / ship:mass.
 	until accel_max > 0 {
@@ -159,15 +160,7 @@ until (err / err_start) < precision {
 	
 	set est_rem_burn to abs(dv_rem / accel_max).
 	
-	// ===============================
-	// STAGING
-	list engines in el.
-	for engine in el {
-		if engine:flameout {
-			stage.
-			break.
-		}
-	}
+	run util_stage_burn.
 
 	run lines_print_and_clear.
 	print "MVR ADJUST AT APOAPSIS".
@@ -188,15 +181,16 @@ until (err / err_start) < precision {
 	print "    burn dur     " + calc_burn_duration_ret.
 	
 	
-	if mvr_eta > 0 and
-	mvr_eta < mvr_eta_0 and
-	mvr_adjust_stage = 0 {
+	if		mvr_eta > 0 and
+			mvr_eta < mvr_eta_0 and
+			mvr_adjust_stage = 0 {
+
 		print "burn in t-" + round(mvr_eta,1).
 
 		set v0 to ship:velocity:orbit:mag.
 	} else {
 	
-		set th to max(0, min(1, est_rem_burn / 10 + 0.01)).
+		set th to max(0, min(1, est_rem_burn / 10)).
 
 		set err_min to min(err_min, err).
 	

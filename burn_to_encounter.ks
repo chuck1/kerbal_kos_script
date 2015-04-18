@@ -43,6 +43,8 @@ until ship:obt:hasnextpatch {
 	print "============================".
 	print "    apoapsis  " + apoapsis.
 	print "    periapsis " + periapsis.
+
+	run util_stage_burn.
 		
 	set th to max(0, min(1, 
 		alt_diff_frac * 10 + 0.05

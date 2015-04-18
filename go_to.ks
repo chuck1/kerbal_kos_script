@@ -23,16 +23,16 @@ if ship:body = go_to_dest[2] {
 				break.
 			}
 		
-			set hop_mode to "latlong".
+			set hop_mode to "latlng".
 			set hop_dest to go_to_dest.
 			run hop.
 		}
 		
 		
-		set hover_alt_mode to "asl".
-		set hover_hor_mode to "latlong".
-		set hover_alt      to go_to_dest[1].
-		set hover_dest     to go_to_dest.
+		set hover_vert_mode to "asl".
+		set hover_hor_mode  to "latlng".
+		set hover_alt       to go_to_dest[1].
+		set hover_dest      to go_to_dest.
 		run hover.
 		
 		run power_land_final.
@@ -54,16 +54,16 @@ if ship:body = go_to_dest[2] {
 				break.
 			}
 		
-			set hop_mode to "latlong".
+			set hop_mode to "latlng".
 			set hop_dest to go_to_dest.
 			run hop.
 		}
 		
 		
-		set hover_alt_mode to "asl".
-		set hover_hor_mode to "latlong".
-		set hover_alt      to go_to_dest[1].
-		set hover_dest     to go_to_dest.
+		set hover_vert_mode to "asl".
+		set hover_hor_mode  to "latlng".
+		set hover_alt       to go_to_dest[1].
+		set hover_dest      to go_to_dest.
 		run hover.
 		
 		run power_land_final.

@@ -150,13 +150,7 @@ until 0 {
 	print "    down_angle_steering " + round(down_angle_steering,1).
 	}
 
-	list engines in el.
-	for engine in el {
-		if engine:flameout {
-			stage.
-			break.
-		}
-	}
+	run util_stage_burn.
 
 	wait 0.1.
 }

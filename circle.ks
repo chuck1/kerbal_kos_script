@@ -39,8 +39,8 @@ set circle_error_periapsis to abs((periapsis - circle_altitude) / (ship:obt:semi
 set circle_ret to 1.
 
 //until error_max < precision {
-if		(ship:obt:eccentricity < 0.1) and
-		(circle_error_apoapsis < 0.1) and
+if		(ship:obt:eccentricity < 0.05) and
+		(circle_error_apoapsis < 0.05) and
 		(circle_error_periapsis < 0.1) {
 	print "orbit is circular".
 	set circle_ret to 0.

@@ -2,30 +2,34 @@ T+0 go_to mun_arch
 T+0 transfer_to_low BODY("Mun")
 T+0 transfer to moon low BODY("Mun")
 T+0 launch_atm BODY("Kerbin")
-T+160 go_to mun_arch
-T+160 transfer_to_low BODY("Mun")
-T+160 transfer to moon low BODY("Mun")
-T+160 circle 120151.212618458
-T+160 mvr_adjust_at_apoapsis 120151.212618458
-T+335 go_to mun_arch
-T+335 transfer_to_low BODY("Mun")
-T+335 transfer to moon low BODY("Mun")
-T+335 mvr_match_inc BODY("Mun")
-T+335 burn_to_encounter BODY("Mun")
-T+27263 go_to mun_arch
-T+27263 circle_low
-T+27263 circle 15000
-T+33313 mvr_adjust_at_apoapsis 15000
-T+33359 go_to mun_arch
-T+33359 circle_low
-T+33359 circle 15000
-T+33359 mvr_adjust_at_apoapsis 15000
-T+35681 go_to mun_arch
-T+35681 circle_low
-T+35681 circle 15000
-T+35681 mvr_flyover LATLNG(2.46413707733154, 81.5249252319336)
-T+35681 circle_low
-T+35681 circle 15000
-T+36461 mvr_flyover_deorbit LATLNG(2.46413707733154, 81.5249252319336)
-T+36770 go_to mun_arch
-T+37139 hover
+T+122 go_to mun_arch
+T+122 transfer_to_low BODY("Mun")
+T+122 transfer to moon low BODY("Mun")
+T+122 circle 120028.720059682
+T+122 mvr_adjust_at_apoapsis 120028.720059682
+T+296 go_to mun_arch
+T+296 transfer_to_low BODY("Mun")
+T+296 transfer to moon low BODY("Mun")
+T+296 mvr_match_inc BODY("Mun")
+T+934 burn_to_encounter BODY("Mun")
+T+26926 go_to mun_arch
+T+26926 circle_low
+T+26926 circle 15000
+T+33156 mvr_adjust_at_apoapsis 15000
+T+33198 go_to mun_arch
+T+33198 circle_low
+T+33198 circle 15000
+T+33208 mvr_adjust_at_apoapsis 15000
+T+36405 go_to mun_arch
+T+36405 circle_low
+T+36405 circle 15000
+T+36405 mvr_flyover LATLNG(2.46413707733154, 81.5249252319336)
+T+36405 circle_low
+T+36405 circle 15000
+T+37225 mvr_flyover_deorbit LATLNG(2.46413707733154, 81.5249252319336)
+T+37533 go_to mun_arch
+T+37910 hover
+T+1187862 go_to mun_arch
+T+1187862 hover
+T+819262 go_to mun_arch
+T+819262 hover

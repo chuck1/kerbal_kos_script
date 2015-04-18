@@ -34,9 +34,6 @@ if wait_for_angle_body_axis = sun {
 	lock v1m to sqrt(wait_for_angle_body_axis:mu / wait_for_angle_body_1:obt:semimajoraxis).
 	lock v2m to sqrt(wait_for_angle_body_axis:mu / wait_for_angle_body_2:obt:semimajoraxis).
 
-	set omega_1 to v1m / r1:mag / constant():pi * 180.
-	set omega_2 to v2m / r2:mag / constant():pi * 180.
-
 	set omega_sign to 1.
 	
 	set d_sign to 1.
@@ -51,8 +48,6 @@ if wait_for_angle_body_axis = sun {
 
 	set normal_1 to vcrs(r1,v1).
 	set normal_2 to vcrs(r2,v2).
-
-	
 
 	if wait_for_angle_body_2 = sun {
 		set normal_2 to V(0,-1,0).
@@ -69,10 +64,14 @@ if wait_for_angle_body_axis = sun {
 }
 
 
-set omega_1 to v1m / r1:mag / constant():pi * 180.
-set omega_2 to v2m / r2:mag / constant():pi * 180.
-
-
+if		(wait_for_angle_body_1:obt:body = wait_for_angle_body_axis:obt:body) and
+		(wait_for_angle_body_2:obt:body = wait_for_angle_body_axis:obt:body) {
+	set omega_1 to 360 / wait_for_angle_body_1:obt:period.
+	set omega_2 to 360 / wait_for_angle_body_2:obt:period.
+} else {
+	set omega_1 to v1m / r1:mag / constant():pi * 180.
+	set omega_2 to v2m / r2:mag / constant():pi * 180.
+}
 
 
 if wait_for_angle_angle < 0 {
