@@ -1,0 +1,203 @@
+T+0 go_to mun_arch
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer to moon low BODY("Mun")
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 launch BODY("Kerbin")
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 launch BODY("Kerbin")
+T+0 launch_atm BODY("Kerbin")
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 launch BODY("Kerbin")
+T+0 launch_atm BODY("Kerbin")
+T+52 go_to mun_arch
+T+52 transfer_to_low BODY("Mun")
+T+52 transfer_to_moon_low BODY("Mun")
+T+52 launch BODY("Kerbin")
+T+52 launch_atm BODY("Kerbin")
+T+0 hover
+T+0 hover
+T+125 hover
+T+143 hover
+T+219 hover
+T+260 hover
+T+281 hover
+T+308 hover
+T+348 hover
+T+360 hover
+T+0 hover
+T+0 hover
+T+0 hover
+T+0 hover
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 launch BODY("Kerbin")
+T+0 launch_atm BODY("Kerbin")
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 launch BODY("Kerbin")
+T+0 launch_atm BODY("Kerbin")
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 launch BODY("Kerbin")
+T+0 launch_atm BODY("Kerbin")
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.819236325
+T+145 go_to mun_arch
+T+145 transfer_to_low BODY("Mun")
+T+145 transfer_to_moon_low BODY("Mun")
+T+145 circle 118190.07184617
+T+145 mvr_adjust_at_apoapsis 118190.07184617
+T+201 go_to mun_arch
+T+201 transfer_to_low BODY("Mun")
+T+201 transfer_to_moon_low BODY("Mun")
+T+201 circle 118174.314980669
+T+201 mvr_adjust_at_apoapsis 118174.314980669
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.66839695
+T+126 mvr_adjust_at_apoapsis 118198.66839695
+T+177 go_to mun_arch
+T+177 transfer_to_low BODY("Mun")
+T+177 transfer_to_moon_low BODY("Mun")
+T+177 circle 118181.629353382
+T+177 mvr_adjust_at_apoapsis 118181.629353382
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.781995667
+T+126 mvr_adjust_at_apoapsis 118198.781995667
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.713974839
+T+126 mvr_adjust_at_apoapsis 118198.713974839
+T+134 go_to mun_arch
+T+134 transfer_to_low BODY("Mun")
+T+134 transfer_to_moon_low BODY("Mun")
+T+134 circle 118193.762055014
+T+134 mvr_adjust_at_apoapsis 118193.762055014
+T+176 go_to mun_arch
+T+176 transfer_to_low BODY("Mun")
+T+176 transfer_to_moon_low BODY("Mun")
+T+176 circle 118181.083489936
+T+176 mvr_adjust_at_apoapsis 118181.083489936
+T+196 go_to mun_arch
+T+196 transfer_to_low BODY("Mun")
+T+196 transfer_to_moon_low BODY("Mun")
+T+197 circle 118175.776423033
+T+197 mvr_adjust_at_apoapsis 118175.776423033
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.66747885
+T+126 mvr_adjust_at_apoapsis 118198.66747885
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.995203966
+T+126 mvr_adjust_at_apoapsis 118198.995203966
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.984343396
+T+126 mvr_adjust_at_apoapsis 118198.984343396
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.990357775
+T+126 mvr_adjust_at_apoapsis 118198.990357775
+T+126 go_to mun_arch
+T+126 transfer_to_low BODY("Mun")
+T+126 transfer_to_moon_low BODY("Mun")
+T+126 circle 118198.088692425
+T+126 mvr_adjust_at_apoapsis 118198.088692425
+T+149 go_to mun_arch
+T+149 transfer_to_low BODY("Mun")
+T+149 transfer_to_moon_low BODY("Mun")
+T+149 circle 118188.885026498
+T+149 mvr_adjust_at_apoapsis 118188.885026498
+T+324 go_to mun_arch
+T+324 transfer_to_low BODY("Mun")
+T+324 transfer_to_moon_low BODY("Mun")
+T+324 mvr_match_inc BODY("Mun")
+T+462 go_to mun_arch
+T+462 transfer_to_low BODY("Mun")
+T+462 transfer_to_moon_low BODY("Mun")
+T+462 mvr_match_inc BODY("Mun")
+T+484 go_to mun_arch
+T+484 transfer_to_low BODY("Mun")
+T+484 transfer_to_moon_low BODY("Mun")
+T+484 mvr_match_inc BODY("Mun")
+T+484 burn_to_encounter BODY("Mun")
+T+843 go_to mun_arch
+T+843 transfer_to_low BODY("Mun")
+T+843 transfer_to_moon_low BODY("Mun")
+T+843 mvr_match_inc BODY("Mun")
+T+843 burn_to_encounter BODY("Mun")
+T+843 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.402958098044
+T+2163 go_to mun_arch
+T+2163 transfer_to_low BODY("Mun")
+T+2163 transfer_to_moon_low BODY("Mun")
+T+2163 mvr_match_inc BODY("Mun")
+T+2163 burn_to_encounter BODY("Mun")
+T+2163 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.616125747452
+T+2177 go_to mun_arch
+T+2177 transfer_to_low BODY("Mun")
+T+2177 transfer_to_moon_low BODY("Mun")
+T+2177 mvr_match_inc BODY("Mun")
+T+2177 burn_to_encounter BODY("Mun")
+T+2177 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.611350997298
+T+4080 go_to mun_arch
+T+4080 transfer_to_low BODY("Mun")
+T+4080 transfer_to_moon_low BODY("Mun")
+T+4080 mvr_match_inc BODY("Mun")
+T+4080 burn_to_encounter BODY("Mun")
+T+4080 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.652598350081
+T+4109 go_to mun_arch
+T+4109 transfer_to_low BODY("Mun")
+T+4109 transfer_to_moon_low BODY("Mun")
+T+4109 mvr_match_inc BODY("Mun")
+T+4109 burn_to_encounter BODY("Mun")
+T+4109 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.646391413324
+T+4114 go_to mun_arch
+T+4114 transfer_to_low BODY("Mun")
+T+4114 transfer_to_moon_low BODY("Mun")
+T+4114 mvr_match_inc BODY("Mun")
+T+4114 burn_to_encounter BODY("Mun")
+T+4114 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.645220191614
+T+4138 go_to mun_arch
+T+4138 transfer_to_low BODY("Mun")
+T+4138 transfer_to_moon_low BODY("Mun")
+T+4138 mvr_match_inc BODY("Mun")
+T+4138 burn_to_encounter BODY("Mun")
+T+4138 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.639261307083
+T+4175 go_to mun_arch
+T+4175 transfer_to_low BODY("Mun")
+T+4175 transfer_to_moon_low BODY("Mun")
+T+4175 mvr_match_inc BODY("Mun")
+T+4175 burn_to_encounter BODY("Mun")
+T+4175 wait_for_angle SHIP("lander 3") BODY("Mun") BODY("Kerbin") 110.629040367292

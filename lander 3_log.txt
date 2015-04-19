@@ -1,9 +1,0 @@
-T+0 hover
-T+6 hover
-T+21 hover
-T+43 hover
-T+0 hover
-T+146 hover
-T+289 hover
-T+0 hover
-T+23 hover

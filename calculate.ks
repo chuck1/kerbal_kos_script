@@ -3,26 +3,22 @@ function calc_burn_duration {
 	
 	run calc_stage_deltav.
 	
-	declare local ret to 0.
+	local ret is 0.
 	
-	set calc_burn_duration_i to (ship_stage_count - 1).
-	until calc_burn_duration_i < 0 {
-		if calc_burn_duration_dv > ship_stage_deltav[calc_burn_duration_i] {
-			set calc_burn_duration_ret to
-				calc_burn_duration_ret +
-				ship_stage_duration_max[calc_burn_duration_i].
+	local i is (ship_stage_count - 1).
+
+	until i < 0 {
+		if calc_burn_duration_dv > ship_stage_deltav[i] {
+			set ret to ret +
+				ship_stage_duration_max[i].
 	
-			set calc_burn_duration_dv to
-				calc_burn_duration_dv -
-				ship_stage_deltav[calc_burn_duration_i].
+			set dv to dv - ship_stage_deltav[i].
 		} else {
-			set calc_burn_duration_ret to
-				calc_burn_duration_ret +
-				ship_stage_duration_max[calc_burn_duration_i] *
-				calc_burn_duration_dv /
-				ship_stage_deltav[calc_burn_duration_i].
+			set ret to ret +
+				ship_stage_duration_max[i] *
+				dv / ship_stage_deltav[i].
 		
-			set calc_burn_duration_dv to 0.
+			set dv to 0.
 	
 			break.
 		}
@@ -30,7 +26,7 @@ function calc_burn_duration {
 		set calc_burn_duration_i to calc_burn_duration_i - 1.
 	}
 	
-	if calc_burn_duration_dv > 0 {
+	if dv > 0 {
 		print "insufficient deltav".
 		//print neverset.
 	}

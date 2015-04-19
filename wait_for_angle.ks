@@ -1,16 +1,13 @@
-// parameter wait_for_angle_body_1.
-// parameter wait_for_angle_body_2.
-// parameter wait_for_angle_body_axis.
-// parameter wait_for_angle_angle.
+//parameter wait_for_angle_body_1.
+//parameter wait_for_angle_body_2.
+//parameter wait_for_angle_body_axis.
+//parameter wait_for_angle_angle.
 
-
-set lines_add_line to "WAIT FOR ANGLE " +
+util_log("wait_for_angle " +
 	wait_for_angle_body_1 + " " +
 	wait_for_angle_body_2 + " " +
 	wait_for_angle_body_axis + " " +
-	wait_for_angle_angle.
-run lines_add.
-set lines_indent to lines_indent + 1.
+	wait_for_angle_angle).
 
 lock r1 to (wait_for_angle_body_1:position - wait_for_angle_body_axis:position).
 lock r2 to (wait_for_angle_body_2:position - wait_for_angle_body_axis:position).
@@ -98,8 +95,7 @@ if eta < 0 {
 lock wait_for_angle_e to abs((a - wait_for_angle_angle) / a).
 
 if eta > 120 {
-	set warp_time_tspan to (eta - 60).
-	run warp_time.
+	run warp_time(eta - 60).
 }
 
 
@@ -173,7 +169,6 @@ unset wait_for_angle_body_2.
 unset wait_for_angle_body_axis.
 unset wait_for_angle_angle.
 
-set lines_indent to lines_indent + 1.
 
 
 

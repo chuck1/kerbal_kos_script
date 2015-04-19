@@ -11,12 +11,6 @@ if not (orbit_type = "circular") {
 	print neverset.
 }
 
-set lines_add_line to
-	"MATCH INCLINATION ship:body = " + ship:body +
-	" target = " + mvr_match_inc_target.
-run lines_add.
-set lines_indent to lines_indent + 1.
-
 // =======================================================================
 // variables
 
@@ -115,7 +109,7 @@ until ang_inc < 0.1 {
 			set mode to 0.
 		}
 		
-		run lines_print_and_clear.
+		clearcsreen.
 		print "MATCH INC".
 		print "==================================".
 		
@@ -140,6 +134,5 @@ until ang_inc < 0.1 {
 	wait 5.
 }
 
-set lines_indent to lines_indent - 1.
 
 

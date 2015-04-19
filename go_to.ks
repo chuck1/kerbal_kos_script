@@ -6,10 +6,6 @@ set go_to_complete to false.
 
 set ship:control:pilotmainthrottle to 0.
 
-set lines_add_line to "GO TO DEST".
-run lines_add.
-set lines_indent to lines_indent + 1.
-
 
 if ship:body = go_to_dest[2] {
 

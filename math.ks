@@ -8,5 +8,9 @@ function math_sign {
 	}
 }
 
+function math_ship_h {
+//	return 
+}
+
 print "loaded library math".
 

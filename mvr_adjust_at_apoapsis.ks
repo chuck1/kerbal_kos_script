@@ -58,7 +58,7 @@ lock alt to periapsis.
 set alt_burn to apoapsis.
 
 
-set dv to calc_deltav(alt_burn, alt, mvr_adjust_altitude).
+local dv is calc_deltav(alt_burn, alt, mvr_adjust_altitude).
 
 set v0 to ship:velocity:orbit:mag.
 
@@ -66,27 +66,35 @@ lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 
 set est_rem_burn to abs(dv_rem / accel_max).
 
-set burn_duration to calc_burn_duration(abs(dv)).
+local burn_duration is calc_burn_duration(abs(dv)).
+if burn_duration = 0 {
+	set burn_duration to est_rem_burn.
+}
 
+util_warp_apo(burn_duration / 2 + 30).
 
-//run warp("apo", calc_burn_duration_ret / 2 + 30).
+local r is (ship:position - ship:body:position).
 
-local lock r to (ship:position - ship:body:position).
+//local h is vcrs(r, ship:velocity:orbit).
 
-local lock h to vcrs(r(), ship:velocity:orbit).
+local v_tang is vxcl(r, ship:velocity:orbit).
 
-local lock v_tang to vxcl(r(), ship:velocity:orbit).
+local myprograde   is (     v_tang:normalized):direction.
+local myretrograde is (-1 * v_tang:normalized):direction.
 
-declare local myprograde   is (     v_tang():normalized):direction.
-declare local myretrograde is (-1 * v_tang():normalized):direction.
+local dir is (math_sign(dv) * v_tang:normalized):direction.
 
-declare local dir is (math_sign(dv) * v_tang():normalized):direction.
-
-declare local err is 0.
+local err is 0.
 
 lock err to mvr_adjust_altitude - alt.
 
-if 1 {
+global lock steering to R(
+	dir:pitch,
+	dir:yaw,
+	ship:facing:roll).
+
+
+if 0 {
 if dv < 0 {
 	global lock steering to R(
 		myretrograde:pitch,
@@ -103,9 +111,9 @@ if dv < 0 {
 	
 }
 
-//util_wait_orient().
 //wait until vang(steering:vector, ship:facing:vector) < 1.
 }
+util_wait_orient().
 
 
 // ============================================================
@@ -129,11 +137,8 @@ set v0        to ship:velocity:orbit:mag.
 declare local err_min   is err.
 set err_start to err.
 
-// get more accurate burn_duration
-run calc_burn_duration(abs(dv)).
-
 //lock mvr_eta to e - est_rem_burn/2.
-lock mvr_eta to e - calc_burn_duration_ret/2.
+lock mvr_eta to e - burn_duration/2.
 
 if mvr_eta < 0 {
 	print "ERROR: missed burn start time".
@@ -141,10 +146,13 @@ if mvr_eta < 0 {
 }
 
 set mvr_eta_0 to mvr_eta.
+wait 0.001.
 
-// 0 pre-burn
-// 1 burning
-set mvr_adjust_stage to 0.
+// mode
+// 10 pre-burn
+// 20 burning
+
+local mode is 10.
 
 // loop
 
@@ -163,9 +171,9 @@ until 0 {
 	
 	set est_rem_burn to abs(dv_rem / accel_max).
 	
-	run util_stage_burn.
+	util_ship_stage_burn().
 
-	run lines_print_and_clear.
+	clearscreen.
 	print "MVR ADJUST AT APOAPSIS".
 	print "=======================================".
 	print "    alt target   " + mvr_adjust_altitude.
@@ -181,12 +189,12 @@ until 0 {
 	print "    throttle     " + round(th,3).
 	print "    v mag 0      " + round(v0,1).
 	print "    v mag        " + round(ship:velocity:orbit:mag,1).
-	print "    burn dur     " + calc_burn_duration_ret.
+	print "    burn dur     " + burn_duration.
 	
 	
 	if		mvr_eta > 0 and
 			mvr_eta < mvr_eta_0 and
-			mvr_adjust_stage = 0 {
+			mode = 10 {
 
 		print "burn in t-" + round(mvr_eta,1).
 

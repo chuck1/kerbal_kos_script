@@ -1,4 +1,6 @@
-//declare parameter circle_altitue.
+
+
+declare parameter circle_altitude.
 //declare parameter precision.
 
 sas off.
@@ -12,11 +14,6 @@ if circle_altitude = 0 {
 }
 
 util_log("circle " + circle_altitude).
-
-set lines_add_line to "CIRCLE " + circle_altitude.
-run lines_add.
-set lines_indent to lines_indent + 1.
-
 
 set precision to 0.2.
 
@@ -70,11 +67,6 @@ if		(ship:obt:eccentricity < 0.05) and
 	}
 	
 }
-
-
-// reset default
-set circle_altitude to 0.
-set lines_indent to lines_indent - 1.
 
 
 

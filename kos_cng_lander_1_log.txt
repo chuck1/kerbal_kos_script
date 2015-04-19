@@ -1,4 +1,0 @@
-T+0 go_to mun_arch
-T+0 transfer_to_low BODY("Mun")
-T+0 transfer to moon low BODY("Mun")
-T+0 launch_atm BODY("Kerbin")

@@ -1,10 +1,6 @@
-// PARAM transfer_to_moon_target
+declare parameter transfer_to_moon_target.
 
-util_log("transfer to moon low " + transfer_to_moon_target).
-
-set lines_add_line to "TRANSFER TO MOON LOW".
-run lines_add.
-set lines_indent to lines_indent + 1.
+util_log("transfer_to_moon_low " + transfer_to_moon_target).
 
 if ship:body = transfer_to_moon_target {
 	run circle_low.
@@ -19,9 +15,9 @@ if ship:body = transfer_to_moon_target {
 		run calc_classify_obt.
 		
 		if (orbit_type = "prelaunch") or (orbit_type = "landed") {
-			run launch.
+			launch(0).
 		} else if (orbit_type = "suborbit") or (orbit_type = "elliptic") {
-			run circle.
+			run circle(0).
 		} else if orbit_type = "circular" {
 			set mvr_match_inc_target to transfer_to_moon_target.
 			run mvr_match_inc.
@@ -40,9 +36,5 @@ if ship:body = transfer_to_moon_target {
 	}
 }
 
-
-// cleanup
-set lines_indent to lines_indent - 1.
-unset transfer_to_moon_target.
 
 
