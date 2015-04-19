@@ -1,5 +1,5 @@
 
-run log("launch_atm " + ship:body).
+util_log("launch_atm " + ship:body).
 
 set lines_add_line to "LAUNCH ATM".
 run lines_add.
@@ -25,7 +25,7 @@ if not (ship:body:atm:exists) {
 
 lock east_vec to vcrs(north:vector, up:vector).
 
-set steering_deflection_limit to 15.
+set steering_deflection_limit to 10.
 lock down_angle_vel to vang(up:vector, ship:velocity:surface).
 
 // with FAR mod, kOS returns approx 3x terminal velocity
@@ -35,7 +35,7 @@ lock term_speed_scale to 12.
 lock g to ship:body:mu / (ship:body:radius + altitude)^2.
 lock pres to ship:body:atm:sealevelpressure * ( constant():e ^ ( -1 * ship:altitude / (ship:body:atm:scale*1000) ) ).
 
-set ship_k to 0.006.
+set ship_k to 0.01.
 
 //lock term_speed to ship:termvelocity / term_speed_scale).
 lock term_speed to sqrt(2 * ship:mass * g / pres / ship_k).
@@ -77,36 +77,37 @@ until 0 {
 
 			set altitude_turn_start to altitude.
 
-			lock down_angle_target to
-				min(
-					0 + ((altitude - altitude_turn_start) / (5 * altitude_turn_start)) * 60,
-					60).
-			
-			
-			// steering deflection: angle between velocity and target steering vectors
-			// clamp steering delfection
-			lock steering_deflection to
-				max(
-				-steering_deflection_limit,
-				min(
-				steering_deflection_limit,
-				(down_angle_target - down_angle_vel)
-				)).
-			
-			lock down_angle_steering to (steering_deflection + down_angle_vel).
-			
-			lock steering_vec to up:vector * cos(down_angle_steering) - east_vec * sin(down_angle_steering).
-			
-			lock steering to R(
-				steering_vec:direction:pitch,
-				steering_vec:direction:yaw,
-				ship:facing:roll).
-
 			set mode to 30.
 		}
 	} else if mode = 30 {
 		print "gravity turn".
 	
+
+		set down_angle_target to
+			min(
+				0 + ((altitude - altitude_turn_start) / (5 * altitude_turn_start)) * 60,
+				60).
+			
+			
+		// steering deflection: angle between velocity and target steering vectors
+		// clamp steering delfection
+		set steering_deflection to
+			max(
+				-steering_deflection_limit,
+				min(
+					steering_deflection_limit,
+					(down_angle_target - down_angle_vel)
+				)).
+			
+		set down_angle_steering to (steering_deflection + down_angle_vel).
+			
+		set steering_vec to up:vector * cos(down_angle_steering) - east_vec * sin(down_angle_steering).
+			
+		lock steering to R(
+			steering_vec:direction:pitch,
+			steering_vec:direction:yaw,
+			ship:facing:roll).
+
 		if altitude < (ship:body:atm:height - 1000) {		
 			set th to launch_atm_p * launch_atm_kp.
 		} else {
@@ -131,17 +132,17 @@ until 0 {
 	}
 
 	print "======================================".
+	
 	if mode = 20 {
 	print "    wait for pres       " + pres_stage.
 	print "    pres                " + pres.
-	print "                        " + sqrt(ship:body:atm:sealevelpressure - pres).
 	}
 	if mode < 40 {
 	print "    term vel            " + round(term_speed, 1).
 	print "    vel                 " + round(ship:velocity:surface:mag, 1).
 	}
 	print "    th                  " + th.
-	if mode = 30 {
+	if (mode = 30) and 0 {
 	print "    apoapsis target     " + round(launch_altitude,0).
 	print "    apoapsis            " + round(altitude,0).
 	print "    down angle vel      " + round(down_angle_vel,1).
@@ -152,7 +153,7 @@ until 0 {
 
 	run util_stage_burn.
 
-	wait 0.1.
+	wait 0.01.
 }
 
 wait 5.

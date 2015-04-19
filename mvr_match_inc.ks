@@ -3,14 +3,13 @@ rcs off.
 set warp to 0.
 lock throttle to 0.
 
+util_log("mvr_match_inc " + mvr_match_inc_target).
 
 run calc_classify_obt.
 if not (orbit_type = "circular") {
 	print "orbit must be circular".
 	print neverset.
 }
-
-run log("mvr_match_inc " + mvr_match_inc_target).
 
 set lines_add_line to
 	"MATCH INCLINATION ship:body = " + ship:body +

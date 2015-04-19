@@ -1,6 +1,6 @@
 //declare parameter mvr_adjust_altitude.
 
-run log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
+util_log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
 
 // prereq
 //run mvr_safe_periapsis.

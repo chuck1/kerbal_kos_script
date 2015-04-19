@@ -9,7 +9,7 @@ set get_stable_orbits_2_body to ship:body.
 run get_stable_orbits_2.
 
 for l in get_stable_orbits_ret {
-	print l.
+	//print l.
 }
 
 if get_stable_orbits_2_ret:length = 1 {

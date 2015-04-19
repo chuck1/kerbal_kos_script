@@ -2,7 +2,7 @@
 // PARAMETER hover_dest
 // PARAMETER 
 
-run log("hover").
+util_log("hover").
 
 sas off.
 rcs on.

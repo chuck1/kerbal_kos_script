@@ -1,7 +1,5 @@
 
-
-run log("burn_to_encounter " + burn_to_encounter_body).
-
+util_log("burn_to_encounter " + burn_to_encounter_body).
 
 set r1 to ship:altitude + ship:body:radius.
 set r2 to burn_to_encounter_body:altitude + ship:body:radius.

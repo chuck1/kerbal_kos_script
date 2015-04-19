@@ -1,6 +1,6 @@
 // PARAM transfer_to_moon_target
 
-run log("transfer to moon low " + transfer_to_moon_target).
+util_log("transfer to moon low " + transfer_to_moon_target).
 
 set lines_add_line to "TRANSFER TO MOON LOW".
 run lines_add.

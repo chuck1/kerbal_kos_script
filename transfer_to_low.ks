@@ -1,6 +1,6 @@
 // declare parameter transfer_to_target
 
-run log("transfer_to_low " + transfer_to_target).
+util_log("transfer_to_low " + transfer_to_target).
 
 print "transfer_to_target " + transfer_to_target.
 

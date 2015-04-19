@@ -11,7 +11,7 @@ if circle_altitude = 0 {
 	set circle_altitude to calc_closest_stable_altitude_ret.
 }
 
-run log("circle " + circle_altitude).
+util_log("circle " + circle_altitude).
 
 set lines_add_line to "CIRCLE " + circle_altitude.
 run lines_add.

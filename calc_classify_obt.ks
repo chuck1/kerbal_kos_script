@@ -8,7 +8,7 @@ set latlng_distance to sqrt((launch_pad:lat - latitude)^2 + (launch_pad:lng - lo
 print "latlng dist " + latlng_distance.
 
 if
-		(latlng_distance < 10^-3) and
+		(latlng_distance < 10^(-3)) and
 		(abs(ship:verticalspeed) < 0.01) and
 		(ship:surfacespeed < 0.01) {
 	// prelaunch

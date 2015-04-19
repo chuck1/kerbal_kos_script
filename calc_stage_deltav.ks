@@ -145,6 +145,8 @@ set i to (ship_stage_count - 1).
 until i < 0 {
 	set string to "stage" + i.
 
+	print "stage" + i.
+
 	set tanks        to ship:partsdubbed(string).
 	set engines      to list().
 	
@@ -254,14 +256,15 @@ until i < 0 {
 
 	set ship_deltav to ship_deltav + ship_stage_deltav[i].
 	
-
+	print "ship deltav " + ship_deltav.
+	
 	// ==========================================
 	// prep for next loop
-	set removed to false.
 	set i1 to 0.
 	until i1 = temp_engines_active:length {
+		set removed to false.
 		set i2 to 0.
-		until i2 = ship_stage_count {
+		until i2 = 10 {
 			if temp_engines_active[i1]:tag = ("stage" + i + "e" + i2) {
 				temp_engines_active:remove(i1).
 				temp_engines_active_isp:remove(i1).

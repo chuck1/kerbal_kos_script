@@ -1,6 +1,6 @@
 // PARAM mvr_flyover_gc
 
-run log("mvr_flyover " + mvr_flyover_gc).
+util_log("mvr_flyover " + mvr_flyover_gc).
 
 set lines_add_line to "MVR FLYOVER " + ship:body + " " + mvr_flyover_gc.
 run lines_add.

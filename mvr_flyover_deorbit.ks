@@ -1,6 +1,6 @@
 // PARAM mvr_flyover_deorbit_gc
 
-run log("mvr_flyover_deorbit " + mvr_flyover_deorbit_gc).
+util_log("mvr_flyover_deorbit " + mvr_flyover_deorbit_gc).
 
 set lines_add_line to "MVR FLYOVER DEORBIT" + ship:body + " " + mvr_flyover_deorbit_gc.
 run lines_add.

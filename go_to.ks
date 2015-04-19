@@ -1,6 +1,6 @@
 // PARAMETER go_to_dest.
 
-run log("go_to " + go_to_dest[3]).
+util_log("go_to " + go_to_dest[3]).
 
 set go_to_complete to false.
 
@@ -38,8 +38,8 @@ if ship:body = go_to_dest[2] {
 		run power_land_final.
 		
 		
-		run log("lat error " + (go_to_dest[0]:lat - latitude)).
-		run log("lng error " + (go_to_dest[0]:lng - longitude)).
+		util_log("lat error " + (go_to_dest[0]:lat - latitude)).
+		util_log("lng error " + (go_to_dest[0]:lng - longitude)).
 		
 		set go_to_complete to true.
 	

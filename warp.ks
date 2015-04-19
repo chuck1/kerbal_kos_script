@@ -1,7 +1,7 @@
-//declare parameter warp_string.
-//declare parameter warp_sub.
+parameter warp_string.
+parameter warp_sub.
 
-
+declare local warp_eta to 0.
 
 if warp_string = "apo" {
 	lock warp_eta to eta:apoapsis - warp_sub.
@@ -62,8 +62,8 @@ set warp to 0.
 unlock warp_eta.
 unset warp_eta.
 
-unset warp_string.
-unset warp_sub.
+//unset warp_string.
+//unset warp_sub.
 
 
 

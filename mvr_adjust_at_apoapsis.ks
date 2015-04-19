@@ -1,6 +1,6 @@
 // parameter mvr_adjust_altitude.
 
-run log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
+util_log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
 
 set precision to 0.02.
 
@@ -58,10 +58,7 @@ lock alt to periapsis.
 set alt_burn to apoapsis.
 
 
-set deltav_alt  to alt_burn.
-set deltav_alt1 to alt.
-set deltav_alt2 to mvr_adjust_altitude.
-run deltav.
+set dv to calc_deltav(alt_burn, alt, mvr_adjust_altitude).
 
 set v0 to ship:velocity:orbit:mag.
 
@@ -69,41 +66,47 @@ lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 
 set est_rem_burn to abs(dv_rem / accel_max).
 
-run calc_burn_duration(abs(dv)).
+set burn_duration to calc_burn_duration(abs(dv)).
 
 
+//run warp("apo", calc_burn_duration_ret / 2 + 30).
 
-set warp_string to "apo".
-set warp_sub to calc_burn_duration_ret / 2 + 30.
-run warp.
+local lock r to (ship:position - ship:body:position).
 
-lock r to ship:position - ship:body:position.
+local lock h to vcrs(r(), ship:velocity:orbit).
 
-lock h to vcrs(r, ship:velocity:orbit).
+local lock v_tang to vxcl(r(), ship:velocity:orbit).
 
-lock v_tang to vxcl(r, ship:velocity:orbit).
+declare local myprograde   is (     v_tang():normalized):direction.
+declare local myretrograde is (-1 * v_tang():normalized):direction.
 
-lock myprograde   to (     v_tang:normalized):direction.
-lock myretrograde to (-1 * v_tang:normalized):direction.
+declare local dir is (math_sign(dv) * v_tang():normalized):direction.
 
+declare local err is 0.
 
+lock err to mvr_adjust_altitude - alt.
 
+if 1 {
 if dv < 0 {
-	lock steering to R(
+	global lock steering to R(
 		myretrograde:pitch,
 		myretrograde:yaw,
 		ship:facing:roll).
 
 	lock err to alt - mvr_adjust_altitude.
 } else {
-	lock steering to R(
+	global lock steering to R(
 		myprograde:pitch,
 		myprograde:yaw,
 		ship:facing:roll).
 
-	lock err to mvr_adjust_altitude - alt.
+	
 }
-run wait_orient.
+
+//util_wait_orient().
+//wait until vang(steering:vector, ship:facing:vector) < 1.
+}
+
 
 // ============================================================
 
@@ -123,7 +126,7 @@ when abs(aop0 - ship:obt:argumentofperiapsis) > 90 then {
 
 // initial variable which are updated until burn starts
 set v0        to ship:velocity:orbit:mag.
-set err_min   to err.
+declare local err_min   is err.
 set err_start to err.
 
 // get more accurate burn_duration
@@ -217,15 +220,11 @@ if 0 {
 print "let extrema pass".
 if mode = 0 {
 	if eta:periapsis < eta:apoapsis {
-		set warp_string to "per".
-		set warp_sub to 0.		
-		run warp.
+		run warp("per",0).
 	}
 } else if mode = 1 {
 	if eta:periapsis > eta:apoapsis {
-		set warp_string to "apo".
-		set warp_sub to 0.
-		run warp.
+		run warp("apo",0).
 	}
 }
 }
