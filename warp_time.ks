@@ -1,6 +1,8 @@
 // warp an AMOUNT of time
 declare parameter warp_time_tspan.
 
+print "warp_time".
+
 local t0 is TIME:seconds.
 
 local warp_time_eta is 0.
@@ -11,10 +13,14 @@ set warp_limit to 7.
 
 if ship:body:atm:exists and ship:altitude < ship:body:atm:height {
 } else {
-	until warp_time_eta < 1 {
+	until 0 {
 	
 		set warp_time_eta to (warp_time_tspan - (time:seconds - t0)).
-		
+
+		if warp_time_eta < 1 {
+			break.
+		}
+
 		if warp_time_eta > 100000 * t and warp_limit > 6 {
 			set warp to 7.
 		} else if warp_time_eta > 10000 * t {

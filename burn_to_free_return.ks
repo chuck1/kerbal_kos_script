@@ -1,4 +1,4 @@
-//declare parameter burn_to_free_return_target
+declare parameter burn_to_free_return_target.
 
 print "WARNING: assumes burning prograde will result in free return".
 
@@ -9,7 +9,7 @@ if not (ship:obt:hasnextpatch) {
 }
 
 lock steering to prograde.
-run wait_orient.
+util_wait_orient().
 
 
 
@@ -18,6 +18,7 @@ set peri_min to 10000000000000000.
 until 0 {
 	lock throttle to 0.1.
 
+	clearscreen.
 	print "BURN TO FREE RETURN".
 	print "==============================".
 	print "    return periapsis " + ship:obt:nextpatch:nextpatch:periapsis.
@@ -41,7 +42,4 @@ print "cooldown".
 wait 5.
 
 
-
-
-unset burn_to_free_return_target.
 

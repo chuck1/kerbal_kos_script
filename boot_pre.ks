@@ -1,9 +1,7 @@
 
 run kos_init.
 
-run calc_classify_obt.
-
-if orbit_type = "prelaunch" {
+if calc_obt_type() = "prelaunch" {
 
 	print "clear log file".
 

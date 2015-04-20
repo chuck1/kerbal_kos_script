@@ -11,9 +11,39 @@ function util_boot_run {
 	log " " to "boot.ks".
 	delete "boot.ks" from 0.
 	
-	log ("wait 5.")                        to "boot.ks".
+	log (" ")                              to "boot.ks".
 	log ("run boot_pre.")                  to "boot.ks".
 	log ("run " + boot_run_file + ".")     to "boot.ks".
+	log ("run boot_post.")                 to "boot.ks".
+	log (" ")                              to "boot.ks".
+	
+	reboot.
+}
+function util_boot_func {
+	parameter boot_func_name.
+	parameter boot_func_args.
+
+	print "util_boot_func".
+	
+	log " " to "boot.ks".
+	delete "boot.ks" from 0.
+	
+	log (" ")                        to "boot.ks".
+	log ("run boot_pre.")            to "boot.ks".
+	
+	local str is boot_func_name + "(".
+	local i is 0.
+	until i = boot_func_args:length {
+		if i = (boot_func_args:length - 1) {
+			set str to str + boot_func_args[i].
+		} else {
+			set str to str + boot_func_args[i] + ", ".
+		}
+		set i to i + 1.
+	}
+	
+	log (str + ").")      to "boot.ks".
+	
 	log ("run boot_post.")                 to "boot.ks".
 	log (" ")                              to "boot.ks".
 	
@@ -67,7 +97,7 @@ function util_warp {
 				set warp to 1.
 			}
 	
-			if 0 {
+			if 1 {
 			clearscreen.
 			print "WARP".
 			print "===================".
@@ -88,10 +118,22 @@ function util_warp {
 	unset warp_eta.
 }	
 
+function util_warp_per {
+	parameter warp_sub.
+
+	util_warp("per", warp_sub).
+	
+}
 function util_warp_apo {
 	parameter warp_sub.
 
 	util_warp("apo", warp_sub).
+	
+}
+function util_warp_trans {
+	parameter warp_sub.
+
+	util_warp("trans", warp_sub).
 	
 }
 

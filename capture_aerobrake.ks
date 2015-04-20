@@ -53,7 +53,7 @@ if ship:verticalspeed > 0 and altitude > ship:body:atm:height {
 
 if capture_aerobrake_ret = 0 {
 	// now perform regular capture program
-	run capture.
+	run capture(0).
 }
 
 

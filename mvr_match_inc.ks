@@ -1,3 +1,5 @@
+declare parameter mvr_match_inc_target.
+
 sas off.
 rcs off.
 set warp to 0.
@@ -5,8 +7,7 @@ lock throttle to 0.
 
 util_log("mvr_match_inc " + mvr_match_inc_target).
 
-run calc_classify_obt.
-if not (orbit_type = "circular") {
+if not (calc_obt_type() = "circular") {
 	print "orbit must be circular".
 	print neverset.
 }
@@ -89,7 +90,7 @@ until ang_inc < 0.1 {
 	} else {
 		lock steering to h:direction.
 	}
-	run wait_orient.
+	util_wait_orient().
 
 	// loop
 	// 0 wait for angle

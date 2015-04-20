@@ -1,5 +1,3 @@
-
-
 declare parameter circle_altitude.
 //declare parameter precision.
 
@@ -24,8 +22,7 @@ lock error_max to max(
 	abs((periapsis - circle_altitude)/circle_altitude)).
 
 if ship:obt:hasnextpatch {
-	set capture_alt to circle_altitude.
-	run capture.
+	run capture(circle_altitude).
 }
 
 set mvr_adjust_altitude to circle_altitude.

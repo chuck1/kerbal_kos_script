@@ -1,4 +1,4 @@
-//declare parameter capture_altitude.
+declare parameter capture_altitude.
 
 if capture_altitude = 0 {
 	run calc_closest_stable_altitude.
@@ -41,19 +41,14 @@ if ship:obt:hasnextpatch {
 	
 	print "perform capture".
 	
-	set deltav_alt  to periapsis.
-	set deltav_alt1 to apoapsis.
-	set deltav_alt2 to capture_altitude.
-	run deltav.
+	set dv to calc_deltav(periapsis, apoapsis, capture_altitude).
 
 	set v0 to ship:velocity:orbit:mag.
 	lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 	lock est_rem_burn to abs(dv_rem / accel_max).
 	
 	if eta:periapsis > 0 { // not yet reached periapsis
-		set warp_string to "per".
-		set warp_sub to (est_rem_burn/2 + 11).
-		run warp.
+		util_warp_per(est_rem_burn/2 + 11).
 	}
 	
 	lock steering to retrograde.
@@ -83,8 +78,6 @@ if ship:obt:hasnextpatch {
 }
 
 
-// reset defaults
-set capture_altitude to 0.
 
 
 

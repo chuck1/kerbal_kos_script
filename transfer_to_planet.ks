@@ -1,8 +1,8 @@
-// PARAM transfer_to_planet_target
+declare parameter transfer_to_planet_target.
 
-set lines_add_line to ("TRANSFER TO PLANET " + transfer_to_planet_target).
-run lines_add.
-set lines_indent to lines_indent + 1.
+print "transfer_to_planet " + transfer_to_planet_target.
+
+util_log("transfer_to_planet " + transfer_to_planet_target).
 
 if ship:body = sun {
 } else if ship:body = transfer_to_planet_target {
@@ -138,15 +138,11 @@ if ship:body:atm:exists {
 	}
 	
 } else {
-	run capture.
+	run capture(0).
 }
 
-run calc_closest_stable_orbit.
+run calc_closest_stable_altitude.
 
-set circle_altitude to calc_closest_stable_orbit_ret.
-run circle.
+run circle(calc_closest_stable_altitude_ret).
 
-// cleanup
-set lines_indent to lines_indent - 1.
-unset transfer_to_planet_target.
 

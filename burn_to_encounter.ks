@@ -26,9 +26,8 @@ set wait_for_angle_body_axis to ship:body.
 set wait_for_angle_angle to phi.
 run wait_for_angle.
 
-
 lock steering to prograde.
-run wait_orient.
+util_wait_orient().
 
 lock alt_diff_frac to abs((apoapsis - burn_to_encounter_body:altitude) / burn_to_encounter_body:altitude).
 
@@ -36,13 +35,13 @@ set th to 0.
 lock throttle to th.
 until ship:obt:hasnextpatch {
 
-	run lines_print_and_clear.
+	clearscreen.
 	print "BURN TO ENCOUNTER".
 	print "============================".
 	print "    apoapsis  " + apoapsis.
 	print "    periapsis " + periapsis.
 
-	run util_stage_burn.
+	util_ship_stage_burn().
 		
 	set th to max(0, min(1, 
 		alt_diff_frac * 10 + 0.05

@@ -12,22 +12,20 @@ if ship:body = transfer_to_moon_target {
 		run transfer_ip.
 
 	} else {
-		run calc_classify_obt.
+		local obt_type is calc_obt_type().
 		
-		if (orbit_type = "prelaunch") or (orbit_type = "landed") {
+		if (obt_type = "prelaunch") or (obt_type = "landed") {
 			launch(0).
-		} else if (orbit_type = "suborbit") or (orbit_type = "elliptic") {
+		} else if (obt_type = "suborbit") or (obt_type = "elliptic") {
 			run circle(0).
-		} else if orbit_type = "circular" {
-			set mvr_match_inc_target to transfer_to_moon_target.
-			run mvr_match_inc.
+		} else if obt_type = "circular" {
 
-			set burn_to_free_return_target to transfer_to_moon_target.
-			run burn_to_free_return.
+			run mvr_match_inc(transfer_to_moon_target).
 
-			set warp_string to "trans".
-			set warp_sub to 0.
-			run warp.
+			run burn_to_free_return(transfer_to_moon_target).
+
+			util_warp_trans(0).
+			
 			wait 2.
 		} else {
 			print "invalid obt type: " + orbit_type.

@@ -2,13 +2,16 @@
 
 // load my lib
 
-run calculate.
-run util.
-run util_ship.
-run util_wait.
+run lib_calculate.
+run lib_util.
+run lib_util_ship.
+run lib_util_wait.
 run math.
 run lib_hover.
 run lib_launch.
+run lib_transfer.
+run lib_calc_ship.
+run lib_calc_obt.
 
 //
 
