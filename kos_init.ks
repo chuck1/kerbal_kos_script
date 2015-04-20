@@ -8,6 +8,7 @@ run lib_calculate.
 run lib_util.
 run lib_util_ship.
 run lib_util_wait.
+run lib_print.
 run math.
 run lib_go_to.
 run lib_hover.

@@ -7,9 +7,6 @@ if ship:obt:hasnextpatch {
 
 local orbits is get_stable_orbits_2(ship:body).
 
-for l in get_stable_orbits_ret {
-	//print l.
-}
 
 if orbits:length = 1 {
 
@@ -24,7 +21,7 @@ if orbits:length = 1 {
 } else {
 	set i to 0.
 
-	until (i + 1) = get_stable_orbits_ret:length {
+	until (i + 1) = orbits:length {
 		set so1 to orbits[i].
 		set so2 to orbits[i + 1].
 	

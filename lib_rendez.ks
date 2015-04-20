@@ -336,65 +336,118 @@ function rendez_approach_2 {
 function rendez {
 	parameter is_boot_func.
 
-	print target.
+	print "rendez " + target.
 
 	run mvr_match_inc(target).
 
 	// orbital planes now match
 	
-	if target:obt:eccentricity > 1.1 {
+	if (target:obt:eccentricity > 1.1) or (target:obt:eccentricity < 0.9) {
 		// eccentric
 		// be lazy and just rendezvous at target apoapsis
-		
-		circle(target:apoapsis).
 	
-		// ship ta at target apoapsis
-		lock ta0 to 
-			target:argumentofperiapsis
-			- ship:argumentofperiapsis + 180.
+		print "target is eccentric".
+	
+		set p_s to ship:obt:period.
+		set p_t to target:obt:period.
+
+		if ship:obt:semimajoraxis < target:obt:semimajoraxis {
+			circle(target:periapsis).
 		
-		if ta0 < 0 {
-			lock ta to ta0 + 360.
-		} else if ta0 > 360 {
-			lock ta to ta0 - 360.
+			// ship ta at target apoapsis
+			lock ta0 to 
+				target:obt:argumentofperiapsis
+				- ship:obt:argumentofperiapsis.
+	
+
+			set ta to math_clamp_angle(ta0).
+
+
+			// sweep to target apoapsis
+			lock swp to math_clamp_angle(ta - ship:obt:trueanomaly).
+	
+			// ship eta to target apoapsis
+			set e_s to swp / 360 * ship:obt:period.
+
+			// target eta to target periapsis
+			set e_t to calc_obt_time_to_periapsis(target).
+			
+			// target eta to target apo when ship is at apo
+			set e_t_0 to e_t - e_s.	
+
+
+			print "ship ta at target periapsis                  " + round(ta,1).
+			print "ship eta to target periapsis                 " + round(e_s,1).
+			print "target eta to target per                     " + round(e_t,1).
+			print "target eta to target per when ship is at per " + round(e_t_0,1).
+			print "target to ship period ratio                  " + round(p_t/p_s,2).
+
+			// for now just choose K_s
+			set k_s to floor(p_t/p_s).
 		} else {
-			lock ta to ta0.
-		}
-	
-		// sweep to target apoapsis
-		lock swp0 to ta - ship:obt:trueanomaly.
+			circle(target:apoapsis).
 		
-		if swp0 < 0 {
-			lock swp to swp0 + 360.
-		} else if swp0 > 360 {
-			lock swp to swp0 - 360.
-		} else {
-			lock swp to swp0.
-		}
+			// ship ta at target apoapsis
+			lock ta0 to 
+				target:obt:argumentofperiapsis
+				- ship:obt:argumentofperiapsis + 180.
+
+			
+			set ta to math_clamp_angle(ta0).
+
+
+			// sweep to target apoapsis
+			lock swp to math_clamp_angle(ta - ship:obt:trueanomaly).
 	
-		// ship eta to target apoapsis
-		set E_s to swp / 360 * ship:obt:period.
+			// ship eta to target apoapsis
+			set e_s to swp / 360 * ship:obt:period.
+	
+			// target eta to target apo when ship is at apo
+			set e_t_0 to calc_obt_time_to_apoapsis(target) - E_s.
+
+			print "ship ta at target periapsis  " + ta.
+			print "ship eta to target periapsis " + e_s.
+			print "target eta to target apo when ship is at apo " + e_t_0.
 		
-		// target eta to target apo when ship is at apo
-		lock E_t_0 to target:eta:apoapsis - E_s.
+			// for now just choose K_s
+			set k_s to 10.
+		}
+		
 	
 		if E_t_0 < 0 {
 			lock E_t to E_t_0 + target:obt:period.
 		} else {
 			lock E_t to E_t_0.
 		}
-		
-		// for now just choose K_s
-		set K_s to 10.
+	
+		// subscripts
+		// t target
+		// s ship
+		// variables
+		// p period
+		// k is number of cycles til encounter
+	
+
+		print "original".
+		print "period ship    " + p_s.
+		print "period target  " + p_t.
+
 	
 		// using old P_s
-		set K_t to (K_s * P_s - E_t) / P_t.
+		set k_t to (k_s * p_s - E_t) / p_t.
 		
-		set K_t to round(K_t, 0).
+		set k_t to round(k_t, 0).
 		
 		// desired ship period
-		set P_s to (K_t * P_t + E_t) / K_s.
+		set p_s to (K_t * P_t + E_t) / K_s.
 	
+		print "new".
+		print "period ship    " + p_s.
+		print "cycles ship    " + k_s.
+		print "cycles target  " + k_t.
+
+		print p_s + " * " + k_s + " = " + K_t + " * " + P_t + " + " + E_t.
+
 		if P_s > ship:obt:period {
 			lock steering to prograde.
 			lock error to P_s - ship:obt:period.
@@ -405,31 +458,37 @@ function rendez {
 			set w_str to "apo".
 		}
 		
+
 		run warp_time(E_s).
+		//wait until 0.
 	
-		run wait_orient.
+		util_wait_orient().
 	
 		print "burn".
 	
 		set th to 0.
 		lock throttle to th.
 		until error < 0 {
-			set th to 1.
+			clearscreen.
+			print "burn".
+			print "period target " + p_s.
+			print "period        " + ship:obt:period.
+			set th to 0.1.
 		}
 		set th to 0.
 		lock throttle to 0.
 		
 		print "burn complete".
 	
-		run warp_time((K_s - 0.5) * ship:obt:period).
+		run warp_time((k_s - 0.5) * ship:obt:period).
 		
-		run warp(w_str, 120).
+		util_warp(w_str, 120).
 	} else {
 		// circular
 	
-		circle(ship:apoapsis, 0.01).
+		circle(ship:apoapsis).
 	
-		run wait_for_transfer_window.
+		run wait_for_transfer_window(target).
 		
 		run burn_to(target:altitude, 0.01).
 		

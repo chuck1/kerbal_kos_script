@@ -1,5 +1,7 @@
 declare parameter mvr_match_inc_target.
 
+print "mvr_match_inc " + mvr_match_inc_target.
+
 sas off.
 rcs off.
 set warp to 0.
@@ -75,8 +77,7 @@ until ang_inc < 0.1 {
 	set warp to 1.
 	wait 2.
 
-	set warp_time_tspan to (ang / (360 - ship:obt:trueanomaly) * eta:periapsis - 30).
-	run warp_time.
+	run warp_time(ang / (360 - ship:obt:trueanomaly) * eta:periapsis - 30).
 
 	until abs(ang) < 5 {
 		print "angle to burn " + round(ang,1) + " ta " + round(ship:obt:trueanomaly,1).
@@ -111,7 +112,7 @@ until ang_inc < 0.1 {
 			set mode to 0.
 		}
 		
-		clearcsreen.
+		clearscreen.
 		print "MATCH INC".
 		print "==================================".
 		

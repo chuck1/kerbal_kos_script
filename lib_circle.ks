@@ -1,6 +1,9 @@
+
 function circle {
 	parameter circle_altitude.
 	//declare parameter precision.
+
+	print "circle " + circle_altitude.
 
 	local obt_type is calc_obt_type().
 
@@ -45,7 +48,7 @@ function circle {
 			(circle_error_apoapsis < 0.05) and
 			(circle_error_periapsis < 0.1) {
 		print "orbit is circular".
-		set circle_ret to 0.
+		return 0.
 	} else {
 		
 		run mvr_safe_periapsis.
@@ -74,4 +77,5 @@ function circle {
 	}
 }
 
+print "loaded library circle".
 

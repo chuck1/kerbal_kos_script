@@ -50,18 +50,19 @@ lock alt to apoapsis.
 set alt_burn to periapsis.
 
 
-local dv is calc_deltav(alt_burn, alt, mvr_adjust_altitude).
+local dv0 is calc_deltav(alt_burn, alt, mvr_adjust_altitude).
+
 
 set v0 to ship:velocity:orbit:mag.
 
-lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
+lock dv_rem to dv0 - (ship:velocity:orbit:mag - v0).
 
 lock est_rem_burn to abs(dv_rem / accel).
 
 
 util_warp_per(est_rem_burn/2 + 30).
 
-if dv < 0 {
+if dv0 < 0 {
 	lock steering to R(
 		retrograde:pitch,
 		retrograde:yaw,
@@ -127,7 +128,7 @@ set err_min   to err.
 set err_start to err.
 
 until (err / err_start) < precision {
-	
+
 	clearscreen.
 	print "MVR ADJUST AT PERIAPSIS".
 	print "=======================================".
@@ -136,7 +137,7 @@ until (err / err_start) < precision {
 	print "    alt burn     " + alt_burn.
 	print "    err          " + err.
 	print "    err_min      " + err_min.
-	print "    dv           " + dv.
+	print "    dv           " + dv0.
 	print "    ship accel   " + accel.
 	print "    est rem burn " + est_rem_burn.
 	print "    throttle     " + round(max(0, min(1, est_rem_burn / 10 + 0.01)),3).
@@ -144,7 +145,6 @@ until (err / err_start) < precision {
 	print "    v mag        " + ship:velocity:orbit:mag.
 	print "    dv rem       " + dv_rem.
 	print " ".
-	
 	
 
 	if mvr_eta > 0 and mvr_eta < mvr_eta_0 and mvr_adjust_stage = 0 {
@@ -157,7 +157,7 @@ until (err / err_start) < precision {
 
 		set err_min to min(err_min, err).
 	
-		if err > (err_min + 10) {
+		if abs(err) > (abs(err_min) + 10) {
 			print "abort: error increasing!".
 			break.
 		}

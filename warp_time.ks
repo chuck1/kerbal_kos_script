@@ -1,7 +1,7 @@
 // warp an AMOUNT of time
 declare parameter warp_time_tspan.
 
-print "warp_time".
+print "warp_time " + warp_time_tspan.
 
 local t0 is TIME:seconds.
 

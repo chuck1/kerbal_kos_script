@@ -40,33 +40,41 @@ function calc_deltav {
 	parameter deltav_alt1.
 	parameter deltav_alt2.
 	
-	declare local debug is 0.
+	local debug is true.
 	
 	// alt is the burn altitude / common altitude
 	
 	// orbit radius
-	declare local deltav_r  is deltav_alt  + ship:body:radius.
-	declare local deltav_r1 is deltav_alt1 + ship:body:radius.
-	declare local deltav_r2 is deltav_alt2 + ship:body:radius.
+	local r  is deltav_alt  + ship:body:radius.
+	local r1 is deltav_alt1 + ship:body:radius.
+	local r2 is deltav_alt2 + ship:body:radius.
 	
 	// semi-major
-	declare local deltav_a1 is (deltav_r + deltav_r1) / 2.
-	declare local deltav_a2 is (deltav_r + deltav_r2) / 2.
+	local deltav_a1 is (r + r1) / 2.
+	local deltav_a2 is (r + r2) / 2.
 	
+	local v1 is sqrt(ship:body:mu * (2/r - 1/deltav_a1)).
+	local v2 is sqrt(ship:body:mu * (2/r - 1/deltav_a2)).
+
+	local dv is v2 - v1.
+
 	if debug {
-	//print "calculate dv".
-	//print "alt  " + deltav_alt.
-	//print "alt1 " + deltav_alt1.
-	//print "alt2 " + deltav_alt2.
-	//print "r    " + deltav_r.
-	//print "r1   " + deltav_r1.
-	//print "r2   " + deltav_r2.
-	//print "a1   " + deltav_a1.
-	//print "a2   " + deltav_a2.
+	print "calculate dv".
+	print "alt  " + deltav_alt.
+	print "alt1 " + deltav_alt1.
+	print "alt2 " + deltav_alt2.
+	print "r    " + r.
+	print "r1   " + r1.
+	print "r2   " + r2.
+	print "a1   " + deltav_a1.
+	print "a2   " + deltav_a2.
+	print "v1   " + v1.
+	print "v2   " + v2.
+	print "dv   " + dv.
 	}
+
 	
-	return (sqrt(ship:body:mu * (2/deltav_r - 1/deltav_a2))
-		- sqrt(ship:body:mu * (2/deltav_r - 1/deltav_a1))).
+	return dv.
 	
 }
 

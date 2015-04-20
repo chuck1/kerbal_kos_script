@@ -1,4 +1,6 @@
 
+
+
 function get_stable_orbits {
 	parameter body.
 	
@@ -96,7 +98,11 @@ function calc_obt_soe_circle {
 
 function calc_obt_soe {
 	parameter x.
+	
+	if 0 {
 	print "calc_obt_soe " + x.
+	}
+
 	return (x:velocity:orbit:mag^2 / 2 - x:body:mu / (x:body:radius + x:altitude)).
 }
 
@@ -104,6 +110,86 @@ function calc_obt_speed_at_altitude {
 	parameter o.
 	parameter altitude.
 	return sqrt(2*(calc_obt_soe(o) + o:body:mu / (o:body:radius + altitude))).
+}
+
+function calc_obt_mean_motion {
+	parameter x.
+	
+	local n is 360 / x:obt:period.
+
+	if 0 {
+	print "calc_obt_mean_motion " + x.
+	print "p " + x:obt:period.
+	print "n " + n.	
+	}
+
+	return n.
+}
+function calc_obt_eccentric_anomaly {
+	parameter x.
+
+	local ta is x:obt:trueanomaly.
+	local e is x:obt:eccentricity.
+	
+	local ea is math_clamp_angle(
+		arctan2(
+			sqrt(1 - e^2) * sin(ta),
+			e + cos(ta)
+		)).
+	
+	if 0 {	
+	print "calc_obt_eccentric_anomaly " + x.
+	print "ta " + ta.
+	print "e  " + e.
+	print "ea " + ea.
+	}
+
+	return ea.
+}
+function calc_obt_mean_anomaly {
+	parameter x.
+	
+	local ea is calc_obt_eccentric_anomaly(x).
+
+	if 0 {
+	print "calc_obt_mean_anomaly " + x.
+	print "ea " + ea.
+	print "e  " + x:obt:eccentricity.
+	}
+
+	return ea - x:obt:eccentricity * (180 / constant():pi) * sin(ea).
+}
+function calc_obt_time_to_periapsis {
+	parameter x.
+
+
+	local n is calc_obt_mean_motion(x).
+
+	
+	local m0 is calc_obt_mean_anomaly(x).
+	local m1 is 360.
+	
+	local t is (m1 - m0) / n.
+
+	if 0 {
+	print "calc_obt_time_to_periapsis " + x.
+	print "m0 "  + m0.
+	print "m1 "  + m1.
+	print "n  "  + n.
+	print "eta " + t.
+	}
+
+	return t.
+}
+function calc_obt_time_to_apoapsis {
+	parameter x.
+	
+	//print "calc_obt_time_to_apoapsis " + x.
+
+	local m0 is calc_obt_mean_anomaly(x).
+	local m1 is 180.
+	
+	return math_clamp_angle(m1 - m0) / calc_obt_mean_motion(x).
 }
 
 print "loaded library lib_calc_obt".

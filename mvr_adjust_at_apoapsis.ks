@@ -1,4 +1,5 @@
 // parameter mvr_adjust_altitude.
+print "mvr_adjust_at_apoapsis " + mvr_adjust_altitude.
 
 util_log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
 
@@ -58,11 +59,11 @@ lock alt to periapsis.
 set alt_burn to apoapsis.
 
 
-local dv is calc_deltav(alt_burn, alt, mvr_adjust_altitude).
+local dv0 is calc_deltav(alt_burn, alt, mvr_adjust_altitude).
 
 set v0 to ship:velocity:orbit:mag.
 
-lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
+lock dv_rem to dv0 - (ship:velocity:orbit:mag - v0).
 
 set est_rem_burn to abs(dv_rem / accel_max).
 
