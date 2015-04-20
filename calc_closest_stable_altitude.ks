@@ -5,16 +5,15 @@ if ship:obt:hasnextpatch {
 	set altitude_of_interest to apoapsis.
 }
 
-set get_stable_orbits_2_body to ship:body.
-run get_stable_orbits_2.
+local orbits is get_stable_orbits_2(ship:body).
 
 for l in get_stable_orbits_ret {
 	//print l.
 }
 
-if get_stable_orbits_2_ret:length = 1 {
+if orbits:length = 1 {
 
-	set so to get_stable_orbits_2_ret[0].
+	set so to orbits[0].
 	
 	set calc_closest_stable_altitude_ret to
 		max(
@@ -26,8 +25,8 @@ if get_stable_orbits_2_ret:length = 1 {
 	set i to 0.
 
 	until (i + 1) = get_stable_orbits_ret:length {
-		set so1 to get_stable_orbits_2_ret[i].
-		set so2 to get_stable_orbits_2_ret[i + 1].
+		set so1 to orbits[i].
+		set so2 to orbits[i + 1].
 	
 		if altitude_of_interest < so1[0] {
 			set calc_closest_stable_altitude_ret to so1[0].
@@ -49,9 +48,9 @@ if get_stable_orbits_2_ret:length = 1 {
 		set i to i + 1.
 	}
 
-	if (i + 1) = get_stable_orbits_ret:length {
+	if (i + 1) = orbits:length {
 		set calc_closest_stable_altitude_ret to
-			get_stable_orbits_2_ret[i][1] * 0.9.
+			orbits[i][1] * 0.9.
 	}
 
 }

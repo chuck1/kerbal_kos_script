@@ -1,5 +1,5 @@
  
 run boot_pre.
-transfer_to(BODY("Kerbin"), True).
+rendez(True).
 run boot_post.
  

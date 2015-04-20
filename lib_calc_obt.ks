@@ -95,9 +95,9 @@ function calc_obt_soe_circle {
 }
 
 function calc_obt_soe {
-	parameter o.
-	print "calc_obt_soe " + o.
-	return (o:velocity:orbit:mag^2 / 2 - o:body:mu / (o:body:radius + o:altitude)).
+	parameter x.
+	print "calc_obt_soe " + x.
+	return (x:velocity:orbit:mag^2 / 2 - x:body:mu / (x:body:radius + x:altitude)).
 }
 
 function calc_obt_speed_at_altitude {

@@ -9,7 +9,8 @@ util_log("mvr_match_inc " + mvr_match_inc_target).
 
 if not (calc_obt_type() = "circular") {
 	print "orbit must be circular".
-	print neverset.
+	
+	circle(0).
 }
 
 // =======================================================================

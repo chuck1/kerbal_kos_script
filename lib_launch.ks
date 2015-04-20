@@ -150,7 +150,7 @@ function launch_atm {
 		print "    down_angle_steering " + round(down_angle_steering,1).
 		}
 	
-		run util_stage_burn.
+		util_ship_stage_burn().
 	
 		wait 0.01.
 	}
@@ -168,14 +168,13 @@ function launch {
 	sas off.
 	rcs off.
 	
-	set get_stable_orbits_body to ship:body.
-	run get_stable_orbits.
+	local orbits is get_stable_orbits(ship:body).
 	
 	if launch_altitude = 0 {
 		set launch_altitude to ship:body:radius / 5.
 	}
 	
-	if periapsis > get_stable_orbits_ret[0][0] {
+	if periapsis > orbits[0][0] {
 		print "already in orbit".
 	} else {
 		if ship:body:atm:exists {
