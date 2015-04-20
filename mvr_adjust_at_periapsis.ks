@@ -50,10 +50,7 @@ lock alt to apoapsis.
 set alt_burn to periapsis.
 
 
-set deltav_alt  to alt_burn.
-set deltav_alt1 to alt.
-set deltav_alt2 to mvr_adjust_altitude.
-run deltav.
+local dv is calc_deltav(alt_burn, alt, mvr_adjust_altitude).
 
 set v0 to ship:velocity:orbit:mag.
 
@@ -62,11 +59,7 @@ lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 lock est_rem_burn to abs(dv_rem / accel).
 
 
-
-
-set warp_string to "per".
-set warp_sub to est_rem_burn/2 + 30.
-run warp.
+util_warp_per(est_rem_burn/2 + 30).
 
 if dv < 0 {
 	lock steering to R(
@@ -83,7 +76,7 @@ if dv < 0 {
 
 	lock err to mvr_adjust_altitude - alt.
 }
-run wait_orient.
+util_wait_orient().
 
 // ============================================================
 
@@ -135,7 +128,7 @@ set err_start to err.
 
 until (err / err_start) < precision {
 	
-	run lines_print_and_clear.
+	clearscreen.
 	print "MVR ADJUST AT PERIAPSIS".
 	print "=======================================".
 	print "    alt target   " + mvr_adjust_altitude.
@@ -183,9 +176,9 @@ wait 5.
 
 // ===================================================
 // ensure burn extrema has passed
-print "let extrema pass".
 
 if 0 {
+print "let extrema pass".
 if eta:periapsis < eta:apoapsis {
 	set warp_string to "per".
 	set warp_sub to 0.		

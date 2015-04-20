@@ -2,10 +2,9 @@ sas off.
 rcs off.
 set warp to 0.
 
-set get_stable_orbits_2_body to ship:body.
-run get_stable_orbits_2.
+local orbits is get_stable_orbits_2(ship:body).
 
-set safe_altitude to get_stable_orbits_2_ret[0][0].
+set safe_altitude to orbits[0][0].
 
 if periapsis < safe_altitude {
 
@@ -19,13 +18,13 @@ if periapsis < safe_altitude {
 		lock radial to vcrs(prograde:vector, h:normalized):direction.
 	
 		lock steering to radial.
-		run wait_orient.
+		util_wait_orient().
 	
 		set thrott to 0.
 		lock throttle to thrott.
 		until periapsis > safe_altitude or ship:verticalspeed > 0 {
 
-			run lines_print_and_clear.
+			clearscreen.
 			print "MVR SAFE PERIAPSIS".
 			print "============================".
 			print "    periapsis  " + periapsis.

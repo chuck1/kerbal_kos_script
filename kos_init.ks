@@ -1,12 +1,15 @@
 
+print "kos_init".
 
 // load my lib
 
+run lib_get.
 run lib_calculate.
 run lib_util.
 run lib_util_ship.
 run lib_util_wait.
 run math.
+run lib_go_to.
 run lib_hover.
 run lib_launch.
 run lib_transfer.

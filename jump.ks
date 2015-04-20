@@ -22,7 +22,7 @@ lock steering to R(
 	up:yaw,
 	ship:facing:roll).
 
-run wait_orient.
+util_wait_orient().
 
 lock vs_error to max(0, vs_target - ship:verticalspeed).
 

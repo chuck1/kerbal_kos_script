@@ -203,3 +203,38 @@ T+131 transfer_to_low BODY("Mun")
 T+131 transfer to moon low BODY("Mun")
 T+131 circle 120274.964652936
 T+131 mvr_adjust_at_apoapsis 120274.964652936
+T+190318 go_to mun_arch
+T+971544 go_to mun_arch
+T+1340148 go_to mun_arch
+T+190697 go_to mun_arch
+T+190736 go_to mun_arch
+T+190790 go_to mun_arch
+T+190790 hover
+T+190938 go_to mun_arch
+T+190994 go_to mun_arch
+T+190994 hover
+T+191195 go_to mun_arch
+T+191195 hover
+T+191237 go_to mun_arch
+T+191237 hover
+T+191271 go_to mun_arch
+T+191271 hover
+T+191342 go_to mun_arch
+T+191401 go_to mun_arch
+T+191401 hover
+T+191562 lat error 1.7404556279299E-05
+T+191562 lng error 7.39233398121542E-05
+T+192193 go_to mun_arch
+T+192193 hover
+T+192330 go_to mun_mono_0
+T+192385 go_to mun_mono_0
+T+192404 go_to mun_mono_0
+T+192576 go_to mun_mono_0
+T+192596 go_to mun_mono_0
+T+192639 go_to mun_mono_0
+T+192672 go_to mun_mono_0
+T+192784 go_to mun_mono_0
+T+192869 go_to mun_mono_0
+T+1341482 go_to mun_mono_0
+T+972880 go_to mun_mono_0
+T+191658 go_to mun_mono_0

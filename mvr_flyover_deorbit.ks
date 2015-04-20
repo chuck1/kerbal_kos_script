@@ -2,10 +2,6 @@
 
 util_log("mvr_flyover_deorbit " + mvr_flyover_deorbit_gc).
 
-set lines_add_line to "MVR FLYOVER DEORBIT" + ship:body + " " + mvr_flyover_deorbit_gc.
-run lines_add.
-set lines_indent to lines_indent + 1.
-
 // useful vats
 lock g to ship:body:mu / (ship:body:radius + altitude)^2.
 lock accel_max to ship:maxthrust / ship:mass.
@@ -46,7 +42,7 @@ lock steering to R(
 	retrograde:yaw,
 	ship:facing:roll).
 
-run wait_orient.
+util_wait_orient().
 
 
 
@@ -77,7 +73,7 @@ set counter to 0.
 
 until 0 {
 
-	run lines_print_and_clear.
+	clearscreen.
 	print "MVR FLYOVER".
 	print "=======================================".
 
@@ -144,9 +140,6 @@ print "through " + round(mvr_flyover_deorbit_highest_peak, 0) +
 // could use time here to adjust for body rotation
 
 
-
-// cleanup
-set lines_indent to lines_indent - 1.
 
 
 

@@ -724,3 +724,95 @@ T+36811 go_to mun_arch
 T+36811 circle_low
 T+36811 go_to mun_arch
 T+36811 circle_low
+T+36867 go_to mun_arch
+T+36867 circle_low
+T+36924 go_to mun_arch
+T+36924 circle_low
+T+36924 circle 15000
+T+36955 go_to mun_arch
+T+36955 circle_low
+T+36955 circle 15000
+T+40032 go_to mun_arch
+T+40032 circle_low
+T+40032 circle 15000
+T+40077 go_to mun_arch
+T+40077 circle_low
+T+40077 circle 15000
+T+40130 go_to mun_arch
+T+40130 circle_low
+T+40130 circle 15000
+T+40130 mvr_adjust_at_apoapsis 15000
+T+40190 go_to mun_arch
+T+40190 circle_low
+T+40190 circle 15000
+T+40190 mvr_adjust_at_apoapsis 15000
+T+40358 go_to mun_arch
+T+40358 circle_low
+T+40358 circle 15000
+T+40358 mvr_adjust_at_apoapsis 15000
+T+72813 go_to mun_arch
+T+72813 circle_low
+T+72813 circle 15000
+T+72851 go_to mun_arch
+T+72851 circle_low
+T+72851 circle 15000
+T+72851 mvr_adjust_at_apoapsis 15000
+T+105810 go_to mun_arch
+T+105810 circle_low
+T+105810 circle 15000
+T+105811 mvr_adjust_at_apoapsis 15000
+T+138715 go_to mun_arch
+T+138715 circle_low
+T+138715 circle 15000
+T+138726 mvr_adjust_at_apoapsis 15000
+T+141497 go_to mun_arch
+T+141497 circle_low
+T+141497 circle 15000
+T+141497 mvr_flyover LATLNG(2.46373581886292, 81.5251212255859)
+T+141535 go_to mun_arch
+T+141535 circle_low
+T+141535 circle 15000
+T+141535 mvr_flyover LATLNG(2.46373581886292, 81.5251212255859)
+T+141535 circle_low
+T+141535 circle 15000
+T+142574 mvr_flyover_deorbit LATLNG(2.46373581886292, 81.5251212255859)
+T+142612 go_to mun_arch
+T+142612 circle_low
+T+142612 circle 15000
+T+142612 mvr_flyover LATLNG(2.46373581886292, 81.5251212255859)
+T+142612 circle_low
+T+142612 circle 15000
+T+142614 mvr_flyover_deorbit LATLNG(2.46373581886292, 81.5251212255859)
+T+142651 go_to mun_arch
+T+142651 circle_low
+T+142651 circle 15000
+T+142651 mvr_flyover LATLNG(2.46373581886292, 81.5251212255859)
+T+142651 circle_low
+T+142651 circle 15000
+T+142653 mvr_flyover_deorbit LATLNG(2.46373581886292, 81.5251212255859)
+T+142955 go_to mun_arch
+T+142960 go_to mun_arch
+T+143188 go_to mun_arch
+T+143215 go_to mun_arch
+T+144557 go_to mun_mono_0
+T+144570 go_to mun_mono_0
+T+144593 go_to mun_mono_0
+T+145650 go_to mun_mono_0
+T+145650 hover
+T+145684 go_to mun_mono_0
+T+145703 go_to mun_mono_0
+T+145710 go_to mun_mono_0
+T+145714 go_to mun_mono_0
+T+145876 go_to mun_mono_0
+T+145876 hover
+T+146139 go_to mun_mono_0
+T+146165 go_to mun_mono_0
+T+146472 go_to mun_mono_0
+T+146472 hover
+T+146719 go_to mun_mono_0
+T+146725 go_to mun_mono_0
+T+146725 hover
+T+578114 transfer_to_planet BODY("Kerbin")
+T+578133 transfer_to_planet BODY("Kerbin")
+T+578183 transfer_to_planet BODY("Kerbin")
+T+578213 transfer_to_planet BODY("Kerbin")

@@ -29,7 +29,7 @@ if ship:obt:hasnextpatch {
 		print "avoid collision with " + ship:body. wait 3.
 
 		lock steering to radial.
-		run wait_orient.		
+		util_wait_orient.		
 
 		lock throttle to 0.1.
 		wait until periapsis > capture_altitude.
@@ -52,13 +52,13 @@ if ship:obt:hasnextpatch {
 	}
 	
 	lock steering to retrograde.
-	run wait_orient.
+	util_wait_orient.
 	
 	set th to 0.
 	lock throttle to th.
 	until not (ship:obt:hasnextpatch) {
 		
-		run lines_print_and_clear.
+		clearscreen.
 		print "CAPTURE".
 		print "================================".
 		print "    apoapsis     " + apoapsis.
@@ -69,7 +69,7 @@ if ship:obt:hasnextpatch {
 	
 	print "captured".
 	
-	wait until apoapsis < (capture_alt * 1.1) or aop_change > 180.
+	wait until apoapsis < (capture_altitude * 1.1) or aop_change > 180.
 	print "burn complete".
 	
 	lock throttle to 0.

@@ -67,7 +67,6 @@ lock go_to_suborbital_approach_dir_v to
 	-1 * v_surf:normalized * cos(pitch_clamped) +
 	up:vector * sin(pitch_clamped).
 
-lock go_to_suborbital_approach_dir to go_to_suborbital_approach_dir_v:direction.
 
 
 set thrott_desired to 0.6.
@@ -102,15 +101,21 @@ lock arrest_descent_steering to (
 // 40 wait burn x
 // 50 burn x
 
+local steer is retrograde.
+
+lock steering to steer.
+
 set mode to "warp".
 
 set thrott to 0.
 lock throttle to thrott.
 until 0 {
 	
-	run lines_print_and_clear.
+	clearscreen.
 	print "GO TO SUBORBITAL APPROACH".
 	print "=======================================".
+
+	set go_to_suborbital_approach_dir to go_to_suborbital_approach_dir_v:direction.
 
 	if mode = "warp" {
 		print "warp".
@@ -128,7 +133,7 @@ until 0 {
 	} else if mode = "wait" {
 		print "wait for closest approach to LZ or altitude limit".
 	
-		lock steering to (-1 * v_surf_z):direction.
+		lock steer to (-1 * v_surf_z):direction.
 
 		set thrott to 0.
 
@@ -141,7 +146,7 @@ until 0 {
 		}
 
 	} else if mode = "burn z" {
-		lock steering to (-1 * v_surf_z):direction.
+		lock steer to (-1 * v_surf_z):direction.
 	
 		if vang(steering:vector, ship:facing:vector) > 1 {
 			print "burn to reduce deflection (wait for orient)".
@@ -165,7 +170,7 @@ until 0 {
 		set thrott to 0.
 
 		//lock steering to ship:srfretrograde.
-		lock steering to R(
+		set steer to R(
 			go_to_suborbital_approach_dir:pitch,
 			go_to_suborbital_approach_dir:yaw,
 			0).

@@ -1,68 +1,32 @@
-declare parameter transfer_to_planet_target.
+declare parameter b.
 
-print "transfer_to_planet " + transfer_to_planet_target.
+print "transfer_to_planet " + b.
 
-util_log("transfer_to_planet " + transfer_to_planet_target).
+util_log("transfer_to_planet " + b).
 
 if ship:body = sun {
-} else if ship:body = transfer_to_planet_target {
-} else {
-
-	// get into stable circular orbit around nearest planet.
-	run transfer_to_planet.
-
-	set body_1 to ship:body.
-	set body_2 to transfer_to_planet_target.
-
-	set calc_transfer_to_planet_target to transfer_to_planet_target.
-	run calc_transfer_to_planet.
-
-	set wait_for_angle_body_1    to body_1.
-	set wait_for_angle_body_2    to body_2.
-	set wait_for_angle_body_axis to sun.
-	set wait_for_angle_angle     to calc_transfer_to_planet_phase.
-	run wait_for_angle.
-
-
-	set mvr_match_inc_target to body_2.
-	run mvr_match_inc.
-
-
-	set wait_for_angle_body_1    to ship.
-	set wait_for_angle_body_2    to sun.
-	set wait_for_angle_body_axis to body_1.
-	set wait_for_angle_angle     to calc_transfer_to_planet_theta + 90.
-	run wait_for_angle.
-
-	set burn_deltav to calc_transfer_to_planet_ejection_burn.
-	run burn.
-
-	set warp_sub to 0.
-	set warp_string to "trans".
-	run warp.
-	
-	// get safe distance from body_1
-	set warp_time_tspan to 3600.
-	run warp_time.
+} else if ship:body = b {
+} else if ship:body:obt:body = sun {
+	transfer_interplanetary_ejection(b).
 }
 
-if ship:body = transfer_to_planet_target {
+if ship:body = b {
 } else {
 
 // long distance approach
 
-set get_capture_alt_body to transfer_to_planet_target.
+set get_capture_alt_body to b.
 run get_capture_alt.
 
 until 0 {
-	if ship:body = transfer_to_planet_target {
+	if ship:body = b {
 		if abs((ship:obt:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
 			print "satisfactory capture altitude".
 			wait 5.
 			break.
 		}
 	} else if ship:obt:hasnextpatch {
-		if not (ship:obt:nextpatch:body = transfer_to_planet_target) {
+		if not (ship:obt:nextpatch:body = b) {
 			print "ERROR: nextpatch body is not target body".
 			print neverset.
 		}
@@ -73,7 +37,7 @@ until 0 {
 		}
 	}
 
-	set node_search_target     to transfer_to_planet_target.
+	set node_search_target     to b.
 	set node_search_use_normal to true.
 	set node_search_alt        to get_capture_alt_ret.
 	run node_search.

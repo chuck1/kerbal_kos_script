@@ -35,9 +35,6 @@ function calc_burn_duration {
 }
 
 
-
-
-
 function calc_deltav {
 	parameter deltav_alt.
 	parameter deltav_alt1.

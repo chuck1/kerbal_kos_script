@@ -45,7 +45,7 @@ set r to calc_suborbital_alt + ship:body:radius.
 set arg to (l/r - 1) / e.
 
 print "e   " + e.
-print "c   " + c.
+//print "c   " + c.
 print "l   " + l.
 
 print "a   " + a.

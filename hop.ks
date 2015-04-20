@@ -11,9 +11,11 @@ set get_highest_peak_body to ship:body.
 run get_highest_peak.
 
 
-if hop_mode = "latlong" {
+if hop_mode = "latlng" {
 	set jump_altitude to get_highest_peak_ret.
 	run jump.
+} else if hop_mode = "vector" {
+} else {
 }
 
 rcs on.
@@ -35,21 +37,23 @@ lock hop_g to ship:body:mu
 	/ (ship:body:radius + ship:altitude)^2.
 
 
-
+local hop_hor_dir is V(0,0,0).
 
 // =================================================
 
-if hop_mode = "latlong" {
-	set calc_latlong_to_vector_lat  to hop_dest[0].
-	set calc_latlong_to_vector_long to hop_dest[1].
-	set calc_latlong_to_vector_alt  to get_highest_peak_ret.
-	run calc_latlong_to_vector.
+if hop_mode = "latlng" {
+	//set calc_latlong_to_vector_lat  to hop_dest[0].
+	//set calc_latlong_to_vector_long to hop_dest[1].
+	//set calc_latlong_to_vector_alt  to get_highest_peak_ret.
+	//run calc_latlong_to_vector.
 
-	set hop_hor_dir to heading(calc_latlong_to_vector_brng, 0):vector.
+	//set hop_hor_dir to heading(calc_latlong_to_vector_brng, 0):vector.
+	
+	set hop_hor_dir to heading(hop_dest[0]:heading, 0):vector.
 
-	set calc_suborbital_alt to hop_dest[2].
+	set calc_suborbital_alt to hop_dest[1].
 	set calc_suborbital_apo to ship:body:radius / 20.
-	set calc_suborbital_l to (calc_latlong_to_vector_vec_distance / 2).
+	set calc_suborbital_l to (hop_dest[0]:distance / 2).
 	run calc_suborbital.
 	
 	set hop_pitch to calc_suborbital_pitch1.
@@ -65,6 +69,9 @@ if hop_mode = "latlong" {
 	set hop_v_mag to
 		sqrt(hop_d * hop_g
 		/ (2 * cos(hop_theta) * hop_sin)).
+} else {
+	print "invalid mode " + hop_mode.
+	print neverset.
 }
 
 set hop_sin to sin(hop_pitch).

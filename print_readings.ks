@@ -16,6 +16,9 @@ until 0 {
 	print "radius               " + ship:body:radius.
 	print "soe mun low          " + calc_obt_soe_circle(mun, calc_obt_alt_low(mun)).
 	print "soe mun low          " + calc_obt_soe_circle(mun, 2 * calc_obt_alt_low(mun)).
+	print "speed vert           " + ship:verticalspeed.
+	print "speed surf           " + ship:surfacespeed.
+	print "obt type             " + calc_obt_type().
 	
 	//print "E                    " + CONSTANT():E.	
 	//print "atm:sealevelpressure " + ship:body:atm:sealevelpressure.

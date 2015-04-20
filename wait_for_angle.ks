@@ -1,7 +1,7 @@
-//parameter wait_for_angle_body_1.
-//parameter wait_for_angle_body_2.
-//parameter wait_for_angle_body_axis.
-//parameter wait_for_angle_angle.
+parameter wait_for_angle_body_1.
+parameter wait_for_angle_body_2.
+parameter wait_for_angle_body_axis.
+parameter wait_for_angle_angle.
 
 util_log("wait_for_angle " +
 	wait_for_angle_body_1 + " " +
@@ -162,12 +162,6 @@ until wait_for_angle_e < 0.01 {
 	wait 0.1.
 }
 
-// cleanup
-
-unset wait_for_angle_body_1.
-unset wait_for_angle_body_2.
-unset wait_for_angle_body_axis.
-unset wait_for_angle_angle.
 
 
 

@@ -1,6 +1,6 @@
-// PARAM node_search_alt
-// PARAM node_search_use_normal
-// PARAM node_search_target
+declare parameter node_search_alt.
+declare parameter node_search_use_normal.
+declare parameter node_search_target.
 
 // eliminate instability in orbit
 set warp to 1.

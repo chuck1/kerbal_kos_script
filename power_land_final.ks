@@ -71,7 +71,7 @@ lock v_hori to vxcl(up:vector, ship:velocity:surface).
 //lock v_vert to ship:velocity:surface - v_hori - slope_avg * up:vector.
 lock v_vert to ship:velocity:surface - v_hori.
 
-lock v to v_hori + v_vert.
+//lock v to v_hori + v_vert.
 
 lock q to v_vert:mag^2 + 4 * (0.5 * g) * alt:radar.
 

@@ -29,7 +29,7 @@ if ship:velocity:surface:mag < 0.01 {
 		}
 
 		lock steering to R(ship:srfretrograde:pitch, ship:srfretrograde:yaw, 180).
-		run wait_orient.
+		util_wait_orient().
 
 		//wait until ship:verticalspeed < 0.
 
@@ -80,7 +80,7 @@ if ship:velocity:surface:mag < 0.01 {
 			print "    controled descent to " + round(next_stage_altitude,0).
 			print "    highest peak         " + round(get_highest_peak_ret,0).
 			print "    radar altitude       " + round(alt:radar,0).
-			print "    g                    " + round(timetoimpact,1).
+			print "    g                    " + round(g,1).
 			print "    vert speed           " + ship:verticalspeed.
 			print "    surf speed           " + ship:verticalspeed.
 			print "    pitch vel            " + pitch_vel.

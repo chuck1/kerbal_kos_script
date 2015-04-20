@@ -2,9 +2,7 @@ set warp to 0.
 
 util_log("circle_low").
 
-set get_stable_orbits_2_body to ship:body.
-run get_stable_orbits_2.
+local ret is get_stable_orbits_2(ship:body).
 
-set circle_altitude to get_stable_orbits_2_ret[0][0].
-run circle.
+run circle(ret[0][0]).
 

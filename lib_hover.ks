@@ -17,10 +17,19 @@ declare function hover {
 	} else {
 		set mode_surf to arg_surf[0].
 	}
+	
 	if arg_vert = 0 {
 		set mode_vert to "agl".
 	} else {
-		set mode_surf to arg_vert[0].
+		set mode_vert to arg_vert[0].
+	}
+
+	if mode_surf = "latlng" {
+		set mode_vert to "asl".
+
+		set hover_dest to arg_surf[1].
+		
+		set hover_alt to hover_dest[1].
 	}
 
 	lock east to vcrs(north:vector, up:vector):direction.
@@ -89,7 +98,7 @@ declare function hover {
 	} else if mode_surf = "latlng" {
 	
 		set kp1 to  0.01.
-		set kd1 to  0.05.
+		set kd1 to  0.10.
 		set ki1 to  0.0.
 	
 		set P1_mag_0 to 0.
@@ -195,7 +204,7 @@ declare function hover {
 	
 	// ========================================================
 	
-	set radar_limit to 20.
+	set radar_limit to 200.
 	
 	set t0 to time:seconds.
 	

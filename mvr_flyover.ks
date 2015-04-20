@@ -2,10 +2,6 @@
 
 util_log("mvr_flyover " + mvr_flyover_gc).
 
-set lines_add_line to "MVR FLYOVER " + ship:body + " " + mvr_flyover_gc.
-run lines_add.
-set lines_indent to lines_indent + 1.
-
 // useful vats
 lock g to ship:body:mu / (ship:body:radius + altitude)^2.
 lock accel_max to ship:maxthrust / ship:mass.
@@ -60,7 +56,7 @@ if abs(inc_change) > 0.1 {
 
 	until 0 {
 
-		run lines_print_and_clear.
+		clearscreen.
 		print "MVR FLYOVER".
 		print "===========================================".
 	
@@ -139,9 +135,6 @@ if abs(inc_change) > 0.1 {
 set mvr_flyover_deorbit_gc to mvr_flyover_gc.
 run mvr_flyover_deorbit.
 
-
-// cleanup
-set lines_indent to lines_indent - 1.
 
 
 

@@ -1,6 +1,9 @@
 
 declare global mun_arch is list().
 declare global mun_arch_2 is list().
+declare global mun_mono_0 to list().
+declare global mun_mono_1 to list().
+declare global mun_mono_2 to list().
 declare global mun_monument to list().
 declare global kerbin_vab to list().
 declare global minmus_monolith to list().
@@ -24,6 +27,12 @@ kerbin_vab:add(     kerbin).
 mun_monument:add(   latlng(  0.7093769, 22.7362742)).
 mun_monument:add(   500).
 mun_monument:add(   mun).
+
+mun_mono_0:add(     latlng( -9.831389,  25.9175)).
+mun_mono_0:add(     500).
+mun_mono_0:add(     mun).
+mun_mono_0:add(     "mun_mono_0").
+
 
 minmus_monolith:add(latlng( 23.776944,  60.045833)).
 minmus_monolith:add(2000).
