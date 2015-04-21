@@ -1,9 +1,10 @@
+declare parameter ret.
 
-if mission_complete {
+if ret = 0 {
 	print "mission complete".
-//	delete "boot.ks" from 0.
+	delete "boot.ks" from 1.
 }
 
-//reboot.
+reboot.
 
 

@@ -56,14 +56,14 @@ function transfer_to_moon {
 	
 		}
 	
-		launch().
+		launch(0).
 	
-		run match_inc(b).
+		mvr_match_inc(b).
 	
 		set burn_to_free_return_target to transfer_to_moon_target.
 		run burn_to_free_return.
 	
-		run warp_trans(0).
+		warp_trans(0).
 		
 		wait 2.
 	
@@ -71,13 +71,14 @@ function transfer_to_moon {
 	
 	circle(0).
 }
-function transfer_to_moon_low {
+function transfer_to_moon {
 	parameter b.
+	parameter alt.
 	
 	util_log("transfer_to_moon_low " + b).
 	
 	if ship:body = b {
-		run circle_low.
+		circle(alt).
 	} else {
 	
 		if not (b:obt:body = ship:body) {
@@ -89,14 +90,18 @@ function transfer_to_moon_low {
 			local obt_type is calc_obt_type(ship).
 			
 			if (obt_type = "prelaunch") or (obt_type = "landed") {
+
 				launch(0).
+
 			} else if (obt_type = "suborbit") or (obt_type = "elliptic") {
+
 				circle(0).
+
 			} else if obt_type = "circular" {
 	
-				run mvr_match_inc(b).
+				mvr_match_inc(b).
 	
-				run burn_to_free_return(b).
+				burn_to_free_return(b).
 	
 				util_warp_trans(0).
 				
@@ -110,26 +115,26 @@ function transfer_to_moon_low {
 }
 
 function transfer_to {
-	parameter transfer_to_target.
-	parameter is_boot_func.
+	parameter b.
+	parameter alt0.
 
-	print "transfer_to".
+	print "transfer_to " + b + " " + alt0.
+	util_log("transfer_to " + b + " " + alt0).
 
-	if transfer_to_target = sun {
+	if b = sun {
 		print neverset.
-	} else if transfer_to_target:obt:body = sun {
-		run transfer_to_planet(transfer_to_target).
-	} else if transfer_to_target:obt:body:obt:body = sun {
-		transfer_to_moon(transfer_to_target).
+	} else if b:obt:body = sun {
+		transfer_to_planet(b, alt0).
+	} else if b:obt:body:obt:body = sun {
+		transfer_to_moon(b, alt0).
 	}
 
-	if is_boot_func {
-		if (calc_obt_type() = "circular") and (ship:body = transfer_to_target) {
-			set mission_complete to true.
-		}
+	if (calc_obt_type(ship) = "circular") and (ship:body = b) {
+		return 0.
+	} else {
+		return 1.
 	}
 }
-	
 function transfer_to_planet_nearest {
 	
 	local orbit_type is calc_obt_type().
@@ -284,23 +289,7 @@ function transfer_to_planet {
 	circle(calc_closest_stable_altitude_ret).
 }
 
-function transfer_to_low {
-	declare parameter b.
-	
-	util_log("transfer_to_low " + b).
-	
-	print "transfer_to_target " + b.
-	
-	if b = sun {
-		print "cannot transfer to sun".
-		print neverset.
-	} else if b:obt:body = sun {
-		transfer_to_planet_low(b).
-	} else if b:obt:body:obt:body = sun {
-		transfer_to_moon_low(b).
-	}
-	
-}
+
 
 print "loaded library transfer".
 

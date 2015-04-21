@@ -1,21 +1,68 @@
+function util_file_exists {
+	parameter filename.
+	
+	list files in fl.
+	for f in fl {
+		if f = filename {
+			return true.
+		}
+	}
+	return false.
+}
+function util_file_delete {
+	// only works on current archive
+	parameter filename.
+	if util_file_exists(filename) {
+		delete filename.
+	}
+}
+function util_boot_filename {
+	parameter x.
+	//return "boot_" + x:rootpart:uid + ".ks".
+	return "boot.ks".
+}
+function util_log_filename {
+	return "log_" + ship:rootpart:uid + ".txt".
+}
+function util_log_delete {
+	parameter x.
+	util_file_delete(util_log_filename).
+}
 function util_log {
 	parameter line.
-	
-	log ("T+" + round(missiontime,0) + " " + line) to ("log_" + ship:name + ".txt").
-	
+	log ("T+" + round(missiontime,0) + " " + line) to util_log_filename().
 }
+function util_string_join {
+	parameter string_list.
+	parameter string_joiner.
 
+	local str is "".
+	local i is 0.
+
+	until i = string_list:length {
+		if i = (string_list:length - 1) {
+			set str to str + string_list[i].
+		} else {
+			set str to str + string_list[i] + string_joiner.
+		}
+		set i to i + 1.
+	}
+	return str.
+}
 function util_boot_run {
 	parameter boot_run_file.
+
+	local filename is util_boot_filename(ship).
 	
-	log " " to "boot.ks".
-	delete "boot.ks" from 0.
-	
-	log (" ")                              to "boot.ks".
-	log ("run boot_pre.")                  to "boot.ks".
-	log ("run " + boot_run_file + ".")     to "boot.ks".
-	log ("run boot_post.")                 to "boot.ks".
-	log (" ")                              to "boot.ks".
+	log " " to filename.
+	delete filename.
+
+	local str is ("run " + boot_run_file + "(" + util_string_join(boo_func_args, ", ") + ").").
+
+	log (" ")     to filename.
+	log ("run load_libraries.") to filename.
+	log (str)     to filename.
+	log (" ")     to filename.
 	
 	reboot.
 }
@@ -24,33 +71,21 @@ function util_boot_func {
 	parameter boot_func_args.
 
 	print "util_boot_func".
+
+	local filename is util_boot_filename(ship).
 	
-	log " " to "boot.ks".
-	delete "boot.ks" from 0.
+	log " " to filename.
+	delete filename.
 	
-	log (" ")                        to "boot.ks".
-	log ("run boot_pre.")            to "boot.ks".
+	local str is "global boot_return is " + boot_func_name + "(" + util_string_join(boot_func_args, ", ") + ").".
 	
-	local str is boot_func_name + "(".
-	local i is 0.
-	until i = boot_func_args:length {
-		if i = (boot_func_args:length - 1) {
-			set str to str + boot_func_args[i].
-		} else {
-			set str to str + boot_func_args[i] + ", ".
-		}
-		set i to i + 1.
-	}
-	
-	log (str + ").")      to "boot.ks".
-	
-	log ("run boot_post.")                 to "boot.ks".
-	log (" ")                              to "boot.ks".
+	log (" ")      to filename.
+	log ("run load_libraries.") to filename.
+	log (str)      to filename.
+	log (" ")      to filename.
 	
 	reboot.
 }
-
-
 function util_warp {
 	parameter warp_string.
 	parameter warp_sub.
@@ -117,7 +152,6 @@ function util_warp {
 	unlock warp_eta.
 	unset warp_eta.
 }	
-
 function util_warp_per {
 	parameter warp_sub.
 

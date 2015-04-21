@@ -1,7 +1,7 @@
 
-copy "copy_files.ks" from 0.
+copy "kos_init.ks" from 0.
 
-run copy_files.
+run kos_init.
 
 
 

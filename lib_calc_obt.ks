@@ -1,32 +1,29 @@
 
-
-
 function get_stable_orbits {
-	parameter body.
+	parameter b.
 	
 	//print "get_stable_orbits " + body.
 
 	set ret to list().
 	
-	if body:atm:exists {
-		set alt0 to body:atm:height.
+	if b:atm:exists {
+		set alt0 to b:atm:height.
 	} else {
-		set get_highest_peak_body to body.
-		run get_highest_peak.
-		
-		set alt0 to get_highest_peak_ret.
+		set alt0 to get_highest_peak(b).
 	}
 	
-	set get_moons_body to body.
-	run get_moons.
+	local ml is get_moons(b).
 	
-	set l to list().
+	local l is list().
 	l:add(alt0).
+
+	local m is 0.
+	local i is 0.
+	//for m in ml {
+	until i = ml:length {
+		set m to ml[i].
 	
-	for m in get_moons_ret {
-	
-		set get_soi_body to m.
-		run get_soi.
+		local get_soi_ret to get_soi(m).
 	
 		l:add(m:periapsis - get_soi_ret).
 		
@@ -34,18 +31,16 @@ function get_stable_orbits {
 	
 		set l to list().
 		l:add(m:apoapsis + get_soi_ret).
+		
+		set i to i + 1.
 	}
 	
-	set get_soi_body to body.
-	run get_soi.
-	
-	l:add(get_soi_ret).
+	l:add(get_soi(b)).
 	
 	ret:add(l).
 
 	return ret.
 }
-
 function get_stable_orbits_2 {
 	parameter body.
 
@@ -291,6 +286,73 @@ function calc_obt_term_speed {
 	
 	return term_speed0.
 }
+function calc_distance_to_target {
+	set t to time.
+	
+	set t1 to time + eta:apoapsis.
+	
+	set ps1 to positionat(ship,   t1).
+	set pt1 to positionat(target, t1).
+	
+	set d1 to (pt1 - ps1):mag.
+	
+	print "distance at ship apoapsis " + d1.
+}
+function calc_closest_stable_altitude {
+	
+	if ship:obt:hasnextpatch {
+		set altitude_of_interest to periapsis.
+	} else {
+		set altitude_of_interest to apoapsis.
+	}
+	
+	local orbits is get_stable_orbits_2(ship:body).
+	
+	
+	if orbits:length = 1 {
+	
+		set so to orbits[0].
+		
+		set calc_closest_stable_altitude_ret to
+			max(
+				so[0],
+				min(
+					so[1],
+					altitude_of_interest)).
+	} else {
+		set i to 0.
+	
+		until (i + 1) = orbits:length {
+			set so1 to orbits[i].
+			set so2 to orbits[i + 1].
+		
+			if altitude_of_interest < so1[0] {
+				set calc_closest_stable_altitude_ret to so1[0].
+				break.
+			} else if
+			altitude_of_interest > so1[0] and
+			altitude_of_interest < so1[1] {
+				// inside so1
+				set calc_closest_stable_altitude_ret to altitude_of_interest.
+				break.
+			} else if
+			altitude_of_interest > so1[1] and
+			altitude_of_interest < so2[0] {
+				// between so1 and so2
+				set calc_closest_stable_altitude_ret to so1[1].
+				break.
+			}
+		
+			set i to i + 1.
+		}
+	
+		if (i + 1) = orbits:length {
+			set calc_closest_stable_altitude_ret to
+				orbits[i][1] * 0.9.
+		}
+	
+	}
+}
 
-print "loaded library lib_calc_obt".
+print "loaded library calc_obt".
 

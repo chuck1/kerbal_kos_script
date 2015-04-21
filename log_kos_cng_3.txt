@@ -271,3 +271,13 @@ T+1052 wait_for_angle $<argstart> $<argstart> $<argstart> $<argstart>
 T+1166 go_to mun_arch
 T+1166 transfer_to_low BODY("Mun")
 T+1166 transfer_to_moon_low BODY("Mun")
+T+0 go_to mun_arch
+T+0 transfer_to_low BODY("Mun")
+T+0 transfer_to_moon_low BODY("Mun")
+T+0 launch BODY("Kerbin")
+T+0 launch_atm BODY("Kerbin")
+T+14 go_to mun_arch
+T+14 transfer_to_low BODY("Mun")
+T+14 transfer_to_moon_low BODY("Mun")
+T+14 circle 77000
+T+14 mvr_adjust_at_apoapsis 77000
