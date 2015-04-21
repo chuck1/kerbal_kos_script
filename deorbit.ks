@@ -4,7 +4,6 @@
 print "DEORBIT ----------------------------------".
 print "body:       " + deorbit_body.
 print "angle:      " + deorbit_angle.
-wait 2.
 
 if ship:body:atm:exists {
 	run deorbit_atm.

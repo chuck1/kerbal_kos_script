@@ -1,11 +1,11 @@
 
 function circle {
 	parameter circle_altitude.
-	//declare parameter precision.
+	parameter is_boot_func.
 
 	print "circle " + circle_altitude.
 
-	local obt_type is calc_obt_type().
+	local obt_type is calc_obt_type(ship).
 
 	if (obt_type = "landed") or (obt_type = "prelaunch") {
 		launch(circle_altitude).
@@ -75,6 +75,14 @@ function circle {
 		}
 		
 	}
+	return 1.
+}
+function circle_low {
+	util_log("circle_low").
+
+	local ret is get_stable_orbits_2(ship:body).
+
+	circle(ret[0][0]).
 }
 
 print "loaded library circle".

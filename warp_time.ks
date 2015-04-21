@@ -37,12 +37,14 @@ if ship:body:atm:exists and ship:altitude < ship:body:atm:height {
 			set warp to 1.
 		}
 
+		if 0 {
 		clearscreen.
 		print "WARP TIME".
 		print "===================".
 		print "    warp " + warp.
 		print "    eta  " + warp_time_eta.
 		print "    time " + warp_time_tspan.
+		}
 	}
 
 }

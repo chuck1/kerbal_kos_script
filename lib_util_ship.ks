@@ -36,5 +36,9 @@ function util_ship_stage_burn {
 	
 }
 
+function util_stage_all {
+	
+}
+
 print "loaded library util_ship".
 

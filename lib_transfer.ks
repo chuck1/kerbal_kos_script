@@ -86,7 +86,7 @@ function transfer_to_moon_low {
 			run transfer_ip.
 	
 		} else {
-			local obt_type is calc_obt_type().
+			local obt_type is calc_obt_type(ship).
 			
 			if (obt_type = "prelaunch") or (obt_type = "landed") {
 				launch(0).
@@ -282,6 +282,24 @@ function transfer_to_planet {
 	run calc_closest_stable_altitude.
 	
 	circle(calc_closest_stable_altitude_ret).
+}
+
+function transfer_to_low {
+	declare parameter b.
+	
+	util_log("transfer_to_low " + b).
+	
+	print "transfer_to_target " + b.
+	
+	if b = sun {
+		print "cannot transfer to sun".
+		print neverset.
+	} else if b:obt:body = sun {
+		transfer_to_planet_low(b).
+	} else if b:obt:body:obt:body = sun {
+		transfer_to_moon_low(b).
+	}
+	
 }
 
 print "loaded library transfer".

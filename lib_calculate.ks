@@ -8,7 +8,7 @@ function calc_burn_duration {
 	local i is (ship_stage_count - 1).
 
 	until i < 0 {
-		if calc_burn_duration_dv > ship_stage_deltav[i] {
+		if dv > ship_stage_deltav[i] {
 			set ret to ret +
 				ship_stage_duration_max[i].
 	
@@ -23,7 +23,7 @@ function calc_burn_duration {
 			break.
 		}
 	
-		set calc_burn_duration_i to calc_burn_duration_i - 1.
+		set i to i - 1.
 	}
 	
 	if dv > 0 {

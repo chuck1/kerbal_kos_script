@@ -67,7 +67,7 @@ lock dv_rem to dv0 - (ship:velocity:orbit:mag - v0).
 
 set est_rem_burn to abs(dv_rem / accel_max).
 
-local burn_duration is calc_burn_duration(abs(dv)).
+local burn_duration is calc_burn_duration(abs(dv0)).
 if burn_duration = 0 {
 	set burn_duration to est_rem_burn.
 }
@@ -83,7 +83,7 @@ local v_tang is vxcl(r, ship:velocity:orbit).
 local myprograde   is (     v_tang:normalized):direction.
 local myretrograde is (-1 * v_tang:normalized):direction.
 
-local dir is (math_sign(dv) * v_tang:normalized):direction.
+local dir is (math_sign(dv0) * v_tang:normalized):direction.
 
 local err is 0.
 
@@ -96,7 +96,7 @@ global lock steering to R(
 
 
 if 0 {
-if dv < 0 {
+if dv0 < 0 {
 	global lock steering to R(
 		myretrograde:pitch,
 		myretrograde:yaw,
@@ -131,11 +131,12 @@ when abs(aop0 - ship:obt:argumentofperiapsis) > 90 then {
 	lock alt to apoapsis.
 }
 
-
+// error increase debounce
+local error_counter is 0.
 
 // initial variable which are updated until burn starts
 set v0        to ship:velocity:orbit:mag.
-declare local err_min   is err.
+local err_min   is abs(err).
 set err_start to err.
 
 //lock mvr_eta to e - est_rem_burn/2.
@@ -183,7 +184,7 @@ until 0 {
 	print "    alt burn     " + alt_burn.
 	print "    err          " + err.
 	print "    err_min      " + err_min.
-	print "    dv           " + round(dv,1).
+	print "    dv           " + round(dv0,1).
 	print "    dv rem       " + round(dv_rem,1).
 	print "    accel max    " + accel_max.
 	print "    est rem burn " + est_rem_burn.
@@ -191,24 +192,36 @@ until 0 {
 	print "    v mag 0      " + round(v0,1).
 	print "    v mag        " + round(ship:velocity:orbit:mag,1).
 	print "    burn dur     " + burn_duration.
-	
-	
-	if		mvr_eta > 0 and
-			mvr_eta < mvr_eta_0 and
-			mode = 10 {
-
+	print "    error count  " + error_counter.
+	if mode = 10 {
 		print "burn in t-" + round(mvr_eta,1).
-
+		
 		set v0 to ship:velocity:orbit:mag.
-	} else {
+		
+		if mvr_eta < 0 {
+			set mode to 20.
+		}
+	} else if mode = 20 {
 	
-		set th to max(0, min(1, est_rem_burn / 10)).
+		set th to max(0, min(1, est_rem_burn / 10 + 0.01)).
 
-		set err_min to min(err_min, err).
+		set err_min to min(err_min, abs(err)).
 	
-		if abs(err) > abs(err_min + 10) {
-			print "abort: error increasing!".
+		if abs(err) > abs(err_min) {
+			set error_counter to error_counter + 1.
+			if error_counter > 10 {
+				print "abort: error increasing!".
+				break.
+			}
+		} else {
+			set error_counter to 0.
+		}
+
+		if 0 {
+		if abs(err / ship:obt:semimajoraxis) < precision {
+			print "burn complete".
 			break.
+		}
 		}
 	}
 
@@ -216,10 +229,7 @@ until 0 {
 }
 
 lock throttle to 0.
-print "burn complete".
-
-// ensure acceleration is over
-print "wait for cooldown".
+print "cooldown".
 wait 5.
 
 

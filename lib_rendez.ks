@@ -48,7 +48,7 @@ function rendez_final {
 	
 	// point at docking port
 	lock steering to (-1 * dp:portfacing:vector):direction.
-	run wait_orient.
+	util_wait_orient().
 	
 	
 	// move in at 0.1 m/s towards target
@@ -118,7 +118,7 @@ function rendez_approach {
 	lock d to vdot(o,v).
 	
 	// velocity component perpendicular to position vector
-	lock v_perp to vectorexclude(v,o).
+	lock v_perp to vxcl(o,v).
 	
 	lock accel_max to ship:maxthrust / ship:mass.
 	
@@ -127,46 +127,54 @@ function rendez_approach {
 	// goal is to reach target in 60 seconds
 	lock v0 to o / 60.
 	
-	lock v_burn to v0 - v.
-	
-	lock burn_time_max to v_burn:mag / accel_max.
+	//lock burn_time_max to v_burn:mag / accel_max.
 	
 	// desired accel is accel needed for 1 second burn
+	
+	lock v_burn to v0 - v.
+
 	lock accel to v_burn:mag / 1.
-	
+
 	lock th0 to accel / accel_max.
-	
-	
+
 	lock steering to v_burn:direction.
-	
-	// make sure steering keeps up
-	when vang(steering:vector, ship:facing:vector) > 2 then {
-		lock throttle to 0.
-		preserve.
-	}
-	when vang(steering:vector, ship:facing:vector) < 2 then {
-		lock throttle to th.
-		preserve.
-	}
+
+
+	local th is 0.
+	lock throttle to th.	
 	
 	until o:mag < 2500 {
-	
+
+		
 		// wait until significant burn is needed
-		wait until (v_burn:mag / v:mag) > 0.1. 
-	
+		until (v_burn:mag / v:mag) > 0.1 {
+			clearscreen.
+			print "wait for burn".
+		}
+		
 		// burn
 		until v_burn:mag < 0.1 or o:mag < 2500 {
-			set th to max(0.01, min(1, th0)).
-			lock throttle to th.
+
+			clearscreen.
+			if vang(steering:vector, ship:facing:vector) > 1 {
+				print "reorient".
+				set th to 0.
+			} else {
+				set th to max(0, min(1, th0)).
+
+				print "burn".
+				print "th " + th.
+				print "dv " + v_burn:mag.
+			}
 		}
 	
-		lock throttle to 0.
 		set th to 0.
 	
-		print o:mag.
 	
 		wait 0.1.
-	}	
+	}
+
+	lock throttle to 0.
 }
 
 
@@ -351,8 +359,22 @@ function rendez {
 		set p_s to ship:obt:period.
 		set p_t to target:obt:period.
 
-		if ship:obt:semimajoraxis < target:obt:semimajoraxis {
-			circle(target:periapsis).
+		local mode is 0.
+		
+		if target:obt:apoapsis < 0 {
+			set mode to "p".
+		} else {
+			if ship:obt:semimajoraxis < target:obt:semimajoraxis {
+				set mode to "p".
+			} else {
+				set mode to "a".
+			}
+		}
+
+		if mode = "p" {
+			if circle(target:periapsis) > 0 {
+				return 1.
+			}
 		
 			// ship ta at target apoapsis
 			lock ta0 to 
@@ -377,15 +399,21 @@ function rendez {
 
 
 			print "ship ta at target periapsis                  " + round(ta,1).
-			print "ship eta to target periapsis                 " + round(e_s,1).
-			print "target eta to target per                     " + round(e_t,1).
-			print "target eta to target per when ship is at per " + round(e_t_0,1).
+			print "ship eta to target periapsis                 " + sprint_clock(e_s).
+			print "target eta to target per                     " + sprint_clock(e_t).
+			print "target eta to target per when ship is at per " + sprint_clock(e_t_0).
 			print "target to ship period ratio                  " + round(p_t/p_s,2).
 
 			// for now just choose K_s
-			set k_s to floor(p_t/p_s).
+			if target:obt:apoapsis < 0 {
+				set k_s to floor(e_t/p_s).
+			} else {
+				set k_s to floor(p_t/p_s).
+			}
 		} else {
-			circle(target:apoapsis).
+			if circle(target:apoapsis) > 0 {
+				return 1.
+			}
 		
 			// ship ta at target apoapsis
 			lock ta0 to 
@@ -432,14 +460,20 @@ function rendez {
 		print "period ship    " + p_s.
 		print "period target  " + p_t.
 
+		local k_t is 0.
 	
-		// using old P_s
-		set k_t to (k_s * p_s - E_t) / p_t.
+		if target:obt:apoapsis < 0 {
+			set k_t to 0.
+		} else {
+			// using old P_s
+			set k_t to (k_s * p_s - E_t) / p_t.
+			
+			set k_t to round(k_t, 0).
+		}
 		
-		set k_t to round(k_t, 0).
 		
 		// desired ship period
-		set p_s to (K_t * P_t + E_t) / K_s.
+		set p_s to (k_t * P_t + E_t) / K_s.
 	
 		print "new".
 		print "period ship    " + p_s.

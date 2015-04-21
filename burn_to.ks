@@ -5,31 +5,28 @@ if burn_to_altitude > ship:altitude {
 	lock alt to apoapsis.
 	
 	lock steering to prograde.
-	run wait_orient.
+	util_wait_orient().
 } else {
 	lock alt to periapsis.
 
 	lock steering to retrograde.
-	run wait_orient.
+	util_wait_orient().
 }
 
 lock accel to ship:maxthrust / ship:mass.
 
 set alt_burn to altitude.
 
-set deltav_alt  to altitude.
-set deltav_alt1 to altitude.
-set deltav_alt2 to burn_to_altitude.
-run deltav.
+local dv0 is calc_deltav(altitude, altitude, burn_to_altitude).
 
 set v0 to ship:velocity:orbit:mag.
-lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
+lock dv_rem to dv0 - (ship:velocity:orbit:mag - v0).
 lock est_rem_burn to abs(dv_rem / accel).
 
-set deltav_alt  to alt_burn.
-set deltav_alt1 to alt.
-set deltav_alt2 to burn_to_altitude.
-run deltav.
+//set deltav_alt  to alt_burn.
+//set deltav_alt1 to alt.
+//set deltav_alt2 to burn_to_altitude.
+//run deltav.
 
 lock err to burn_to_altitude - alt.
 
@@ -56,7 +53,7 @@ until (err / err_start) < precision {
 		min(est_rem_burn / 5, 1)
 		)).
 	
-	run lines_print_and_clear.
+	clearscreen.
 	print "BURN TO".
 	print "===================================".
 	print "alt target " + burn_to_altitude.

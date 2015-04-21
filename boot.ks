@@ -1,5 +1,5 @@
  
 run boot_pre.
-rendez(True).
+go_to(mun_arch, True).
 run boot_post.
  

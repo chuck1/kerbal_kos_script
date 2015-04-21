@@ -2,7 +2,8 @@
 function go_to {
 	//declare parameter go_to_dest_string.
 	//local go_to_dest is get_destination(go_to_dest_string).
-	declare parameter go_tO_dest.
+	parameter go_to_dest.
+	parameter is_boot_func.
 
 	print "go_to " + go_to_dest[3].
 	
@@ -97,16 +98,16 @@ function go_to {
 		}
 	
 	} else {
-		set transfer_to_target to go_to_dest[2].
-		run transfer_to_low.
+		transfer_to_low(go_to_dest[2]).
 	}
 
 
-	if go_to_complete {
-		set mission_complete to true.
-		print "go_to complete".
+	if is_boot_func {
+		if go_to_complete {
+			set mission_complete to true.
+			print "go_to complete".
+		}
 	}
-
 }
 
 

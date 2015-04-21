@@ -14,6 +14,7 @@ run lib_go_to.
 run lib_hover.
 run lib_launch.
 run lib_circle.
+run lib_mvr.
 run lib_transfer.
 run lib_rendez.
 run lib_calc_ship.

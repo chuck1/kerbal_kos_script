@@ -24,5 +24,42 @@ function math_clamp_angle {
 	return a.
 }
 
+function math_deg_to_rad {
+	parameter x.
+	return x / 180 * constant():pi.
+}
+function math_rad_to_deg {
+	parameter x.
+	return x * 180 / constant():pi.
+}
+function math_arccosh {
+	parameter x.
+
+	if x < 1 {
+		print neverset.
+	}
+	
+	local y is ln(x + sqrt(x^2 - 1)).
+
+	return math_rad_to_deg(y).
+}
+function math_arccosh2 {
+	parameter x.
+	parameter y.
+	
+	return math_arccosh(x/y).
+}
+function math_sinh {
+	parameter x.
+
+	set x to math_deg_to_rad(x).
+	
+	local y is (constant():e^x - constant():e^(-x)) / 2.
+	
+	return y.
+}
+
 print "loaded library math".
+
+
 

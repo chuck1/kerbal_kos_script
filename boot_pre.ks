@@ -1,7 +1,7 @@
 
 run kos_init.
 
-if calc_obt_type() = "prelaunch" {
+if calc_obt_type(ship) = "prelaunch" {
 
 	print "clear log file".
 

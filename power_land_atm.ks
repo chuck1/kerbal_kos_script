@@ -1,3 +1,5 @@
+run kos_init.
+
 // preliminaries
 sas off.
 rcs off.
@@ -9,7 +11,7 @@ run deorbit.
 
 // ===============================================================
 // variables 
-set g to ship:body:mu / ship:body:radius^2.
+lock g to ship:body:mu / ship:body:radius^2.
 lock a to ship:maxthrust / ship:mass * cos(ship:facing:pitch).
 
 lock timetostop to -1.0 * ship:verticalspeed / (a - g).
@@ -26,6 +28,9 @@ lock steering to R(
 print "wait for descent".
 wait until ship:verticalspeed < 0.
 
+print "wait for atmosphere".
+wait until ship:altitude < ship:body:atm:height.
+
 lock a0 to vang(up:vector, ship:srfretrograde:forevector).
 
 lock throttle to 0.
@@ -38,16 +43,27 @@ wait until vdot(ship:facing:vector, up:vector) > 0.
 
 set scal1 to 1.0.
 
-lock timetoterm to 0.
-lock disttoterm to 0.
+
+
+//lock timetoterm to () / g.
+
+local term_speed is 0.
+
 lock delvel to 1.
 
 until alt:radar < 2000 {
 
-
+	set term_speed to calc_obt_term_speed(ship).
+	
+	set timetoterm to (term_speed + ship:verticalspeed) / g.
+	
+	set disttoterm to (term_speed^2 - ship:verticalspeed^2) / 2 / g.
+	
+	
+	
 	if delvel < 0.1 {
 		// close to term
-		set timetoimpact to alt:radar / ship:termvelocity.
+		set timetoimpact to alt:radar / term_speed.
 		set meth to 0.
 	} else if alt:radar < disttoterm {
 		// not going to reach term
@@ -71,6 +87,13 @@ until alt:radar < 2000 {
 		set meth to 2.
 	}
 
+	clearscreen.
+	print "speed vert " + ship:verticalspeed.
+	print "speed term " + term_speed.
+	print "radar      " + alt:radar.
+	print "timetoterm " + timetoterm.
+	print "disttoterm " + disttoterm.
+	
 	if timetoimpact < (timetostop + 1) {
 		print "timetoimpact " + meth + " " + timetoimpact.
 		lock throttle to 1.

@@ -115,7 +115,24 @@ function calc_obt_speed_at_altitude {
 function calc_obt_mean_motion {
 	parameter x.
 	
-	local n is 360 / x:obt:period.
+	local ot is calc_obt_type(x).
+	local n is 0.
+	
+	if (ot = "elliptic") or (ot = "circular") {
+	
+		set n to 360 / x:obt:period.
+
+	} else if (ot = "hyperbolic") {
+
+		set n to sqrt(x:body:mu / ((-x:obt:semimajoraxis)^3)).
+		
+		set n to math_rad_to_deg(n).		
+
+	} else {
+		print neverset.
+	}
+
+
 
 	if 0 {
 	print "calc_obt_mean_motion " + x.
@@ -128,14 +145,33 @@ function calc_obt_mean_motion {
 function calc_obt_eccentric_anomaly {
 	parameter x.
 
+	
+
 	local ta is x:obt:trueanomaly.
 	local e is x:obt:eccentricity.
 	
-	local ea is math_clamp_angle(
-		arctan2(
-			sqrt(1 - e^2) * sin(ta),
-			e + cos(ta)
-		)).
+	local ot is calc_obt_type(x).
+	
+	local ea is 0.
+	
+	if (ot = "elliptic") or (ot = "circular") {
+	
+		set ea to arctan2(
+				sqrt(1 - e^2) * sin(ta),
+				e + cos(ta)).
+	
+	} else if (ot = "hyperbolic") {
+
+		set ea to math_arccosh2(
+			e + cos(ta),
+			1 + e * cos(ta)).
+
+
+	} else {
+		print neverset.
+	}
+	
+	set ea to math_clamp_angle(ea).
 	
 	if 0 {	
 	print "calc_obt_eccentric_anomaly " + x.
@@ -150,14 +186,29 @@ function calc_obt_mean_anomaly {
 	parameter x.
 	
 	local ea is calc_obt_eccentric_anomaly(x).
+	local e is x:obt:eccentricity.
 
 	if 0 {
 	print "calc_obt_mean_anomaly " + x.
 	print "ea " + ea.
-	print "e  " + x:obt:eccentricity.
+	print "e  " + e.
 	}
 
-	return ea - x:obt:eccentricity * (180 / constant():pi) * sin(ea).
+	local ma is 0.
+	local ot is calc_obt_type(x).
+
+	if (ot = "elliptic") or (ot = "circular") {
+
+		set ma to ea - e * (180 / constant():pi) * sin(ea).
+
+	} else if (ot = "hyperbolic") {
+
+		set ma to e * (180 / constant():pi) * math_sinh(ea) - ea.
+
+		set ma to 360 - ma.
+	}
+
+	return ma.
 }
 function calc_obt_time_to_periapsis {
 	parameter x.
@@ -190,6 +241,55 @@ function calc_obt_time_to_apoapsis {
 	local m1 is 180.
 	
 	return math_clamp_angle(m1 - m0) / calc_obt_mean_motion(x).
+}
+function calc_obt_a_from_period {
+	parameter x.
+	parameter p.
+	
+	return (x:body:mu * (p / 2 / constant():pi)^2)^(1/3).
+}
+function calc_obt_per_from_apo_and_period {
+	parameter x.
+	parameter apo.
+	parameter p.
+	
+	local a is calc_obt_a_from_period(x,p).
+	
+	local per is 2 * a - apo.
+	
+	return per.
+}
+function calc_obt_apo_from_per_and_period {
+	parameter x.
+	parameter per.
+	parameter p.
+	
+	local a is calc_obt_a_from_period(x,p).
+	
+	local apo is 2 * a - per.
+	
+	return apo.
+}
+function calc_obt_pres {
+	parameter x.
+
+	local scale is x:body:atm:scale * 1000.
+	
+	local pres0 is x:body:atm:sealevelpressure * ( constant():e ^ ( -1 * x:altitude / scale ) ).
+	
+	return pres0.
+}
+function calc_obt_term_speed {
+	parameter x.
+	
+	local ship_k to 0.02.
+	
+	local pres0 is calc_obt_pres(x).
+	
+	//lock term_speed to ship:termvelocity / term_speed_scale).
+	local term_speed0 is sqrt(2 * x:mass * g / pres0 / ship_k).
+	
+	return term_speed0.
 }
 
 print "loaded library lib_calc_obt".

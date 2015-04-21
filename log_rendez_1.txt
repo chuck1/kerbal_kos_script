@@ -171,3 +171,103 @@ T+84264 mvr_adjust_at_apoapsis 795383.846073486
 T+84303 mvr_match_inc SHIP("rendez_1_target")
 T+84303 circle 795380.420627817
 T+84303 mvr_adjust_at_apoapsis 795380.420627817
+T+84433 mvr_match_inc SHIP("rendez_1_target")
+T+84433 circle 795352.957897073
+T+84433 mvr_adjust_at_apoapsis 795352.957897073
+T+85553 circle 291654.578177517
+T+85553 mvr_adjust_at_apoapsis 291654.578177517
+T+104873 circle 291655
+T+104873 mvr_adjust_at_apoapsis 291655
+T+105677 circle 291655
+T+105677 mvr_adjust_at_apoapsis 291655
+T+138061 circle 291655
+T+138061 mvr_adjust_at_apoapsis 291655
+T+139455 circle 291655
+T+139455 mvr_adjust_at_apoapsis 291655
+T+140917 circle 291655
+T+140917 mvr_adjust_at_apoapsis 291655
+T+141034 circle 291655
+T+141034 mvr_adjust_at_apoapsis 291655
+T+143541 circle 291655
+T+143541 mvr_adjust_at_apoapsis 291655
+T+146056 circle 291655
+T+146056 mvr_adjust_at_apoapsis 291655
+T+146110 circle 291655
+T+147734 mvr_match_inc SHIP("rendez_1_target")
+T+147734 circle 291654.578177517
+T+824759 mvr_match_inc SHIP("Ast. ALO-971")
+T+824759 circle 6620923.41625022
+T+824759 mvr_adjust_at_apoapsis 6620923.41625022
+T+852583 mvr_match_inc SHIP("Ast. ALO-971")
+T+863497 circle -67016763.8277301
+T+863497 mvr_adjust_at_apoapsis -67016763.8277301
+T+863508 mvr_match_inc SHIP("Ast. ALO-971")
+T+863508 circle 5366057.33906468
+T+863508 mvr_adjust_at_apoapsis 5366057.33906468
+T+863517 mvr_match_inc SHIP("Ast. ALO-971")
+T+863517 circle 5366057.33906468
+T+863518 mvr_adjust_at_apoapsis 5366057.33906468
+T+863601 mvr_match_inc SHIP("Ast. ALO-971")
+T+863601 circle 5366057.33906468
+T+863601 mvr_adjust_at_apoapsis 5366057.33906468
+T+863624 mvr_match_inc SHIP("Ast. ALO-971")
+T+863624 circle 5366057.33906468
+T+863624 mvr_adjust_at_apoapsis 5366057.33906468
+T+887398 mvr_match_inc SHIP("Ast. ALO-971")
+T+887398 circle 5374785.61215044
+T+887398 mvr_adjust_at_apoapsis 5374785.61215044
+T+899404 circle 5366057.33906468
+T+899591 mvr_match_inc SHIP("Ast. ALO-971")
+T+899591 circle 5366057.33906468
+T+899675 mvr_match_inc SHIP("Ast. ALO-971")
+T+899715 mvr_match_inc SHIP("Ast. ALO-971")
+T+899739 mvr_match_inc SHIP("Ast. ALO-971")
+T+899739 circle 5366057.33906468
+T+912971 mvr_match_inc SHIP("Ast. ALO-971")
+T+912971 circle 5366057.33906468
+T+825051 mvr_match_inc SHIP("Ast. ALO-971")
+T+828486 mvr_match_inc SHIP("Ast. ALO-971")
+T+833546 circle 5366057.33906468
+T+833546 mvr_adjust_at_apoapsis 5366057.33906468
+T+859089 mvr_match_inc SHIP("Ast. ALO-971")
+T+859089 circle 5374221.48012906
+T+859089 mvr_adjust_at_apoapsis 5374221.48012906
+T+872030 circle 5366057.33906468
+T+872071 mvr_match_inc SHIP("Ast. ALO-971")
+T+872071 circle 5366057.33906468
+T+872201 mvr_match_inc SHIP("Ast. ALO-971")
+T+872201 circle 5366057.33906468
+T+873930 mvr_match_inc SHIP("Ast. ALO-971")
+T+873930 circle 5366057.33906468
+T+874064 mvr_match_inc SHIP("Ast. ALO-971")
+T+874064 circle 5366057.33906468
+T+874089 mvr_match_inc SHIP("Ast. ALO-971")
+T+874089 circle 5366057.33906468
+T+874135 mvr_match_inc SHIP("Ast. ALO-971")
+T+874135 circle 5366057.33906468
+T+874238 mvr_match_inc SHIP("Ast. ALO-971")
+T+874238 circle 5366057.33906468
+T+874289 mvr_match_inc SHIP("Ast. ALO-971")
+T+874289 circle 5366057.33906468
+T+979500 circle 150000
+T+979500 mvr_adjust_at_apoapsis 150000
+T+1013176 circle 150000
+T+1013176 mvr_adjust_at_apoapsis 150000
+T+1032087 circle 144297.81789737
+T+1032087 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90
+T+1032194 circle 144313.518168608
+T+1032194 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90
+T+1032211 circle 144316.299329119
+T+1032211 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90
+T+1032259 circle 144324.371940006
+T+1032259 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90
+T+1032273 circle 144326.922959343
+T+1032442 circle 144357.563607664
+T+1032442 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90
+T+1032623 circle 144387.152620233
+T+1032734 circle 149635.505592902
+T+1032734 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90
+T+1032807 circle 149622.284180945
+T+1032807 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90
+T+1032987 circle 149588.938383762
+T+1032987 wait_for_angle SHIP("rendez_1") BODY("Sun") BODY("Kerbin") 90

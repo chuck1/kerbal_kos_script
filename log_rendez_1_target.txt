@@ -1,0 +1,3 @@
+T+169484 mvr_match_inc SHIP("rendez_1_target")
+T+169484 circle 5389017.00995818
+T+169484 mvr_adjust_at_apoapsis 5389017.00995818

@@ -19,12 +19,7 @@ if phi < 0 {
 //print "theta  " + theta.
 print "phi    " + phi.
 
-
-set wait_for_angle_body_1    to ship.
-set wait_for_angle_body_2    to burn_to_encounter_body.
-set wait_for_angle_body_axis to ship:body.
-set wait_for_angle_angle to phi.
-run wait_for_angle.
+run wait_for_angle(ship, burn_to_encounter_body, ship:body, phi).
 
 lock steering to prograde.
 util_wait_orient().

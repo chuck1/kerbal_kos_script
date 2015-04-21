@@ -3,6 +3,12 @@ parameter wait_for_angle_body_2.
 parameter wait_for_angle_body_axis.
 parameter wait_for_angle_angle.
 
+print "wait_for_angle " +
+	wait_for_angle_body_1 + " " +
+	wait_for_angle_body_2 + " " +
+	wait_for_angle_body_axis + " " +
+	wait_for_angle_angle.
+
 util_log("wait_for_angle " +
 	wait_for_angle_body_1 + " " +
 	wait_for_angle_body_2 + " " +
@@ -46,12 +52,16 @@ if wait_for_angle_body_axis = sun {
 	set normal_1 to vcrs(r1,v1).
 	set normal_2 to vcrs(r2,v2).
 
+	local normal_dot is 0.
+
 	if wait_for_angle_body_2 = sun {
-		set normal_2 to V(0,-1,0).
+		//set normal_2 to v(0,-1,0).
+		set normal_dot to -1 * normal_1:y.
+	} else {
+		set normal_dot to vdot(normal_1, normal_2).
 	}
 	
-	set omega_sign to vdot(normal_1, normal_2) / abs(vdot(normal_1, normal_2)).
-	
+	set omega_sign to math_sign(normal_dot).
 	
 	lock c to vcrs(r1,r2).
 
@@ -61,15 +71,21 @@ if wait_for_angle_body_axis = sun {
 }
 
 
-if		(wait_for_angle_body_1:obt:body = wait_for_angle_body_axis:obt:body) and
-		(wait_for_angle_body_2:obt:body = wait_for_angle_body_axis:obt:body) {
-	set omega_1 to 360 / wait_for_angle_body_1:obt:period.
-	set omega_2 to 360 / wait_for_angle_body_2:obt:period.
+
+if	(not (wait_for_angle_body_1 = sun)) and
+	(not (wait_for_angle_body_2 = sun)) {
+	if		(wait_for_angle_body_1:obt:body = wait_for_angle_body_axis:obt:body) and
+			(wait_for_angle_body_2:obt:body = wait_for_angle_body_axis:obt:body) {
+		set omega_1 to 360 / wait_for_angle_body_1:obt:period.
+		set omega_2 to 360 / wait_for_angle_body_2:obt:period.
+	} else {
+		set omega_1 to v1m / r1:mag / constant():pi * 180.
+		set omega_2 to v2m / r2:mag / constant():pi * 180.
+	}
 } else {
 	set omega_1 to v1m / r1:mag / constant():pi * 180.
 	set omega_2 to v2m / r2:mag / constant():pi * 180.
 }
-
 
 if wait_for_angle_angle < 0 {
 	set wait_for_angle_angle to wait_for_angle_angle + 360.

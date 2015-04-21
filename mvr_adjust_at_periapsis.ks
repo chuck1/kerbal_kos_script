@@ -97,7 +97,8 @@ when abs(aop0 - ship:obt:argumentofperiapsis) > 90 then {
 	
 }
 
-
+// error increasing debounce
+local error_counter is 0.
 
 // initial variable which are updated until burn starts
 set v0        to ship:velocity:orbit:mag.
@@ -105,8 +106,6 @@ set err_min   to err.
 set err_start to err.
 
 lock frac to abs(err / err_start).
-
-set counter to 0.
 
 set th to 0.
 lock throttle to th.
@@ -120,14 +119,14 @@ if mvr_eta < 0 {
 
 set mvr_eta_0 to mvr_eta.
 
-// 0 pre-burn
-// 1 burning
-set mvr_adjust_stage to 0.
+// 10 pre-burn
+// 20 burning
+local mode is 10.
 
 set err_min   to err.
 set err_start to err.
 
-until (err / err_start) < precision {
+until 0 {
 
 	clearscreen.
 	print "MVR ADJUST AT PERIAPSIS".
@@ -144,22 +143,38 @@ until (err / err_start) < precision {
 	print "    v mag 0      " + v0.
 	print "    v mag        " + ship:velocity:orbit:mag.
 	print "    dv rem       " + dv_rem.
-	print " ".
+	print "    error count  " + error_counter.
 	
 
-	if mvr_eta > 0 and mvr_eta < mvr_eta_0 and mvr_adjust_stage = 0 {
+	if mode = 10 {
 		print "burn in t-" + round(mvr_eta,1).
-
-		set v0        to ship:velocity:orbit:mag.
-	} else {
+		
+		set v0 to ship:velocity:orbit:mag.
+		
+		if mvr_eta < 0 {
+			set mode to 20.
+		}
+	} else if mode = 20 {
 	
 		set th to max(0, min(1, est_rem_burn / 10 + 0.01)).
 
-		set err_min to min(err_min, err).
+		set err_min to min(err_min, abs(err)).
 	
-		if abs(err) > (abs(err_min) + 10) {
-			print "abort: error increasing!".
+		if abs(err) > abs(err_min) {
+			set error_counter to error_counter + 1.
+			if error_counter > 10 {
+				print "abort: error increasing!".
+				break.
+			}
+		} else {
+			set error_counter to 0.
+		}
+
+		if 0 {
+		if abs(err / ship:obt:semimajoraxis) < precision {
+			print "burn complete".
 			break.
+		}
 		}
 	}
 
@@ -167,10 +182,7 @@ until (err / err_start) < precision {
 }
 
 lock throttle to 0.
-print "burn complete".
-
-// ensure acceleration is over
-print "wait for cooldown".
+print "cooldown".
 wait 5.
 
 
