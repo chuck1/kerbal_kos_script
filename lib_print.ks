@@ -1,4 +1,3 @@
-
 function sprint_clock {
 	parameter t.
 	
@@ -21,4 +20,5 @@ function sprint_clock {
 	return (d + "d, " + h + ":" + m + ":" + s).
 }
 
+print "loaded library print".
 

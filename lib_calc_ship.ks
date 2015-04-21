@@ -131,8 +131,8 @@ function calc_stage_deltav {
 	
 	
 	set i to (ship_stage_count - 1).
+
 	until i < 0 {
-	
 		// calculate
 		for engines in ship_stage_engines[i] {
 			for eng in engines {

@@ -1,5 +1,5 @@
 
-run kos_init.
+run load_libraries.
 
 local args is list().
 args:add(true).

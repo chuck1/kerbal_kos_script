@@ -1,9 +1,13 @@
 
 function circle {
 	parameter circle_altitude.
-	parameter is_boot_func.
 
 	print "circle " + circle_altitude.
+
+	// when apoapsis and periapsis are close, just burn
+	if abs((apoapsis - periapsis) / periapsis) < precision {
+		burn_to(circle_altitude).
+	}
 
 	local obt_type is calc_obt_type(ship).
 
@@ -18,8 +22,7 @@ function circle {
 	
 	
 	if circle_altitude = 0 {
-		run calc_closest_stable_altitude.
-		set circle_altitude to calc_closest_stable_altitude_ret.
+		set circle_altitude to calc_closest_stable_altitude().
 	}
 	
 	util_log("circle " + circle_altitude).
@@ -51,7 +54,7 @@ function circle {
 		return 0.
 	} else {
 		
-		run mvr_safe_periapsis.
+		mvr_safe_periapsis().
 		
 		print "eta:apoapsis  " + eta:apoapsis.
 		print "eta:periapsis " + eta:periapsis.
@@ -59,17 +62,17 @@ function circle {
 		if ship:verticalspeed > 0 {
 			
 			if (circle_error_periapsis < 0.05) {
-				run mvr_adjust_at_periapsis.
+				mvr_adjust_at_periapsis(circle_altitude).
 			} else {
-				run mvr_adjust_at_apoapsis.
+				mvr_adjust_at_apoapsis(circle_altitude).
 			}
 			
 		} else if ship:verticalspeed < 0 {
 	
 			if (circle_error_apoapsis < 0.05) {
-				run mvr_adjust_at_apoapsis.
+				mvr_adjust_at_apoapsis(circle_altitude).
 			} else {
-				run mvr_adjust_at_periapsis.
+				mvr_adjust_at_periapsis(circle_altitude).
 			}
 	
 		}

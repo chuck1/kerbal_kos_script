@@ -72,14 +72,12 @@ function get_stable_orbits_2 {
 	}
 	return ret.
 }	
-
 function calc_obt_alt_low {
 	parameter b.
 	//print "calc_obt_alt_low " + b.
 	local orbits is get_stable_orbits_2(b).
 	return orbits[0][0].
 }
-
 function calc_obt_soe_circle {
 	parameter b.
 	parameter alt.
@@ -90,7 +88,6 @@ function calc_obt_soe_circle {
 
 	return (-1 * b:mu / (2 * a)).
 }
-
 function calc_obt_soe {
 	parameter x.
 	
@@ -100,13 +97,11 @@ function calc_obt_soe {
 
 	return (x:velocity:orbit:mag^2 / 2 - x:body:mu / (x:body:radius + x:altitude)).
 }
-
 function calc_obt_speed_at_altitude {
 	parameter o.
 	parameter altitude.
 	return sqrt(2*(calc_obt_soe(o) + o:body:mu / (o:body:radius + altitude))).
 }
-
 function calc_obt_mean_motion {
 	parameter x.
 	
@@ -127,20 +122,16 @@ function calc_obt_mean_motion {
 		print neverset.
 	}
 
-
-
 	if 0 {
-	print "calc_obt_mean_motion " + x.
-	print "p " + x:obt:period.
-	print "n " + n.	
+		print "calc_obt_mean_motion " + x.
+		print "p " + x:obt:period.
+		print "n " + n.	
 	}
 
 	return n.
 }
 function calc_obt_eccentric_anomaly {
 	parameter x.
-
-	
 
 	local ta is x:obt:trueanomaly.
 	local e is x:obt:eccentricity.
@@ -152,8 +143,8 @@ function calc_obt_eccentric_anomaly {
 	if (ot = "elliptic") or (ot = "circular") {
 	
 		set ea to arctan2(
-				sqrt(1 - e^2) * sin(ta),
-				e + cos(ta)).
+			sqrt(1 - e^2) * sin(ta),
+			e + cos(ta)).
 	
 	} else if (ot = "hyperbolic") {
 
@@ -169,10 +160,10 @@ function calc_obt_eccentric_anomaly {
 	set ea to math_clamp_angle(ea).
 	
 	if 0 {	
-	print "calc_obt_eccentric_anomaly " + x.
-	print "ta " + ta.
-	print "e  " + e.
-	print "ea " + ea.
+		print "calc_obt_eccentric_anomaly " + x.
+		print "ta " + ta.
+		print "e  " + e.
+		print "ea " + ea.
 	}
 
 	return ea.
@@ -327,31 +318,28 @@ function calc_closest_stable_altitude {
 			set so2 to orbits[i + 1].
 		
 			if altitude_of_interest < so1[0] {
-				set calc_closest_stable_altitude_ret to so1[0].
-				break.
+				return so1[0].
 			} else if
-			altitude_of_interest > so1[0] and
-			altitude_of_interest < so1[1] {
+					altitude_of_interest > so1[0] and
+					altitude_of_interest < so1[1] {
 				// inside so1
-				set calc_closest_stable_altitude_ret to altitude_of_interest.
-				break.
+				return altitude_of_interest.
 			} else if
-			altitude_of_interest > so1[1] and
-			altitude_of_interest < so2[0] {
+					altitude_of_interest > so1[1] and
+					altitude_of_interest < so2[0] {
 				// between so1 and so2
-				set calc_closest_stable_altitude_ret to so1[1].
-				break.
+				return so1[1].
 			}
 		
 			set i to i + 1.
 		}
 	
 		if (i + 1) = orbits:length {
-			set calc_closest_stable_altitude_ret to
-				orbits[i][1] * 0.9.
+			return orbits[i][1].
 		}
 	
 	}
+	return 0.
 }
 
 print "loaded library calc_obt".

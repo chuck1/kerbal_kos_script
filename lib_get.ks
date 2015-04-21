@@ -1,4 +1,3 @@
-
 function get_destination {
 	parameter s.
 

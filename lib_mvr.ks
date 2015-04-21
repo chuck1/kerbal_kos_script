@@ -177,36 +177,13 @@ function mvr_burn {
 	lock throttle to 0.
 }
 function mvr_adjust_at_apoapsis {
-	// parameter mvr_adjust_altitude.
+	parameter mvr_adjust_altitude.
+
 	print "mvr_adjust_at_apoapsis " + mvr_adjust_altitude.
 	
 	util_log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
 	
 	set precision to 0.02.
-	
-	// when apoapsis and periapsis are close,
-	// the locations are unstable.
-	if abs((apoapsis - periapsis) / periapsis) < precision {
-		set burn_to_altitude to mvr_adjust_altitude.
-		run burn_to.
-	}
-	
-	// ==================================================
-	
-	set altitiude_lst to list().
-	set altitiude_lst_i      to  0.
-	set altitiude_lst_n      to 20.
-	set altitiude_lst_length to  0.
-	set altitiude_lst_sum    to  0.
-	until altitiude_lst_i = altitiude_lst_n {
-		altitiude_lst:add(0).
-		set altitiude_lst_i to altitiude_lst_i + 1.
-	}
-	
-	lock altitiude_lst_avg to 0.
-	when altitiude_lst_length > altitiude_lst_n then {
-		lock altitiude_lst_avg to altitiude_lst_sum / altitiude_lst_n.
-	}
 	
 	// ==================================================
 	// preliminaries
@@ -222,6 +199,7 @@ function mvr_adjust_at_apoapsis {
 		abs((periapsis - mvr_adjust_altitude)/mvr_adjust_altitude)).
 	
 	set accel_max to ship:maxthrust / ship:mass.
+
 	until accel_max > 0 {
 		stage.
 		set accel_max to ship:maxthrust / ship:mass.
@@ -431,7 +409,7 @@ function mvr_adjust_at_apoapsis {
 	unlock steering.
 }
 function mvr_adjust_at_periapsis {
-	//declare parameter mvr_adjust_altitude.
+	parameter mvr_adjust_altitude.
 	
 	util_log("mvr_adjust_at_apoapsis " + mvr_adjust_altitude).
 	
@@ -440,12 +418,6 @@ function mvr_adjust_at_periapsis {
 	
 	set precision to 0.02.
 	
-	// when apoapsis and periapsis are close,
-	// the locations are unstable.
-	if abs((apoapsis - periapsis) / periapsis) < precision {
-		set burn_to_altitude to mvr_adjust_altitude.
-		run burn_to.
-	}
 	
 	// ==================================================
 	// preliminaries

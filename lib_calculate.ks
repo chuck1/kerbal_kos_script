@@ -72,12 +72,9 @@ function calc_deltav {
 	print "v2   " + v2.
 	print "dv   " + dv.
 	}
-
 	
 	return dv.
-	
 }
-
 function calc_closest_approach {
 	parameter dest.
 	

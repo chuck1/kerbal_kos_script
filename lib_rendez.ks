@@ -102,7 +102,6 @@ function rendez_final {
 	set vec_thrust:show to false.
 	
 }
-
 function rendez_approach {
 	print "rendezvous approach".
 	
@@ -176,8 +175,6 @@ function rendez_approach {
 
 	lock throttle to 0.
 }
-
-
 function rendez_approach_2 {
 	
 	rcs off.
@@ -340,7 +337,6 @@ function rendez_approach_2 {
 	set vec_pf_perp:show to false.
 	set vec_v:show to false.
 }
-
 function rendez {
 	parameter is_boot_func.
 
@@ -535,11 +531,7 @@ function rendez {
 	
 	rendez_approach().
 	rendez_final().
-	
-	
 }
-
-
 function rendez_viz {
 	lock throttle to 0.
 	sas off.

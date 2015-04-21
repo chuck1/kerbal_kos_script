@@ -1,9 +1,9 @@
 
-run kos_init.
+run load_libraries.
 
 if ship:body:atm:exists {
-	run power_land_atm.
+	power_land_atm().
 } else {
-	run power_land_no_atm.
+	power_land_no_atm().
 }
 
