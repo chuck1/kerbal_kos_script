@@ -3,6 +3,9 @@ function launch_atm {
 	
 	util_log("launch_atm " + ship:body).
 
+	// settings
+	local grav_turn_pres is 0.20.
+
 	if launch_altitude = 0 {
 		set launch_altitude to calc_obt_alt_low(ship:body).
 	}
@@ -42,8 +45,6 @@ function launch_atm {
 	
 	set launch_atm_kp to 0.01.
 	
-	set pres_stage to 0.14.
-	
 	// modes
 	// 10 countdown
 	// 20 leg 1
@@ -64,7 +65,7 @@ function launch_atm {
 	
 			set th to launch_atm_p * launch_atm_kp.
 	
-			if calc_obt_pres(ship) < pres_stage {
+			if calc_obt_pres(ship) < grav_turn_pres {
 				// transition to mode 30
 	
 				set altitude_turn_start to altitude.
@@ -128,7 +129,7 @@ function launch_atm {
 		print "======================================".
 		print "    alt target          " + launch_altitude. 
 		if mode = 20 {
-		print "    wait for pres       " + pres_stage.
+		print "    wait for pres       " + grav_turn_pres.
 		print "    pres                " + calc_obt_pres(ship).
 		}
 		if mode < 40 {

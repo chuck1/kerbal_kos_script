@@ -47,4 +47,64 @@ function ves_radialin {
 	local vec is vcrs(obt_h_for(ves),obt_v_for(ves)).
 	return vec:direction.
 }
+function ves_pitch_and_th_from_acc {
+	// get pitch and throttle from...
+	parameter ves.
+	parameter acc_y. // scalar, desired vertical acceleration (up positive)
+	parameter acc_x. // vector, desired surface acceleration
+	parameter flag. 
+	// flags
+	// 0: priority is vertical
+	// 1: priority is surface
+	// 2: proportional (maintain ratio but scale to 1)
+	
+	// returns a vector whose magnitude should be used as throttle and
+	// whose direction should be used for steering.
+
+	local a_max is ves_a_max(ves).
+	
+	local th_x is acc_x / a_max.
+	local th_y is acc_y / a_max.
+	
+	if sqrt(th_y^2 + vdot(th_x,th_x)) > 1 {
+		// limited
+		if flag = 0 { // y priority
+			if th_y > 1 {
+				// vertical throttle maxed out
+				return up:vector.
+			} else {
+				set th_x to th_x:normalized * sqrt(1 - th_y^2).
+			}
+		} else if flag = 1 { // x priority
+			if th_x:magnitude > 1 {
+				// surface throttle maxed out
+				return th_x:normalized.
+			} else {
+				set th_y to sqrt(1 - vdot(th_x,th_x)).
+			}
+		} else if flag = 2 {
+			// proportional
+			local th is up:vector * th_y + th_x.
+			return th:normalized.
+		} else {
+			print neverset.
+		}
+	}
+	return (up:vector * th_y + th_x).
+}
+function ves_th_from_cur_pitch_and_acc {
+	parameter ves.
+	parameter acc_vert.
+	
+	local th_y is acc_vert / ves_a_max(ves).
+
+	local pitch is 90 - vang(ves:facing:vector, up:vector).
+
+	local th is th_y / sin(pitch).
+	
+	return math_clamped(th, 0, 1).
+}
+
+
+
 
