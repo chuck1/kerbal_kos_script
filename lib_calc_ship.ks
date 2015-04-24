@@ -3,9 +3,9 @@ function calc_obt_type {
 	
 	local highest_peak is get_highest_peak_here().
 	
-	set launch_pad to latlng(-0.09722550958395, -74.5576705932617).
+	local launch_pad is latlng(-0.09722550958395, -74.5576705932617).
 	
-	lock landed to ((abs(x:verticalspeed) < 0.05) and (x:surfacespeed < 0.05)) and (alt:radar < 1000).
+	local landed is ((abs(x:verticalspeed) < 0.05) and (x:surfacespeed < 0.05)) and (alt:radar < 1000).
 	
 	if landed {
 		if (launch_pad:distance < 1) and (x:body = kerbin) {
@@ -40,14 +40,14 @@ function calc_stage_deltav {
 	// ===========================================
 	// return lists
 	
-	local ship_stage_mass_fuel          is list().
-	local ship_stage_thrust_max         is list().
-	local ship_stage_fuel_rate_max      is list().
-	local ship_stage_duration_max       is list().
-	local ship_stage_deltav             is list().
-	local ship_stage_engines            is list().
-	local ship_stage_engines_thrust_max is list().
-	local ship_stage_engines_isp        is list().
+	global ship_stage_mass_fuel          is list().
+	global ship_stage_thrust_max         is list().
+	global ship_stage_fuel_rate_max      is list().
+	global ship_stage_duration_max       is list().
+	global ship_stage_deltav             is list().
+	global ship_stage_engines            is list().
+	global ship_stage_engines_thrust_max is list().
+	global ship_stage_engines_isp        is list().
 	
 	// ===========================================
 	// general vars
@@ -58,8 +58,8 @@ function calc_stage_deltav {
 	// determine number of stages
 	// and populate lists with empty values
 	
-	set temp_engines_active to list().
-	set temp_engines_active_isp to list().
+	local temp_engines_active to list().
+	local temp_engines_active_isp to list().
 	
 	set ship_stage_count to 0.
 	until 0 {
@@ -80,7 +80,7 @@ function calc_stage_deltav {
 	
 	// ===========================================
 	// populate stage engines lists
-	set i to 0.
+	local i is 0.
 	until i = 10 { //ship_stage_count {
 	
 		ship_stage_engines:add(list()).
@@ -332,6 +332,3 @@ function calc_stage_deltav {
 	
 	print "deltav total " + ship_deltav.
 }
-
-print "loaded library calc_ship".
-

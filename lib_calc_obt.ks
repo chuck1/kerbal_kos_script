@@ -1,8 +1,7 @@
-
 function get_stable_orbits {
 	parameter b.
 	
-	//print "get_stable_orbits " + body.
+	print "get_stable_orbits " + b.
 
 	set ret to list().
 	
@@ -42,39 +41,39 @@ function get_stable_orbits {
 	return ret.
 }
 function get_stable_orbits_2 {
-	parameter body.
+	parameter b.
 
-	//print "get_stable_orbits_2 " + body.
+	print "get_stable_orbits_2 " + b.
 
 	// stable orbits with some room for error and extra room above body so that
 	// low orbits dont have unstable apo/peri due to very low altitude
 	
-	local orbits is get_stable_orbits(body).
+	local orbits is get_stable_orbits(b).
 	
 	set ret to list().
 	
 	// populate new list
 	
-	set get_stable_orbits_2_i to 0.
+	local i is 0.
 	
-	until get_stable_orbits_2_i = orbits:length {
+	until i = orbits:length {
 		set l to list().
 	
 		l:add(max(
-			orbits[get_stable_orbits_2_i][0] * 1.1,
-			body:radius * 3 / 40
+			orbits[i][0] * 1.1,
+			b:radius * 3 / 40
 			)).
-		l:add(orbits[get_stable_orbits_2_i][1] * 0.9).
+		
+		l:add(orbits[i][1] * 0.9).
 	
 		ret:add(l).
 	
-		set get_stable_orbits_2_i to get_stable_orbits_2_i + 1.
+		set i to i + 1.
 	}
 	return ret.
 }	
 function calc_obt_alt_low {
 	parameter b.
-	//print "calc_obt_alt_low " + b.
 	local orbits is get_stable_orbits_2(b).
 	return orbits[0][0].
 }
@@ -82,7 +81,7 @@ function calc_obt_soe_circle {
 	parameter b.
 	parameter alt.
 	
-	//print "calc_obt_soe_circle " + b.
+	print "calc_obt_soe_circle " + b + " " + alt.
 
 	local a is b:radius + alt.
 
@@ -257,25 +256,22 @@ function calc_obt_apo_from_per_and_period {
 	return apo.
 }
 function calc_obt_pres {
-	parameter x.
+	parameter ves.
 
-	local scale is x:body:atm:scale * 1000.
+	local scale is ves:body:atm:scale * 1000.
 	
-	local pres0 is x:body:atm:sealevelpressure * ( constant():e ^ ( -1 * x:altitude / scale ) ).
+	local pres0 is ves:body:atm:sealevelpressure * ( constant():e ^ ( -1 * ves:altitude / scale ) ).
 	
 	return pres0.
 }
+function calc_ves_g {
+	parameter ves.
+	return ves:body:mu / (ves:body:radius + ves:altitude)^2.
+}
 function calc_obt_term_speed {
-	parameter x.
-	
+	parameter ves.
 	local ship_k to 0.02.
-	
-	local pres0 is calc_obt_pres(x).
-	
-	//lock term_speed to ship:termvelocity / term_speed_scale).
-	local term_speed0 is sqrt(2 * x:mass * g / pres0 / ship_k).
-	
-	return term_speed0.
+	return sqrt(2*ves:mass*calc_ves_g(ves)/calc_obt_pres(ves)/ship_k).
 }
 function calc_distance_to_target {
 	set t to time.
@@ -341,6 +337,80 @@ function calc_closest_stable_altitude {
 	}
 	return 0.
 }
+function calc_suborbital {
+	parameter calc_suborbital_l.
+	parameter calc_suborbital_alt.
+	parameter calc_suborbital_apo.
+	
+	set l to calc_suborbital_l.
+	
+	set calc_suborbital_r_apo to calc_suborbital_apo + ship:body:radius.
+	
+	//set r1 to alt1 + ship:body:radius.
+	//set r2 to alt2 + ship:body:radius.
+	
+	
+	//set e to (r1 - r2) / den.
+	//set e to 0.5.
+	
+	//set l to (r2 * r1 * (cos(p2) - cos(p1))) / den.
+	//set a to l / (1 - ecc^2).
+	
+	//set c to ship:body:radius / 2.
+	
+	//set a to c / e.
+	//set l to (1 - e^2) * a.
+	
+	set a to calc_suborbital_r_apo^2 / (2 * calc_suborbital_r_apo - l).
+	
+	//set a1 to (l + sqrt(l^2 + 4 * c^2)) / 2.
+	//set a2 to (l - sqrt(l^2 + 4 * c^2)) / 2.
+	
+	//print "a1 " + a1.
+	//print "a2 " + a2.
+	//print "l  " + l.
+	
+	//set a to a1.
+	
+	set b to sqrt(l * a).
+	
+	set e to sqrt(1 - b^2/a^2).
+	
+	// =======================
+	
+	set r0 to calc_suborbital_alt + ship:body:radius.
+	
+	set arg to (l/r0 - 1) / e.
+	
+	print "e   " + e.
+	//print "c   " + c.
+	print "l   " + l.
+	
+	print "a   " + a.
+	
+	
+	print "arg " + arg.
+	
+	
+	
+	//set ta1 to arccos((l - r1) / (r1 * e)).
+	set ta1 to arccos(arg).
+	
+	set ta2 to 360 - ta1.
+	
+	set calc_suborbital_v1r to sqrt(ship:body:mu / l) * e * sin(ta1).
+	
+	set calc_suborbital_v1t to sqrt(ship:body:mu / l) * (1 + e * cos(ta1)).
+	
+	print "ta1 " + ta1.
+	print "ta2 " + ta2.
+	
+	set calc_suborbital_pitch1 to arctan2(calc_suborbital_v1r,  calc_suborbital_v1t).
+	
+	print "v1r " + calc_suborbital_v1r.
+	print "v1t " + calc_suborbital_v1t.
+}
 
 print "loaded library calc_obt".
+
 

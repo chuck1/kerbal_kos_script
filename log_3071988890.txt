@@ -1,0 +1,14 @@
+T+13251210 circle 100000
+T+13251620 circle 100000
+T+13251657 circle 100000
+T+13251657 mvr_adjust_at_apoapsis 100000
+T+13252942 circle 100000
+T+13252942 mvr_adjust_at_apoapsis 100000
+T+13254689 circle 100000
+T+13254689 mvr_adjust_at_apoapsis 100000
+T+13256536 circle 100000
+T+13256551 mvr_adjust_at_apoapsis 100000
+T+13257353 circle 100000
+T+13257356 mvr_adjust_at_apoapsis 100000
+T+13257581 circle 100000
+T+13257593 mvr_adjust_at_apoapsis 100000

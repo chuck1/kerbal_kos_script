@@ -1,23 +1,24 @@
 
-copy "kos_init.ks" from 0.
+copy "copy_files.ks" from 0.
 
-run kos_init.
+run copy_files.
 
+// check for boot file on archive
 
+if 0 { // rename not working
+run lib_util.
 
-//local filename is util_boot_filename(ship).
+switch to 0.
+local filename is util_boot_filename_arch(ship).
 
-//if util_file_exists(filename) {
+if util_file_exists(filename) {
+	print filename + " found".
+	copy filename to 1.
+	rename file filename to "boot.ks".
+} else {
+	print filename + " not found".
+}
 
-//	print filename + " exists".
-	
-//	run filename.
-	
-//	run boot_post(boot_return).
-
-//} else {
-//	print filename + " does not exist".
-//}
-
-
+switch to 1.
+}
 

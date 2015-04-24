@@ -36,76 +36,41 @@ function transfer_interplanetary_ejection {
 	set burn_deltav to calc_transfer_to_planet_ejection_burn.
 	run burn.
 
-	util_warp_trans(0).
+	warp_trans(0).
 	
 	// get safe distance from body_1
-	run warp_time(3600).
+	warp_time(3600).
 }
-
-
 function transfer_to_moon {
-	parameter b.
-	
-	if ship:body = b {
-	} else {
-	
-		if not (b:obt:body = ship:body) {
-		
-			set transfer_ip_target to transfer_to_moon_target:obt:body.
-			run transfer_ip.
-	
-		}
-	
-		launch(0).
-	
-		mvr_match_inc(b).
-	
-		set burn_to_free_return_target to transfer_to_moon_target.
-		run burn_to_free_return.
-	
-		warp_trans(0).
-		
-		wait 2.
-	
+	declare parameter b.
+	declare parameter alt0.
+
+	if alt0 = "low" {
+		set alt0 to calc_obt_alt_low(b).
 	}
-	
-	circle(0).
-}
-function transfer_to_moon {
-	parameter b.
-	parameter alt.
 	
 	util_log("transfer_to_moon_low " + b).
 	
 	if ship:body = b {
-		circle(alt).
+		circle(alt0).
 	} else {
-	
 		if not (b:obt:body = ship:body) {
 		
-			set transfer_ip_target to transfer_to_moon_target:obt:body.
-			run transfer_ip.
+			transfer_ip(b:obt:body).
 	
 		} else {
 			local obt_type is calc_obt_type(ship).
 			
 			if (obt_type = "prelaunch") or (obt_type = "landed") {
-
 				launch(0).
-
 			} else if (obt_type = "suborbit") or (obt_type = "elliptic") {
-
 				circle(0).
-
 			} else if obt_type = "circular" {
-	
 				mvr_match_inc(b).
-	
-				burn_to_free_return(b).
-	
-				util_warp_trans(0).
-				
+				burn_to_encounter(b).
+				warp_trans(0).
 				wait 2.
+				mvr_adjust_per(alt0).
 			} else {
 				print "invalid obt type: " + orbit_type.
 				print neverset.
@@ -115,8 +80,8 @@ function transfer_to_moon {
 }
 
 function transfer_to {
-	parameter b.
-	parameter alt0.
+	declare parameter b.
+	declare parameter alt0.
 
 	print "transfer_to " + b + " " + alt0.
 	util_log("transfer_to " + b + " " + alt0).
@@ -131,13 +96,14 @@ function transfer_to {
 
 	if (calc_obt_type(ship) = "circular") and (ship:body = b) {
 		return 0.
-	} else {
-		return 1.
 	}
+
+	//return 1. error: wrong # of args
+	reboot.
 }
 function transfer_to_planet_nearest {
 	
-	local orbit_type is calc_obt_type().
+	local orbit_type is calc_obt_type(ship).
 	
 	if
 			(orbit_type = "landed") or
@@ -159,22 +125,17 @@ function transfer_to_planet_nearest {
 			} else {
 				print "ship:body is moon".
 				
-				run mvr_match_inc(ship:body:obt:body).
+				mvr_match_inc(ship:body:obt:body).
 		
-				set burn_to_encounter_body to ship:body:obt:body.
-				set burn_to_encounter_alt  to 0.
-				run burn_to_encounter.
+				run burn_to_encounter(ship:body:obt:body, 0).
 		
-				set warp_string to "trans".
-				set warp_sub to 0.
-				run warp.
+				warp_trans(0).
 			
 			}
 		}
 	
 	}
 }
-
 function transfer_to_planet {
 	declare parameter b.
 	
@@ -191,76 +152,75 @@ function transfer_to_planet {
 	
 	if ship:body = b {
 	} else {
-	
-	// long distance approach
-	
-	set get_capture_alt_body to b.
-	run get_capture_alt.
-	
-	until 0 {
-		if ship:body = b {
-			if abs((ship:obt:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
-				print "satisfactory capture altitude".
-				wait 5.
-				break.
-			}
-		} else if ship:obt:hasnextpatch {
-			if not (ship:obt:nextpatch:body = b) {
-				print "ERROR: nextpatch body is not target body".
-				print neverset.
-			}
-			if abs((ship:obt:nextpatch:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
-				print "satisfactory capture altitude".
-				wait 5.
-				break.
-			}
-		}
-	
-		set node_search_target     to b.
-		set node_search_use_normal to true.
-		set node_search_alt        to get_capture_alt_ret.
-		run node_search.
-		run node_burn.
-	
-		if ship:body = transfer_to_planet_target {
-			if abs((ship:obt:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
-				print "satisfactory capture altitude".
-				wait 5.
-				break.
-			}
-			// quarter the distance to periapsis
-			set t to (eta:periapsis / 4).
-		} else if ship:obt:hasnextpatch {
-			if not (ship:obt:nextpatch:body = transfer_to_planet_target) {
-				print "ERROR: nextpatch body is not target body".
-				print neverset.
-			}
-	
-			if abs((ship:obt:nextpatch:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
-				print "satisfactory capture altitude".
-				wait 5.
-				break.
-			}
-	
-			set t to eta:transition.
-	
 		
-			if eta:transition < (60*60*6) {
-				// less than a day to transition
-				// warp to transition
-				set t to eta:transition + 60.
-			} else {
-				set t to eta:transition / 2.
+		// long distance approach
+		
+		set get_capture_alt_body to b.
+		run get_capture_alt.
+		
+		until 0 {
+			if ship:body = b {
+				if abs((ship:obt:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
+					print "satisfactory capture altitude".
+					wait 5.
+					break.
+				}
+			} else if ship:obt:hasnextpatch {
+				if not (ship:obt:nextpatch:body = b) {
+					print "ERROR: nextpatch body is not target body".
+					print neverset.
+				}
+				if abs((ship:obt:nextpatch:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
+					print "satisfactory capture altitude".
+					wait 5.
+					break.
+				}
 			}
-		} else {
-			set t to eta:apoapsis / 2.
+		
+			set node_search_target     to b.
+			set node_search_use_normal to true.
+			set node_search_alt        to get_capture_alt_ret.
+			run node_search.
+			run node_burn.
+		
+			if ship:body = transfer_to_planet_target {
+				if abs((ship:obt:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
+					print "satisfactory capture altitude".
+					wait 5.
+					break.
+				}
+				// quarter the distance to periapsis
+				set t to (eta:periapsis / 4).
+			} else if ship:obt:hasnextpatch {
+				if not (ship:obt:nextpatch:body = transfer_to_planet_target) {
+					print "ERROR: nextpatch body is not target body".
+					print neverset.
+				}
+		
+				if abs((ship:obt:nextpatch:periapsis - get_capture_alt_ret) / get_capture_alt_ret) < 0.01 {
+					print "satisfactory capture altitude".
+					wait 5.
+					break.
+				}
+		
+				set t to eta:transition.
+		
+			
+				if eta:transition < (60*60*6) {
+					// less than a day to transition
+					// warp to transition
+					set t to eta:transition + 60.
+				} else {
+					set t to eta:transition / 2.
+				}
+			} else {
+				set t to eta:apoapsis / 2.
+			}
+		
+			// half the distance to object
+			set warp_time_tspan to t.
+			warp_time(t).
 		}
-	
-		// half the distance to object
-		set warp_time_tspan to t.
-		run warp_time.
-	
-	}
 	}
 	
 	
@@ -274,19 +234,17 @@ function transfer_to_planet {
 	// should now be in orbit with periapsis close to desired
 	
 	if ship:body:atm:exists {
-		run capture_aerobrake.
+		capture_aerobrake().
 		
 		if capture_aerobrake_ret = 1 {
-			run power_land_atm.
+			power_land_atm().
 		}
 		
 	} else {
-		run capture(0).
+		capture(0).
 	}
 	
-	run calc_closest_stable_altitude.
-	
-	circle(calc_closest_stable_altitude_ret).
+	circle(calc_closest_stable_altitude(ship)).
 }
 
 

@@ -1,34 +1,28 @@
+//print "load_libraries".
 
-print "load_libraries".
+run copy_files.
 
-
-run lib_get.
-run lib_util.
-run lib_util_ship.
-run lib_util_wait.
-run lib_print.
-run lib_math.
-run lib_calculate.
-run lib_calc_ship.
-run lib_calc_obt.
-run lib_go_to.
-run lib_hover.
-run lib_launch.
-run lib_circle.
-run lib_mvr.
-run lib_transfer.
-run lib_rendez.
-run lib_land.
+run lib_get.ks.
+run lib_obt.ks.
+run lib_print.ks.
+run lib_math.ks.
+run lib_calculate.ks.
+run lib_calc_ship.ks.
+run lib_calc_obt.ks.
+run lib_go_to.ks.
+run lib_hover.ks.
+run lib_launch.ks.
+run lib_circle.ks.
+run lib_mvr.ks.
+run lib_transfer.ks.
+//run lib_rendez.ks.
+run lib_land.ks.
+run lib_wait.ks.
+run lib_warp.ks.
+run lib_util.ks.
+run lib_util_ship.ks.
+run lib_util_wait.ks.
+run lib_ves.ks.
 
 run global_var.
-
-if calc_obt_type(ship) = "prelaunch" {
-	print "clear log file".
-	util_log_delete().
-}
-
-
-copy "go_to" from 0.
-
-
 

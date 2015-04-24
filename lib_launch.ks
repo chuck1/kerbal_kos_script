@@ -1,8 +1,11 @@
-
 function launch_atm {
 	parameter launch_altitude.
 	
 	util_log("launch_atm " + ship:body).
+
+	if launch_altitude = 0 {
+		set launch_altitude to calc_obt_alt_low(ship:body).
+	}
 	
 	if ship:maxthrust = 0 {
 		stage.
@@ -29,17 +32,9 @@ function launch_atm {
 	
 	// with FAR mod, kOS returns approx 3x terminal velocity
 	
-	//lock term_speed_scale to 12.
+	lock g to calc_ves_g(ship).
 	
-	lock g to ship:body:mu / (ship:body:radius + altitude)^2.
-	lock pres to ship:body:atm:sealevelpressure * ( constant():e ^ ( -1 * ship:altitude / (ship:body:atm:scale*1000) ) ).
-	
-	set ship_k to 0.02.
-	
-	//lock term_speed to ship:termvelocity / term_speed_scale).
-	lock term_speed to sqrt(2 * ship:mass * g / pres / ship_k).
-	
-	lock speed_target to term_speed.
+	lock speed_target to calc_obt_term_speed(ship).
 	
 	lock launch_atm_p to speed_target - ship:velocity:surface:mag.
 	set th to 0.
@@ -47,9 +42,7 @@ function launch_atm {
 	
 	set launch_atm_kp to 0.01.
 	
-	
 	set pres_stage to 0.14.
-	
 	
 	// modes
 	// 10 countdown
@@ -71,7 +64,7 @@ function launch_atm {
 	
 			set th to launch_atm_p * launch_atm_kp.
 	
-			if pres < pres_stage {
+			if calc_obt_pres(ship) < pres_stage {
 				// transition to mode 30
 	
 				set altitude_turn_start to altitude.
@@ -123,21 +116,23 @@ function launch_atm {
 			}
 		} else if mode = 40 {
 			print "coast out of atm".
-			
+		
+			lock steering to prograde.
+	
 			if altitude > ship:body:atm:height {
-				util_ship_jettison_fairings.
+				util_ship_jettison_fairings().
 				break.
 			}
 		}
 	
 		print "======================================".
-		
+		print "    alt target          " + launch_altitude. 
 		if mode = 20 {
 		print "    wait for pres       " + pres_stage.
-		print "    pres                " + pres.
+		print "    pres                " + calc_obt_pres(ship).
 		}
 		if mode < 40 {
-		print "    term vel            " + round(term_speed, 1).
+		print "    term vel            " + round(calc_obt_term_speed(ship), 1).
 		print "    vel                 " + round(ship:velocity:surface:mag, 1).
 		}
 		print "    th                  " + th.
@@ -158,7 +153,6 @@ function launch_atm {
 	wait 5.
 
 }
-
 function launch {
 	parameter launch_altitude.
 	
@@ -184,6 +178,36 @@ function launch {
 		}
 	}
 }
+function launch_no_atm {
+	if ship:maxthrust = 0 {
+		stage.
+	}
+	
+	print "launch!".
+	lock throttle to 0.8.
+	lock steering to up + R(0,0,180).
+	
+	if legs {
+		set legs to false.
+	}
+	
+	when stage:liquidfuel < 0.001 then {
+	    stage.
+	    preserve.
+	}
+	
+	lock throttle to 1.
+			
+	lock steering to up + R(0,0,180) + R(0,-45,0).
+	
+	wait until apoapsis > launch_altitude.
+	
+	print "coast".
+	print "cooldown".
+	lock throttle to 0.
+	wait 5.
+}
 
 print "loaded library launch".
+
 

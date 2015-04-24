@@ -1,3 +1,8 @@
+function get_alt_safe {
+	parameter bdy.
+	local obts is get_stable_orbits(bdy).
+	return obts[0][0].
+}
 function get_destination {
 	parameter s.
 

@@ -5,9 +5,6 @@ function power_land_final {
 	set debug to 0.
 	set visual to 0.
 	
-	set get_highest_peak_body to ship:body.
-	run get_highest_peak.
-	
 	// modes
 	// 0 default
 	// 1 surface speed low: steer up, use rcs for surf speed
@@ -449,7 +446,7 @@ function power_land_atm {
 	
 	// ===============================================================
 	// variables 
-	lock g to ship:body:mu / ship:body:radius^2.
+	local g is ship:body:mu / ship:body:radius^2.
 	lock a to ship:maxthrust / ship:mass * cos(ship:facing:pitch).
 	
 	lock timetostop to -1.0 * ship:verticalspeed / (a - g).
@@ -559,11 +556,8 @@ function power_land_no_atm {
 	
 			lock a to ship:maxthrust / ship:mass * cos(ship:facing:pitch).
 	
-			set get_highest_peak_body to ship:body.
-			run get_highest_peak.
-	
 			// if in stable orbit
-			if periapsis > get_highest_peak_ret {
+			if periapsis > get_highest_peak(ship:body) {
 				//set deorbit_body  to power_land_no_atm_body.
 				//set deorbit_angle to power_land_no_atm_angle.
 				run deorbit.
@@ -616,7 +610,7 @@ function power_land_no_atm {
 				print "POWER LAND NO ATM".
 				print "==================================================".
 				print "    controled descent to " + round(next_stage_altitude,0).
-				print "    highest peak         " + round(get_highest_peak_ret,0).
+				print "    highest peak         " + round(get_highest_peak(ship:body),0).
 				print "    radar altitude       " + round(alt:radar,0).
 				print "    g                    " + round(g,1).
 				print "    vert speed           " + ship:verticalspeed.
@@ -629,7 +623,7 @@ function power_land_no_atm {
 					print "warning!".
 			
 					lock throttle to 1.
-				} else if altitude < get_highest_peak_ret and pitch_vel > -45 {
+				} else if altitude < get_highest_peak(ship:body) and pitch_vel > -45 {
 					print "reduce horizontal velocity".
 					lock throttle to 1.
 				} else {
@@ -719,6 +713,4 @@ function power_land_arrest_surf_speed {
 	
 	lock throttle to 0.
 }
-
-print "loaded library land".
 

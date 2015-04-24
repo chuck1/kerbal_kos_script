@@ -1,7 +1,7 @@
 function calc_burn_duration {
 	parameter dv.
 	
-	run calc_stage_deltav.
+	calc_stage_deltav().
 	
 	local ret is 0.
 	
@@ -33,30 +33,68 @@ function calc_burn_duration {
 	
 	return ret.
 }
+function calc_dv_from_per {
+	// calculate dv for hyperbolic orbit to change periapsis
+	parameter alt. // alt at burn
+	parameter per. // new periapsis
+	
+	local ot is calc_obt_type(ship).
+	
+	if ot = "hyperbolic" {
+		return calc_hyp_dv_from_per(alt, per).
+	} else {
+		print neverset.
+	}
+	
+	return 0.
+}
+function calc_hyp_dv_from_per {
+	// calculate dv for hyperbolic orbit to change periapsis
+	parameter alt. // alt at burn
+	parameter per. // new periapsis
+	
+	local e is ship:obt:eccentricity.
 
+	local a1 is periapsis / (1-e).
+	local a2 is per / (1-e).
+	
+	return calc_dv_1(alt, a1, a2).
+}
+function calc_dv_1 {
+	// calculate dv based on...
+	parameter alt. // alt at burn
+	parameter a1.  // old semimajoraxis
+	parameter a2.  // new semimajoraxis
+	
+	local r is alt + ship:body:radius.
 
+	local v1 is sqrt(ship:body:mu * (2/r - 1/a1)).
+	local v2 is sqrt(ship:body:mu * (2/r - 1/a2)).
+	
+	return (v2 - v1).
+}
 function calc_deltav {
-	parameter deltav_alt.
-	parameter deltav_alt1.
+	// for burning at apo/per to change per/apo
+	parameter deltav_alt.  // alt at burn
+	parameter deltav_alt1. // 
 	parameter deltav_alt2.
+
+	print "calc_deltav " + deltav_alt + " " + deltav_alt1 + " " + deltav_alt2.
 	
 	local debug is true.
 	
 	// alt is the burn altitude / common altitude
 	
 	// orbit radius
-	local r  is deltav_alt  + ship:body:radius.
+	local r is deltav_alt  + ship:body:radius.
 	local r1 is deltav_alt1 + ship:body:radius.
 	local r2 is deltav_alt2 + ship:body:radius.
 	
 	// semi-major
-	local deltav_a1 is (r + r1) / 2.
-	local deltav_a2 is (r + r2) / 2.
+	local a1 is (r + r1) / 2.
+	local a2 is (r + r2) / 2.
 	
-	local v1 is sqrt(ship:body:mu * (2/r - 1/deltav_a1)).
-	local v2 is sqrt(ship:body:mu * (2/r - 1/deltav_a2)).
-
-	local dv is v2 - v1.
+	local dv is calc_dv_1(deltav_alt, a1, a2).
 
 	if debug {
 	print "calculate dv".
@@ -66,10 +104,10 @@ function calc_deltav {
 	print "r    " + r.
 	print "r1   " + r1.
 	print "r2   " + r2.
-	print "a1   " + deltav_a1.
-	print "a2   " + deltav_a2.
-	print "v1   " + v1.
-	print "v2   " + v2.
+	print "a1   " + a1.
+	print "a2   " + a2.
+	//print "v1   " + v1.
+	//print "v2   " + v2.
 	print "dv   " + dv.
 	}
 	

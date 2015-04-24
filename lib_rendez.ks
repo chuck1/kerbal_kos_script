@@ -44,7 +44,7 @@ function rendez_final {
 	
 	
 	
-	lock v to ship:velocity:orbit - target:velocity:orbit.
+	lock vel to ship:velocity:orbit - target:velocity:orbit.
 	
 	// point at docking port
 	lock steering to (-1 * dp:portfacing:vector):direction.
@@ -54,10 +54,10 @@ function rendez_final {
 	// move in at 0.1 m/s towards target
 	lock v0 to o:normalized * 0.1.
 	
-	lock v_burn to v0 - v.
+	lock v_burn to v0 - vel.
 	
 	lock P to o.
-	lock D to v.
+	lock D to vel.
 	
 	set kp to 0.005.
 	set kd to 0.5.
@@ -111,7 +111,7 @@ function rendez_approach {
 	
 	lock o to o_target.
 	
-	lock v to ship:velocity:orbit - target:velocity:orbit.
+	lock vel to ship:velocity:orbit - target:velocity:orbit.
 	
 	// positive indicates moving toward target
 	lock d to vdot(o,v).
@@ -130,7 +130,7 @@ function rendez_approach {
 	
 	// desired accel is accel needed for 1 second burn
 	
-	lock v_burn to v0 - v.
+	lock v_burn to v0 - vel.
 
 	lock accel to v_burn:mag / 1.
 
@@ -236,13 +236,13 @@ function rendez_approach_2 {
 	
 	// ==========================================
 	
-	lock v to ship:velocity:orbit - target:velocity:orbit.
+	lock vel to ship:velocity:orbit - target:velocity:orbit.
 	
 	// positive indicates moving toward target
 	lock d to vdot(o,v).
 	
 	// velocity component perpendicular to position vector
-	lock v_perp to vectorexclude(v,o_dp).
+	lock v_perp to vectorexclude(vel, o_dp).
 	
 	lock accel_max to ship:maxthrust / ship:mass.
 	
@@ -251,7 +251,7 @@ function rendez_approach_2 {
 	// goal is to reach target in 60 seconds
 	lock v0 to o / 30.
 	
-	lock v_burn to v0 - v.
+	lock v_burn to v0 - vel.
 	
 	lock burn_time_max to v_burn:mag / accel_max.
 	
@@ -488,8 +488,7 @@ function rendez {
 			set w_str to "apo".
 		}
 		
-
-		run warp_time(E_s).
+		warp_time(e_s).
 		//wait until 0.
 	
 		util_wait_orient().
@@ -510,9 +509,9 @@ function rendez {
 		
 		print "burn complete".
 	
-		run warp_time((k_s - 0.5) * ship:obt:period).
+		warp_time((k_s - 0.5) * ship:obt:period).
 		
-		util_warp(w_str, 120).
+		warp_to(w_str, 120).
 	} else {
 		// circular
 	
@@ -576,7 +575,7 @@ function rendez_viz {
 	
 	
 	
-	lock v to ship:velocity:orbit - target:velocity:orbit.
+	lock vel to ship:velocity:orbit - target:velocity:orbit.
 	
 	// point at docking port
 	//lock steering to (-1 * dp:portfacing:vector):direction.
@@ -585,10 +584,10 @@ function rendez_viz {
 	// move in at 1 m/s towards target
 	lock v0 to o / 30.
 	
-	lock v_burn to v0 - v.
+	lock v_burn to v0 - vel.
 	
 	lock P to o.
-	lock D to v.
+	lock D to vel.
 	
 	set kp to 0.005.
 	set kd to 0.05.
@@ -614,8 +613,6 @@ function rendez_viz {
 		
 		wait 0.5.
 	}
-	
-	
 	
 	set vec_ship_fore:show to false.
 	set vec_ship_star:show to false.

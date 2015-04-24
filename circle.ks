@@ -1,12 +1,7 @@
 declare parameter alt.
 
-run kos_init.
+run load_libraries.
 
-local args is list().
-args:add(alt).
-args:add(true).
-
-util_boot_func("circle", args).
-
+local ret is circle(alt).
 
 

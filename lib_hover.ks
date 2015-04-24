@@ -1,5 +1,4 @@
-
-declare function hover {
+function hover {
 	parameter arg_vert.
 	parameter arg_surf.
 
@@ -11,6 +10,7 @@ declare function hover {
 	
 	local mode_surf is 0.
 	local hover_alt is 15.	
+	local hover_dest is 0.
 
 	if arg_surf = 0 {
 		set mode_surf to "none".
@@ -25,11 +25,9 @@ declare function hover {
 	}
 
 	if mode_surf = "latlng" {
-		set mode_vert to "asl".
-
+		set mode_vert  to "asl".
 		set hover_dest to arg_surf[1].
-		
-		set hover_alt to hover_dest[1].
+		set hover_alt  to hover_dest[1].
 	}
 
 	lock east to vcrs(north:vector, up:vector):direction.
@@ -52,19 +50,22 @@ declare function hover {
 	
 	lock v_srf to vectorexclude(up:vector, ship:velocity:surface).
 	
+	// =================================================
 	
-	
+	lock a_surf_max_cruising to g * tan(hover_down_angle_limit).
+
+	lock dist_to_arrest_surf_speed to (ship:surfacespeed^2) / 2 / a_surf_max_cruising.
 	
 	// ===================================================
 	// altitude control
 	
-	set kp0 to 0.30 / twr.
-	set kd0 to 0.50.
-	set ki0 to 0.01.
+	local kp0 is 0.30 / twr.
+	local kd0 is 0.50.
+	local ki0 is 0.01.
 	
-	set I0 to 0.
+	local I0 is 0.
 	
-	set P0 to 0.
+	local P0 is 0.
 	
 	
 	lock D0 to 0 - ship:verticalspeed.
@@ -118,8 +119,8 @@ declare function hover {
 	
 		// vector from ship to target
 		
-		//lock v_surf_target_perp to vxcl(hover_latlng_p_surf, v_srf).
-		//lock v_surf_target to v_srf - v_surf_target_perp.
+		lock v_surf_target_perp to vxcl(hover_latlng_p_surf, v_srf).
+		lock v_surf_target to v_srf - v_surf_target_perp.
 	
 		lock D1 to -1 * v_srf.
 		//lock D1 to -1 * v_surf_target.
@@ -210,7 +211,18 @@ declare function hover {
 	
 	until 0 {
 	
-		set dir to up:vector * cos(down_angle) + Y1:normalized * sin(down_angle).
+		if mode_surf = "latlng" {
+			if		(dist_to_arrest_surf_speed > hover_latlng_p_surf:mag) and
+					(vdot(v_surf_target, hover_latlng_p_surf) > 0) {
+				// point away from target
+				set dir to up:vector * cos(hover_down_angle_limit) - v_surf:normalized * sin(hover_down_angle_limit).
+			} else {
+				set dir to up:vector * cos(down_angle) + Y1:normalized * sin(down_angle).
+			}
+		} else {
+			set dir to up:vector * cos(down_angle) + Y1:normalized * sin(down_angle).
+		}
+
 	
 		set dt to time:seconds - t0.
 		set t0 to time:seconds.	
@@ -287,22 +299,22 @@ declare function hover {
 	
 	
 		if not (mode_surf = "none") {
-		if (P1:mag < 100) and (D1:mag < 5) {
-			lock steering to up.
+			if (P1:mag < 100) and (D1:mag < 5) {
+				lock steering to up.
 	
-			rcs on.
+				rcs on.
 		
-			set ship:control:translation to thrust_ship.
-		} else {
-			lock steering to R(
-				dir:direction:pitch,
-				dir:direction:yaw,
-				ship:facing:roll).
+				set ship:control:translation to thrust_ship.
+			} else {
+				lock steering to R(
+					dir:direction:pitch,
+					dir:direction:yaw,
+					ship:facing:roll).
+		
+				rcs off.
 	
-			rcs off.
-	
-			set ship:control:translation to V(0,0,0).
-		}
+				set ship:control:translation to V(0,0,0).
+			}
 		}
 		
 	
@@ -362,6 +374,7 @@ declare function hover {
 		print "vs target       " + vs_target.
 		print "arrest desc a   " + hover_arrest_descent_accel.
 		print "arrest desc th  " + hover_arrest_descent_thrott.
+		print "dist to arrest surf speed " + dist_to_arrest_surf_speed.
 		print "thrust ship     " + thrust_ship:mag.
 		//print "P0            = " + P0.
 		//print "I0            = " + I0.
@@ -401,7 +414,6 @@ declare function hover {
 	
 	set ship:control:translation to V(0,0,0).
 }	
-
 
 print "loaded library hover".
 

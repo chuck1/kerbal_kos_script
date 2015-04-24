@@ -11,7 +11,12 @@ function math_sign {
 function math_ship_h {
 //	return 
 }
-
+function math_clamp {
+	parameter x.
+	parameter a.
+	parameter b.
+	return max(a, min(b, x)).
+}
 function math_clamp_angle {
 	parameter a.
 	

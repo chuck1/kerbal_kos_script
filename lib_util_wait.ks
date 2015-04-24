@@ -3,10 +3,12 @@ function util_wait_orient {
 	
 	declare local t0 is time.
 	declare local ret is 0.
+
+	local orient_time is 60.
 	
 	print "wait for reorientation".
 	until vang(steering():vector, ship:facing:vector) < 0.1 {
-		if (time - t0):seconds > 30 {
+		if (time - t0):seconds > 60 {
 			set ret to 1.
 			break.
 		}

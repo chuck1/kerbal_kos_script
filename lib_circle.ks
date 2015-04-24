@@ -2,7 +2,17 @@
 function circle {
 	parameter circle_altitude.
 
+	local precision is 0.05.
+
 	print "circle " + circle_altitude.
+	util_log("circle " + circle_altitude).
+
+	if circle_altitude = 0 {
+		set circle_altitude to calc_closest_stable_altitude().
+	}
+	if circle_altitude = "low" {
+		set circle_altitude to calc_obt_alt_low(ship:body).
+	}
 
 	// when apoapsis and periapsis are close, just burn
 	if abs((apoapsis - periapsis) / periapsis) < precision {
@@ -21,36 +31,29 @@ function circle {
 	set warp to 0.
 	
 	
-	if circle_altitude = 0 {
-		set circle_altitude to calc_closest_stable_altitude().
-	}
-	
-	util_log("circle " + circle_altitude).
-	
 	set precision to 0.2.
 	
-	//set mvr_adjustcle_precision
-	
-	lock error_max to max(
-		abs((apoapsis  - circle_altitude)/circle_altitude),
-		abs((periapsis - circle_altitude)/circle_altitude)).
-	
 	if ship:obt:hasnextpatch {
-		run capture(circle_altitude).
+		capture(circle_altitude).
 	}
 	
 	set mvr_adjust_altitude to circle_altitude.
 	
-	set circle_error_apoapsis  to abs((apoapsis  - circle_altitude) / (ship:obt:semimajoraxis)).
-	set circle_error_periapsis to abs((periapsis - circle_altitude) / (ship:obt:semimajoraxis)).
+	lock circle_error_apoapsis  to abs((apoapsis  - circle_altitude) / (ship:obt:semimajoraxis)).
+	lock circle_error_periapsis to abs((periapsis - circle_altitude) / (ship:obt:semimajoraxis)).
+
+	lock apo_good to (circle_error_apoapsis < 0.01).
+	lock per_good to (circle_error_periapsis < 0.01).
 	
-	set circle_ret to 1.
-	
-	//until error_max < precision {
 	if		(ship:obt:eccentricity < 0.05) and
-			(circle_error_apoapsis < 0.05) and
-			(circle_error_periapsis < 0.1) {
+			(apo_good) and (per_good) {
 		print "orbit is circular".
+		print "apoapsis  " + apoapsis.
+		print "periapsis " + periapsis.
+		print "err apo   " + circle_error_apoapsis.
+		print "err per   " + circle_error_periapsis.
+		print "alt       " + circle_altitude.
+		print "semimajor " + ship:obt:semimajoraxis.
 		return 0.
 	} else {
 		
@@ -58,10 +61,13 @@ function circle {
 		
 		print "eta:apoapsis  " + eta:apoapsis.
 		print "eta:periapsis " + eta:periapsis.
+		print "err apo       " + circle_error_apoapsis.
+		print "err per       " + circle_error_periapsis.
+		//wait 10.
 		
 		if ship:verticalspeed > 0 {
 			
-			if (circle_error_periapsis < 0.05) {
+			if per_good {
 				mvr_adjust_at_periapsis(circle_altitude).
 			} else {
 				mvr_adjust_at_apoapsis(circle_altitude).
@@ -69,7 +75,7 @@ function circle {
 			
 		} else if ship:verticalspeed < 0 {
 	
-			if (circle_error_apoapsis < 0.05) {
+			if apo_good {
 				mvr_adjust_at_apoapsis(circle_altitude).
 			} else {
 				mvr_adjust_at_periapsis(circle_altitude).
@@ -78,7 +84,8 @@ function circle {
 		}
 		
 	}
-	return 1.
+	reboot.	
+	//return 1. error: wrong # of args
 }
 function circle_low {
 	util_log("circle_low").
