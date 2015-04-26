@@ -1,5 +1,9 @@
 
+rm -rf reddit_challenge
 mkdir reddit_challenge
+
+cp boot.ks reddit_challenge
+cp copy_files.ks reddit_challenge
 
 cp load_libraries.ks reddit_challenge
 

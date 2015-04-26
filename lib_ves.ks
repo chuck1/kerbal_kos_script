@@ -26,7 +26,10 @@ function ves_g {
 	parameter ves.
 	return (ves:body:mu / ((ves:body:radius + ves:altitude)^2)).
 }
-
+function ves_twr {
+	parameter ves.
+	return ves_a_max(ves) / ves_g(ves).
+}
 function ves_normal {
 	parameter ves.
 	local vec is obt_h_for(ves).
@@ -97,6 +100,7 @@ function ves_pitch_and_th_from_acc {
 	return (up:vector * th_y + th_x).
 }
 function ves_th_from_cur_pitch_and_acc {
+	// get throttle value basde on current pitch and desired vertical acceleration
 	parameter ves.
 	parameter acc_vert.
 	
@@ -106,7 +110,7 @@ function ves_th_from_cur_pitch_and_acc {
 
 	local th is th_y / sin(pitch).
 	
-	return math_clamped(th, 0, 1).
+	return math_clamp(th, 0, 1).
 }
 
 

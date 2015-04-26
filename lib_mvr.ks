@@ -1151,17 +1151,17 @@ function burn_to_encounter {
 	wait 5.
 }
 function capture {
-	parameter capture_altitude.
+	parameter alt.
 	
-	if capture_altitude = 0 {
-		set capture_altitude to calc_closest_stable_altitude().
+	if alt = 0 {
+		set alt to calc_closest_stable_altitude().
 	}
-	if capture_altitude = "low" {
-		set capture_altitude to calc_obt_alt_low().
+	if alt = "low" {
+		set alt to get_alt_low().
 	}
 	
 	print "CAPTURE ----------------------------------".
-	print "burn to:    " + capture_altitude.
+	print "burn to:    " + alt.
 	
 	set aop to ship:obt:argumentofperiapsis.
 
@@ -1179,7 +1179,7 @@ function capture {
 			util_wait_orient().
 	
 			lock throttle to 0.1.
-			wait until periapsis > capture_altitude.
+			wait until periapsis > alt.
 			lock throttle to 0.
 			
 			print "cooldown".
@@ -1188,7 +1188,7 @@ function capture {
 		
 		print "perform capture".
 		
-		set dv to calc_deltav(periapsis, get_soi(ship:body), capture_altitude).
+		set dv to calc_deltav(periapsis, get_soi(ship:body), alt).
 		
 		if eta:periapsis > 0 { // not yet reached periapsis
 			warp_per(calc_burn_duration(abs(dv)) / 2 + 30).
@@ -1213,12 +1213,12 @@ function capture {
 		
 		print "captured".
 	
-		set dv to calc_deltav(periapsis, apoapsis, capture_altitude).
+		set dv to calc_deltav(periapsis, apoapsis, alt).
 	
 		set v0 to ship:velocity:orbit:mag.
 		lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 	
-		until (apoapsis < capture_altitude) {
+		until (apoapsis < alt) {
 
 			set aop_change to abs(aop - ship:obt:argumentofperiapsis).
 			if aop_change > 180 {

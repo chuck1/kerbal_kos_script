@@ -1,8 +1,38 @@
+function hover_acc_control_alt {
+	// use kinematic equ to get vertical acceleration to control altitude
+	parameter ves.
+	parameter seek.
+	parameter curr.
+	
+	local x is seek - curr.
+	
+	if x > 0 {
+		// ascend
+		local v is sqrt(2 * ves_g(ves) * x).
+		return (v - ship:verticalspeed).
+	} else {
+		// descend
+	
+		if ship:verticalspeed < 0 {
+	
+			local a is (0 - ship:verticalspeed^2) / (2 * x) + g.
+			local t is a / ves_a_max(ves).
+			
+			if t > 0.5 {
+				return (0 - ship:verticalspeed).
+			} else {
+				return 0.
+			}
+		} else {
+			return 0.
+		}
+	}
+}
 function hover {
 	parameter arg_vert.
 	parameter arg_surf.
 
-	util_log("hover").
+	//util_log("hover").
 	
 	sas off.
 	rcs off.
@@ -46,8 +76,6 @@ function hover {
 	
 	lock accel_max to ship:maxthrust / ship:mass.
 	
-	lock twr to accel_max / g.
-	
 	lock v_srf to vectorexclude(up:vector, ship:velocity:surface).
 	
 	// =================================================
@@ -58,39 +86,38 @@ function hover {
 	
 	// ===================================================
 	// altitude control
-	
-	local kp0 is 0.30 / twr.
-	local kd0 is 0.50.
-	local ki0 is 0.01.
-	
-	local I0 is 0.
-	
-	local P0 is 0.
-	
-	
-	lock D0 to 0 - ship:verticalspeed.
-	
-	lock Y0 to P0 * kp0 + D0 * kd0 + I0 * ki0.
+
+	local kp is 0.50 / ves_twr(ship).
+
+	local pid_vert is pid_init(
+		kp,
+		kp * 0,
+		kp * 6,
+		0,
+		1).
 	
 	// ==================================================
 	// alternate altitude control
 	
+	//set vs_target to 0.
 	
-	set vs_target to 0.
-	
-	lock vs_error to max(0, vs_target - ship:verticalspeed).
+	//lock vs_error to max(0, vs_target - ship:verticalspeed).
 	
 	// ===================================================
 	// surface speed control
 	
 	
 	set dP1dt to V(0,0,0).
+
+	local pid_surf is 0.
 	
 	if mode_surf = "speed" {
-	
+		
+		
+		
 		set kp1 to 0.10.
-		set kd1 to 1.00.
 		set ki1 to 0.
+		set kd1 to 1.00.
 	
 		lock P1 to v - v_srf.
 	
@@ -102,12 +129,13 @@ function hover {
 		set kd1 to  0.10.
 		set ki1 to  0.0.
 	
+		set pid_surf to pid_init(0.01, 0, 0.1, 0, 1).
+	
 		set P1_mag_0 to 0.
 		set dLLEdt to 0.
 	
 		lock lat_error  to hover_dest[0]:lat  - latitude.
 		lock long_error to hover_dest[0]:lng - longitude.
-	
 	
 		lock hover_latlng_p to hover_dest[0]:position - ship:position.
 		
@@ -125,6 +153,7 @@ function hover {
 		lock D1 to -1 * v_srf.
 		//lock D1 to -1 * v_surf_target.
 	} else if mode_surf = "none" {
+		sas on.
 		//lock P1 to V(0,0,0).
 		//lock D1 to V(0,0,0).
 	} else {
@@ -134,6 +163,8 @@ function hover {
 	
 	set P1_0 to V(0,0,0).
 	set I1   to V(0,0,0).
+
+	local Y1 is V(0,0,0).
 	
 	if mode_surf = "none" {
 		lock P1 to V(0,0,0).
@@ -144,13 +175,10 @@ function hover {
 	}
 	
 	
+	
 	// ================================================
 	// user input
 	
-	on ag1 {
-		set I1 to V(0,0,0).
-		preserve.
-	}
 	on ag2 {
 		set hover_alt to hover_alt - 10.
 		preserve.
@@ -176,12 +204,6 @@ function hover {
 		preserve.
 	}
 	
-	// ==============================================
-	// for descending
-	
-	lock hover_arrest_descent_accel to (0 - ship:verticalspeed^2) / (2 * P0) + g.
-	lock hover_arrest_descent_thrott to hover_arrest_descent_accel / accel_max.
-	
 	// ===================================================
 	// desired direction
 	
@@ -192,12 +214,8 @@ function hover {
 	//		arctan2(Y1:mag, -Y0),
 	//		hover_down_angle_limit
 	//	).
-	lock down_angle to 
-		min(
-			arctan2(Y1:mag, -1),
-			hover_down_angle_limit
-		).
 	
+	local down_angle is 0.
 	
 	set th to 0.
 	
@@ -210,8 +228,30 @@ function hover {
 	set t0 to time:seconds.
 	
 	until 0 {
-	
+
+
+
 		if mode_surf = "latlng" {
+
+			set pid_surf_input to pid_seek(pid_surf, 0, hover_latlng_p_surf:mag).
+
+			if 1 {
+				set down_angle to 
+					math_clamp(
+						arctan2(abs(pid_surf_input), -1),
+						0,
+						hover_down_angle_limit).
+			} else {
+				set down_angle to 
+					math_clamp(
+						arctan2(Y1:mag, -1),
+						0,
+						hover_down_angle_limit).
+			}
+
+
+
+
 			if		(dist_to_arrest_surf_speed > hover_latlng_p_surf:mag) and
 					(vdot(v_surf_target, hover_latlng_p_surf) > 0) {
 				// point away from target
@@ -231,41 +271,32 @@ function hover {
 		// altitude error
 	
 		if mode_vert = "agl" {
-			lock P0 to hover_alt - alt:radar.
+			set alt_seek to hover_alt.
+			set alt_curr to alt:radar.
 		} else if mode_vert = "asl" {
 			if alt:radar < radar_limit {
-				lock P0 to max(
-					radar_limit - alt:radar,
-					hover_alt - altitude).
+				if (radar_limit - alt:radar) > (hover_alt - altitude) {
+					set alt_seek to radar_limit.
+					set alt_curr to alt:radar.
+				} else {
+					set alt_seek to hover_alt.
+					set alt_curr to altitude.
+				}
 			} else {
-				lock P0 to (hover_alt - altitude).
+				set alt_seek to hover_alt.
+				set alt_curr to altitude.
 			}
 		} else {
 			print "invalid vert mode: " + mode_vert.
 			print neverset.
 		}
 	
-	
-	
-		if P0 > 0 {
-			// ascend
-			set vs_target to sqrt(2 * g * P0).
-		} else {
-			// descend
-			//lock vs_target to -1 * sqrt(2 * g * P0).
-	
-			if ship:verticalspeed < 0 {
-			
-				if hover_arrest_descent_thrott > 0.5 {
-					set vs_target to -1.
-				} else {
-					set vs_target to -100.
-				}
-			} else {
-				set vs_target to -100.
-			}
-		}
-	
+		set th to ves_th_from_cur_pitch_and_acc(ship, hover_acc_control_alt(ship, alt_seek, alt_curr)).
+
+		set alt_error to alt_seek - alt_curr.
+
+		//set pid_vert_input to pid_seek(pid_vert, 50, alt:radar).
+
 		if alt:radar > 2000 {
 			set hover_down_angle_limit to 30.
 		} else {
@@ -276,7 +307,7 @@ function hover {
 		// end conditions
 	
 		if mode_surf = "latlng" {
-			if abs(ship:verticalspeed < 0.1) and abs(P0) < 5 and P1:mag < 0.01 {
+			if abs(ship:verticalspeed < 0.1) and abs(alt_error) < 5 and P1:mag < 0.01 {
 				if radar_limit > 10 {
 					set radar_limit to 10.
 				} else {
@@ -284,9 +315,6 @@ function hover {
 				}
 			}
 		} else if mode_surf = "none" {
-			//if abs(P0) < 1 {
-			//	break.
-			//}
 		} else {
 			print "invalid surface mode: " + mode_surf.
 			print neverset.
@@ -316,20 +344,10 @@ function hover {
 				set ship:control:translation to V(0,0,0).
 			}
 		}
-		
 	
 		// update control vars
 		
 		if dt > 0 {
-	
-			set I0 to I0 + P0 * dt.
-			if ship:verticalspeed < 0 {
-				set I0 to 0.
-			}
-			if abs(P0 > 100) {
-				set I0 to 0.
-			}
-	
 	
 			set dP1dt_0 to dP1dt.
 			set dP1dt to (P1 - P1_0) / dt.
@@ -349,16 +367,19 @@ function hover {
 			}
 	
 			// pid control
-			//set th to Y0.
+
+			//set th to pid_vert_input.
+
 			// analytical control
 			
-			set th_vert to vs_error / accel_max.
+			//set th to ves_th_from_cur_pitch_and_acc(ship, vs_error).
 			
-			set th to max(0, min(1, th_vert / cos(down_angle_actual))).
+			//set th to ves_th_from_cur_pitch_and_acc(ship, pid_vert_input + ves_g(ship)).
+			
+		
 		}
 		
 		// ======================================
-		// print
 		clearscreen.
 		print "HOVER".
 		print "==================================================".
@@ -367,26 +388,16 @@ function hover {
 		print "hover vert mode " + mode_vert.
 		print "altitude        " + altitude.
 		print "alt:radar       " + alt:radar.
-		print "alt error       " + P0.
+		print "alt seek        " + alt_seek.
+		print "alt curr        " + alt_curr.
+		print "alt error       " + alt_error.
 		print "radar limit     " + radar_limit.
 		print "v_srf:mag       " + v_srf:mag.
-		print "vs error        " + vs_error.
-		print "vs target       " + vs_target.
-		print "arrest desc a   " + hover_arrest_descent_accel.
-		print "arrest desc th  " + hover_arrest_descent_thrott.
 		print "dist to arrest surf speed " + dist_to_arrest_surf_speed.
 		print "thrust ship     " + thrust_ship:mag.
-		//print "P0            = " + P0.
-		//print "I0            = " + I0.
-		//print "D0            = " + D0.
-		//print "Y0            = " + Y0.
-		//print "Y1              " + vdot(Y1, hover_latlng_p_surf:normalized).
-		//print "D1:mag        = " + D1:mag.
-		//print "P1:mag        = " + P1:mag.
-		//print "I1:mag        = " + I1:mag.
-		print "dP1dt:mag       " + dP1dt:mag.
 		print "down angle act  " + down_angle_actual.
 		print "down angle      " + down_angle.
+		print "th              " + th.
 		//print "down angle0     " + arctan2(Y1:mag, Y0).
 		
 		if mode_surf = "latlng" {

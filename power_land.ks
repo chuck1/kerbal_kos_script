@@ -1,4 +1,3 @@
-run copy_files.
 
 run lib_get.ks.
 run lib_obt.ks.

@@ -21,7 +21,7 @@ mun_arch:add(       "mun_arch").
 
 
 kerbin_vab:add(     latlng( -0.097,    -74.619)).
-kerbin_vab:add(     500.0).
+kerbin_vab:add(     400.0).
 kerbin_vab:add(     kerbin).
 
 mun_monument:add(   latlng(  0.7093769, 22.7362742)).

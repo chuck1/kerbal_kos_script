@@ -44,10 +44,12 @@ v^2                                 mu(2/r - 1/a)
 r                                   p/(1 + e cos(ta))   
 
 p, semi-latus rectum                    a(1-e^2)            
+
+r periapsis                              a(1-e)
+
+r apoapsis                               a(1+e)
                                            
 a, semimajoraxis        a > 0              |  a < 0
-                                           |
-r periapsis                                |  -a(e-1)
                                            |
 e                       sqrt(1 - b^2/a^2)  |  sqrt(1 + b^2/a^2)
 
