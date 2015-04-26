@@ -434,7 +434,6 @@ function power_land_final {
 	}
 }
 function power_land_atm {
-	run kos_init.
 	
 	// preliminaries
 	sas off.
@@ -443,7 +442,7 @@ function power_land_atm {
 	
 	set deorbit_body  to sun.
 	set deorbit_angle to 90.
-	run deorbit.
+	deorbit.
 	
 	// ===============================================================
 	// variables 
@@ -715,3 +714,96 @@ function power_land_arrest_surf_speed {
 	lock throttle to 0.
 }
 
+function deorbit {
+	declare parameter deorbit_body.
+	declare parameter deorbit_angle.
+
+	print "DEORBIT ----------------------------------".
+	print "body:       " + deorbit_body.
+	print "angle:      " + deorbit_angle.
+
+	if ship:body:atm:exists {
+		run deorbit_atm.
+	} else {
+		run deorbit_no_atm.
+	}
+}
+function deorbit_atm {
+	declare parameter deorbit_body.
+	declare parameter deorbit_angle.
+
+	print "deorbit atm".
+	
+	set peri_target to ship:body:atm:height * 0.5.
+	
+	if periapsis > ship:body:atm:height {
+	
+		if periapsis < (ship:body:radius / 4) {
+			circle(periapsis).
+		} else {
+			circle(ship:body:radius / 4).
+		}
+	
+	
+	
+		print "periapsis target = " + peri_target.
+	
+		run wait_for_angle(ship, deorbit_body, ship:body, deorbit_angle).
+	
+		lock steering to retrograde.
+		util_wait_orient().
+	
+		lock throttle to 1.
+		wait until periapsis < peri_target.
+		lock throttle to 0.
+	
+		wait 5.
+	
+	}
+}
+function deorbit_no_atm {
+	declare parameter deorbit_no_atm_body.
+	declare parameter deorbit_no_atm_angle.
+	
+	print "DEORBIT NO ATM ---------------------------".
+	print "body:       " + deorbit_body.
+	print "angle:      " + deorbit_angle.
+	print "periapsis:  " + periapsis.
+	print "apoapsis:   " + apoapsis.
+	wait 4.
+	
+	if periapsis > 10000 {
+	
+		print "burn to suborbital trajectory".
+	
+		if periapsis < (ship:body:radius / 4) {
+			print "periapsis is below (radius/4)".
+			set circle_altitude to periapsis.
+			run circle.
+		} else {
+			print "periapsis is above (radius/4)".
+			wait 4.
+			set circle_altitude to ship:body:radius / 4.
+			run circle.
+		}
+	
+		set peri_target to -1 * ship:altitude.
+	
+		print "periapsis target = " + peri_target.
+	
+		set wait_for_angle_body_1    to ship.
+		set wait_for_angle_body_2    to deorbit_body.
+		set wait_for_angle_body_axis to ship:body.
+		set wait_for_angle_angle     to deorbit_angle.
+		run wait_for_angle.
+	
+		lock steering to retrograde.
+		run wait_orient.
+	
+		lock throttle to 1.
+		wait until periapsis < peri_target.
+		lock throttle to 0.
+	
+		wait 5.
+	}
+}
