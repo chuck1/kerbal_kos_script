@@ -1,6 +1,8 @@
 function power_land_final {
 	sas off.
 	rcs on.
+
+	print "power lanf final".
 	
 	set debug to 0.
 	set visual to 0.
@@ -143,14 +145,14 @@ function power_land_final {
 	
 	
 	
-	set thrott to 0.
+	local thrott is 0.
 	
 	
 	// ===========================================
 	
 	if debug = 0 {
-	lock throttle to thrott.
-	lock steering to steer.
+		lock throttle to thrott.
+		lock steering to steer.
 	}
 	
 	set t0 to time:seconds.
@@ -168,26 +170,25 @@ function power_land_final {
 	
 	// ==========================================
 	
-	lock steer to R(
-		myretro:pitch,
-		myretro:yaw,
-		ship:facing:roll).
-	
 	print "wait for pitch up".
 	wait until ship:facing:pitch > 0.
 	
-	when ship:surfacespeed < 0.1 then {
-		lock steer to R(
-			up:pitch,
-			up:yaw,
-			ship:facing:roll).
-	
-		rcs on.
-	}
-	
-	
-	
 	until ship:verticalspeed > -0.1 and alt:radar < 20 {
+
+		if ship:surfacespeed < 0.1 {
+			set steer to R(
+				up:pitch,
+				up:yaw,
+				ship:facing:roll).
+	
+			rcs on.
+		} else {
+			set steer to R(
+				myretro:pitch,
+				myretro:yaw,
+				ship:facing:roll).
+		}
+		
 	
 		set v_burn_mag to v_burn:mag.
 			

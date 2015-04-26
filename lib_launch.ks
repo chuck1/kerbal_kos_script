@@ -5,7 +5,12 @@ function launch_atm {
 
 	// settings
 	local grav_turn_pres            is 0.25.
-	local steering_deflection_limit is 12.
+	local steering_deflection_limit is 10.
+
+	// variables
+	local down_angle_target is 70.
+	local steering_deflection is 0.
+	local down_angle_steering is 0.
 
 	// ===============================
 	if launch_altitude = 0 {
@@ -36,7 +41,7 @@ function launch_atm {
 	
 	// with FAR mod, kOS returns approx 3x terminal velocity
 	
-	lock g to calc_ves_g(ship).
+	//lock g to ves_g(ship).
 	
 	lock speed_target to calc_obt_term_speed(ship).
 	
@@ -82,7 +87,6 @@ function launch_atm {
 			//	min(
 			//		0 + ((altitude - altitude_turn_start) / (5 * altitude_turn_start)) * 60,
 			//		60).
-			set down_angle_target to 70.
 				
 			// steering deflection: angle between velocity and target steering vectors
 			// clamp steering delfection
@@ -147,9 +151,8 @@ function launch_atm {
 	
 		wait 0.01.
 	}
-	
+	print "cooldown".
 	wait 5.
-
 }
 function launch {
 	parameter launch_altitude.

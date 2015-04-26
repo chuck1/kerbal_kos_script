@@ -353,9 +353,7 @@ function go_to_suborbital_approach {
 		
 						lock th0 to a_surf_target / (accel_max * cos(pitch_clamped)).
 			
-						//set thrott to max(0, min(1, th0 + thrott_extra)).
 						set thrott to 1.
-						//set thrott to max(0, min(1, th0)).
 					}
 				}
 			}

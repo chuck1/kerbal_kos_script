@@ -170,25 +170,30 @@ function mvr_burn {
 }
 function mvr_adjust_per {
 	parameter per.
+
+	// variables
+	local dv_rem is 0.
 	
 	local s is math_sign(per - periapsis).
-
+	
 	local dv is calc_dv_from_per(altitude, per).
 	local v0 is ship:velocity:orbit:mag.
-
-	lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
-
+	
 	lock steering to (prograde:vector * s):direction.
 	
 	util_wait_orient().
-	
+
+	local th is 0.
+	lock throttle to th.	
 	until 0 {
 		// detect sign flip
 		if (math_sign(per - periapsis) * s) < 0 {
 			break.
 		}
 	
-		lock throttle to ves_thrott_from_burn_dur(ship, dv_rem).
+		set dv_rem to dv - (ship:velocity:orbit:mag - v0).
+	
+		set th to ves_thrott_from_burn_dur(ship, dv_rem).
 	}
 	lock throttle to 0.
 }
@@ -407,12 +412,7 @@ function mvr_adjust_at_periapsis {
 	
 	// settings
 	local orient_time is 60.
-	
-	// prereq
-	//run mvr_safe_periapsis.
-	
-	set precision to 0.02.
-	
+	local precision   is 0.02.
 	
 	// ==================================================
 	// preliminaries
@@ -442,9 +442,7 @@ function mvr_adjust_at_periapsis {
 	lock alt to apoapsis.
 	set alt_burn to periapsis.
 	
-	
 	local dv0 is calc_deltav(alt_burn, alt, mvr_adjust_altitude).
-	
 	
 	set v0 to ship:velocity:orbit:mag.
 	
@@ -456,10 +454,8 @@ function mvr_adjust_at_periapsis {
 	}
 
 	warp_per(burn_duration/2 + orient_time).
-
 	
 	lock v_tan to obt_v_tan_for(ship).
-	
 	
 	lock dir to (math_sign(dv0) * v_tan:normalized):direction.
 	
@@ -469,8 +465,6 @@ function mvr_adjust_at_periapsis {
 
 	//set steer to R(dir:pitch, dir:yaw, ship:facing:roll).
 	set steer to dir.
-	//set steer:roll to ship:facing:roll. 
-	
 	global lock steering to steer.
 	
 	util_wait_orient().
@@ -482,13 +476,6 @@ function mvr_adjust_at_periapsis {
 	// use argument of periapsis to detect flip
 	set aop0 to ship:obt:argumentofperiapsis.
 	
-	when abs(aop0 - ship:obt:argumentofperiapsis) > 90 then {
-		print "flip! aop = " + ship:obt:argumentofperiapsis.
-		
-		lock alt to periapsis.
-		set mode to 1.
-		
-	}
 	
 	// error increasing debounce
 	local error_counter is 0.
@@ -498,7 +485,7 @@ function mvr_adjust_at_periapsis {
 	local err_min   is abs(err).
 	local err_start is err.
 	
-	local th is 0.
+	local thr is 0.
 	lock throttle to th.
 	
 	lock mvr_eta to e - burn_duration/2.
@@ -512,12 +499,21 @@ function mvr_adjust_at_periapsis {
 	
 	// 10 pre-burn
 	// 20 burning
-	local mode is 10.
+	local mode0 is 10.
 	
 	until 0 {
+		set steer to dir.
+
+		if abs(aop0 - ship:obt:argumentofperiapsis) > 90 {
+			print "flip! aop = " + ship:obt:argumentofperiapsis.
+			lock alt to periapsis.
+			//lock err to alt - mvr_adjust_altitude.
+		}
+
 		clearscreen.
 		print "MVR ADJUST AT PERIAPSIS".
 		print "=======================================".
+		print "    mode         " + mode0.
 		print "    alt target   " + mvr_adjust_altitude.
 		print "    alt          " + alt.
 		print "    alt burn     " + alt_burn.
@@ -531,25 +527,26 @@ function mvr_adjust_at_periapsis {
 		print "    dv rem       " + dv_rem.
 		print "    error count  " + error_counter.
 		print "    mvr eta 0    " + mvr_eta_0.
+		print "    throttle     " + thr.
 	
-		if mode = 10 {
+		if mode0 = 10 {
 			print "burn in t-" + round(mvr_eta,1).
 			
 			set v0 to ship:velocity:orbit:mag.
 			
 			if mvr_eta < 0 {
-				set mode to 20.
+				set mode0 to 20.
 			}
 			if mvr_eta > mvr_eta_0 {
-				set mode to 20.
+				set mode0 to 20.
 			}
-		} else if mode = 20 {
+		} else if mode0 = 20 {
 		
-			set th to math_clamp(ves_burn_dur(ship, dv_rem) / 10 + 0.01, 0, 1).
+			set thr to math_clamp(ves_burn_dur(ship, dv_rem) / 10 + 0.01, 0, 1).
 	
 			if abs(err) > abs(err_min) {
 				set error_counter to error_counter + 1.
-				if error_counter > 10 {
+				if error_counter > 5 {
 					print "abort: error increasing!".
 					break.
 				}
@@ -565,6 +562,9 @@ function mvr_adjust_at_periapsis {
 				break.
 			}
 			}
+		} else {
+			print "invalid mode " + mode0.
+			print neverset.
 		}
 	
 		wait 0.1.
@@ -755,13 +755,24 @@ function mvr_flyover_deorbit {
 	
 			set th to ves_thrott_from_g(ship).
 
-			set t_l to time:seconds.
+			//set t_l to time:seconds.
+			if alt_l < mvr_flyover_deorbit_highest_peak {
+				set t_search_dir to -1.
+			} else {
+				set t_search_dir to 1.
+			}
 			until 0 {
 				//if alt_l < mvr_flyover_deorbit_gc:terrainheight + 2000 {
-				if alt_l < mvr_flyover_deorbit_highest_peak {
-					break.
+				if t_search_dir < 0 {
+					if alt_l > mvr_flyover_deorbit_highest_peak {
+						break.
+					}
+				} else {
+					if alt_l < mvr_flyover_deorbit_highest_peak {
+						break.
+					}
 				}
-				set t_l to t_l + 1.
+				set t_l to t_l + t_search_dir.
 			}
 		
 	
@@ -770,10 +781,13 @@ function mvr_flyover_deorbit {
 				
 				// anti-jitter
 				set counter to counter + 1.
-				if counter = 5 {
+				if counter = 3 {
 					lock throttle to 0.
 					break.
 				}
+			} else {
+				// reste count
+				set counter to 0.
 			}
 	
 			set d_l_min to min(d_l_min, d_l:mag).
@@ -798,6 +812,8 @@ function mvr_flyover_deorbit {
 }
 function mvr_flyover {
 	parameter mvr_flyover_gc.
+
+	set warp to 0.
 	
 	util_log("mvr_flyover " + mvr_flyover_gc).
 	
@@ -832,23 +848,23 @@ function mvr_flyover {
 	lock inc_sign to 
 		vdot(vcrs(gc_r, gc_r_tangent), s_r).
 	
-	print "inc change " + inc_change.
-	wait 2.
-	
 	lock dv_rem to 2 * ship:velocity:orbit:mag * sin(inc_change / 2).
 	
 	
-	
 	if abs(inc_change) > 0.1 {
-	
+		//local thr0 is 0.
+		//lock throttle to thr0.
+		lock throttle to 0.
+
 		// ====================================
 		// 10 wait for phase of 90
 		// 20 inc change burn
 	
-		set mode to 10.
+		local mode to 10.
 	
 		until 0 {
-	
+			set thr0 to ves_thrott_from_burn_dur(ship, dv_rem).
+
 			clearscreen.
 			print "MVR FLYOVER".
 			print "===========================================".
@@ -863,14 +879,18 @@ function mvr_flyover {
 	
 					set inc_sign_0 to inc_sign.
 	
-					set mode to 20.
-				}
-	
-				// other stuff
-				if (90 - phase) > 0 or (90 - phase) < -5 {
-					set warp to 2.
-				} else {
 					set warp to 0.
+
+					set mode to 20.
+				} else {
+					// other stuff
+					if (90 - phase) > 0 or (90 - phase) < -5 {
+						set warp to 3.
+					} else {
+						if not (warp = 0) {
+							set warp to 0.
+						}
+					}
 				}
 			} else if mode = 20 {
 				// status line
@@ -878,14 +898,16 @@ function mvr_flyover {
 				// end conditions
 				if (inc_change < 0.1) or ((inc_sign * inc_sign_0) < 0) {
 	
-					lock throttle to 0.
-					print "cooldown".
-					wait 5.
 	
 					break.
 				}
 				
+				local steer_vec is (obt_h_for(ship) * math_sign(inc_sign) * -1):normalized.
+				
+				lock steering to steer_vec:direction.
+				
 				// orientation
+				if 0 {
 				if inc_sign < 0 {
 					lock steering to R(
 						h:direction:pitch,
@@ -897,25 +919,33 @@ function mvr_flyover {
 						(-1 * h):direction:yaw,
 						ship:facing:roll).
 				}
+				}
 
 				util_ship_stage_burn().
-	
+				
 				if vang(steering:vector, ship:facing:vector) > 3 {
 					print "change inclination (reorient)".
+					//set thr to 0.
 					lock throttle to 0.
 				} else {
 					print "change inclination".
-					lock throttle to ves_thrott_from_burn_dur(ship, dv_rem).
+					//local thr0 is ves_thrott_from_burn_dur(ship, dv_rem).
+					//lock throttle to ves_thrott_from_burn_dur(ship, dv_rem).
+					//lock throttle to thr0.
+					lock throttle to 1.
 				}
 			}
 	
 			print "===========================================".
+			print "    mode       " + mode.
 			print "    phase      " + phase.
 			print "    inc change " + inc_change.
 	
-			wait 0.1.
+			wait 0.01.
 		}
-	
+		lock throttle to 0.
+		print "cooldown".
+		wait 5.
 	}
 	
 	mvr_flyover_deorbit(mvr_flyover_gc).
@@ -924,6 +954,8 @@ function mvr_safe_periapsis {
 	sas off.
 	rcs off.
 	set warp to 0.
+
+	print "mvr_safe_periapsis".
 	
 	local safe_altitude to get_alt_safe(ship:body).
 	
@@ -932,19 +964,19 @@ function mvr_safe_periapsis {
 		if ship:verticalspeed > 0 {
 		} else {
 	
-			lock h to vcrs(
-				ship:position - ship:body:position,
-				ship:velocity:orbit - ship:body:velocity:orbit).
-		
-			lock radial to vcrs(prograde:vector, h:normalized):direction.
-		
-			lock steering to radial.
+	
+			local steer is R(0,0,0).	
+			lock steering to steer.
+
 			util_wait_orient().
 		
 			set thrott to 0.
 			lock throttle to thrott.
+
 			until periapsis > safe_altitude or ship:verticalspeed > 0 {
 	
+				set steer to ves_radialout(ship).
+				
 				clearscreen.
 				print "MVR SAFE PERIAPSIS".
 				print "============================".
@@ -1132,8 +1164,8 @@ function capture {
 	print "burn to:    " + capture_altitude.
 	
 	set aop to ship:obt:argumentofperiapsis.
-	
-	lock aop_change to abs(aop - ship:obt:argumentofperiapsis).
+
+	local aop_change is 0.
 	
 	lock radial to ves_radialout(ship).
 	
@@ -1186,7 +1218,16 @@ function capture {
 		set v0 to ship:velocity:orbit:mag.
 		lock dv_rem to dv - (ship:velocity:orbit:mag - v0).
 	
-		until (apoapsis < capture_altitude) or (aop_change > 90) {
+		until (apoapsis < capture_altitude) {
+
+			set aop_change to abs(aop - ship:obt:argumentofperiapsis).
+			if aop_change > 180 {
+				set aop_change to 360 - aop_change.
+			}
+
+			if (aop_change > 45) {
+				break.
+			}
 
 			set th to ves_thrott_from_burn_dur(ship, dv_rem).
 
