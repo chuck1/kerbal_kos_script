@@ -15,7 +15,7 @@ run lib_launch.ks.
 run lib_circle.ks.
 run lib_mvr.ks.
 run lib_transfer.ks.
-//run lib_rendez.ks.
+run lib_rendez.ks.
 run lib_land.ks.
 run lib_wait.ks.
 run lib_warp.ks.

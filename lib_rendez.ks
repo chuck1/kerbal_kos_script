@@ -338,11 +338,16 @@ function rendez_approach_2 {
 	set vec_v:show to false.
 }
 function rendez {
-	parameter is_boot_func.
 
 	print "rendez " + target.
 
-	run mvr_match_inc(target).
+	local ot is calc_obt_type(ship).
+	
+	if (ot = "prelaunch") or (ot = "landed") {
+		//wait_for_rendez_launch_window().
+	}
+	
+	mvr_match_inc_with_target().
 
 	// orbital planes now match
 	

@@ -55,6 +55,6 @@ copy "go_to" from 0.
 copy "go_to_mun_arch" from 0.
 copy "power_land" from 0.
 copy launch from 0.
-copy test from 0.
-
+copy test   from 0.
+copy rendez from 0.
 

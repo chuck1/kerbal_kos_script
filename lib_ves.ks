@@ -112,7 +112,18 @@ function ves_th_from_cur_pitch_and_acc {
 	
 	return math_clamp(th, 0, 1).
 }
+function ves_phase_with {
+	parameter ves.
+	parameter obb.
+	
+	local rv1 is ves:position - ves:body:position.
+	local rv2 is obb:position - ves:body:position.
+	
+	local hv is obt_h_for(ves).
+	
+	local s is math_sign(vdot(hv, vcrs(rv1,rv2))).
 
-
+	return math_clamp_angle(s * vang(rv1,rv2)).
+}
 
 

@@ -78,6 +78,53 @@ function obt_struc_ctor_circle {
 	ret:add(ev).
 	return ret.
 }
+function obt_struc_get_anv {
+	parameter array.
+	local hv is obt_struc_get_hv(array).
+	return vcrs(V(0,-1,0),hv):normalized.
+}
+function obt_lan2_for {
+	parameter obt.
+	return obt:lan + 53.9886.
+}
+function obt_struc_ctor_from_obt {
+	parameter obt.
+
+	print "obt_struc_ctor_from_obt".
+	
+	local xhat is V(1,0,0).
+	local zhat is V(0,0,1).
+	
+	local lan2 is obt_lan2_for(ship:obt).
+	local aop  is obt:argumentofperiapsis.
+	local i    is obt:inclination.
+
+	// ascending node vector
+	local anv     is xhat * cos(lan2) + zhat * sin(lan2).
+
+	local anv2    is vcrs(V(0,-1,0), anv).
+	
+	local anv3    is anv2 * cos(i)   + V(0,1,0) * sin(i).
+	
+	local ev_unit is anv  * cos(aop) + anv3     * sin(aop).
+	
+	local hv_unit is vcrs(anv, anv3).
+	
+	local hv is hv_unit * sqrt(obt:semimajoraxis * (1-obt:eccentricity^2) * obt:body:mu).
+	
+	local ev is ev_unit * obt:eccentricity.
+
+
+	print "lan2 " + lan2.
+	print "aop  " + aop.
+	
+	local ret is list().
+	ret:add(hv).
+	ret:add(ev).
+	ret:add(anv2).
+	ret:add(anv3).
+	return ret.
+}
 // functions for calculating deltav
 function obt_dv {
 	// get deltav vector for
@@ -138,6 +185,14 @@ function obt_v_from_ev_h_r {
 	parameter h. // mom vector
 	parameter rv. // position vector
 	return vcrs((-(ev + rv:normalized) * ves:body:mu), h) / vdot(h,h).
+}
+function obt_node_vec {
+	// node vector between two orbital planes
+	parameter os1.
+	parameter os2.
+	local hv1 is obt_struc_get_hv(os1):normalized.
+	local hv2 is obt_struc_get_hv(os2):normalized.
+	return vcrs(hv1,hv2):normalized.
 }
 
 

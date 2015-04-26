@@ -1,8 +1,11 @@
 
-run load_libraries.
+run lib_util.
+run lib_util_ship.
+run lib_util_wait.
+
+run global_var.
 
 local args is list().
-args:add(true).
 
 util_boot_func("rendez", args).
 

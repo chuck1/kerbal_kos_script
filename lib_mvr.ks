@@ -1,3 +1,73 @@
+function obt_at_body {
+	parameter ob.
+	parameter bdy.
+	
+	print "obt_at_body".
+	print "    bdy     " + bdy.
+	print "    ob:body " + ob:body.
+	
+	if ob:body = bdy {
+		return ob.
+	} else if (ob:hasnextpatch) {
+		if ob:nextpatch:body = bdy {
+			return ob:nextpatch.
+		}
+	}
+	
+	print neverset.
+}
+function obt_lan_at_body {
+	parameter obt.
+	parameter bdy.
+	
+	if obt:body = bdy {
+		return obt:lan.
+	} else if (obt:hasnextpatch) {
+		if obt:nextpatch:body = bdy {
+			return obt:nextpatch:lan.
+		}
+	}
+	
+	print neverset.
+}
+function obt_inc_at_body {
+	parameter obt.
+	parameter bdy.
+	
+	if obt:body = bdy {
+		return obt:inclination.
+	} else if (obt:hasnextpatch) {
+		if obt:nextpatch:body = bdy {
+			return obt:nextpatch:inclination.
+		}
+	}
+	
+	print neverset.
+}
+function mvr_match_inc_with_target {
+	
+	print "mvr_match_inc_with_target".
+
+	wait_for_rendez_launch_window().
+	
+	local i is obt_inc_at_body(target:obt, ship:body).
+	
+	local hv is obt_h_for(ship).
+
+	until 0 {
+	
+		local del_i is i - ship:obt:inclination.
+	
+		lock steering to (-1 * hv * math_sign(del_i)):direction.
+
+		lock throttle to 0.1.
+
+		if abs(del_i) < 0.1 {
+			break.
+		}
+	}
+	lock throttle to 0.
+}
 function mvr_match_inc {
 	parameter mvr_match_inc_target.
 	

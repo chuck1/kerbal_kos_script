@@ -20,18 +20,18 @@ function transfer_interplanetary_ejection {
 		
 	
 	// get into stable circular orbit around nearest planet.
-	run transfer_to_planet_nearest.
+	transfer_to_planet_nearest().
 
 	set body_2 to transfer_to_planet_target.
 
-	set calc_transfer_to_planet_target to transfer_to_planet_target.
-	run calc_transfer_to_planet.
+	set calc_transfer_ip_target to transfer_to_planet_target.
+	run calc_transfer_ip.
 
-	run wait_for_angle(ship:body, body_2, sun, calc_transfer_to_planet_phase).
+	wait_for_angle(ship:body, body_2, sun, calc_transfer_to_planet_phase).
 
-	run mvr_match_inc(body_2).
+	mvr_match_inc(body_2).
 
-	run wait_for_angle(ship, sun, ship:body, calc_transfer_to_planet_theta + 90).
+	wait_for_angle(ship, sun, ship:body, calc_transfer_to_planet_theta + 90).
 
 	set burn_deltav to calc_transfer_to_planet_ejection_burn.
 	run burn.

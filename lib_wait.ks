@@ -160,25 +160,40 @@ function wait_for_angle {
 		print "error         " + error.
 		print "omega         " + derror.
 		print "omega_sign    " + omega_sign.
-	
-		//print "sign          " + d_sign.
-		//print "v1            " + v1m.
-		//print "v2            " + v2m.
-		//print "va            " + wait_for_angle_body_axis:velocity:orbit:mag.
-		//print "r1            " + r1:mag.
-		//print "r2            " + r2:mag.
 		print "omega 1       " + omega_1.
 		print "omega 2       " + omega_2.
-		
 		print "eta           " + eta.
-	
-	
-		//print "h1 " + normal_1:normalized.
-		//print "h2 " + normal_2:normalized.
 	
 		wait 0.1.
 	}
 }
+function wait_for_rendez_launch_window {
+	until 0 {
 
-print "loaded library wait".
+		local os1 is obt_struc_ctor_current_for(ship).
+		local os2 is obt_struc_ctor_from_obt(obt_at_body(target:obt, ship:body)).
+
+		local nv is obt_node_vec(os1, os2).
+		
+		local hv1 is obt_h_for(ship).
+		local r is obt_r_for(ship).
+
+		local ph is vang(r,nv) * math_sign(vdot(hv1,vcrs(r,nv))).
+		
+	
+		clearscreen.
+		print "wait for rendez launch window".
+		print "=============================".
+		print "    phase    " + ph.
+		print "    hv1      " + hv1.
+		print "    rv1      " + r.
+		print "    nv       " + nv.
+	
+		if abs(ph) < 0.1 {
+			break.
+		}
+	
+		wait 0.01.
+	}
+}
 

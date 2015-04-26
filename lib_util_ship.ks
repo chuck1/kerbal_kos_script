@@ -1,5 +1,4 @@
 function util_ship_jettison_fairings {
-	local p  is 0.
 	local pl is 0.
 	local module is 0.
 	list parts in pl.
