@@ -4,8 +4,10 @@ function launch_atm {
 	util_log("launch_atm " + ship:body).
 
 	// settings
-	local grav_turn_pres is 0.20.
+	local grav_turn_pres            is 0.25.
+	local steering_deflection_limit is 12.
 
+	// ===============================
 	if launch_altitude = 0 {
 		set launch_altitude to calc_obt_alt_low(ship:body).
 	}
@@ -30,7 +32,6 @@ function launch_atm {
 	
 	lock east_vec to vcrs(north:vector, up:vector).
 	
-	set steering_deflection_limit to 10.
 	lock down_angle_vel to vang(up:vector, ship:velocity:surface).
 	
 	// with FAR mod, kOS returns approx 3x terminal velocity
@@ -47,8 +48,9 @@ function launch_atm {
 	
 	// modes
 	// 10 countdown
-	// 20 leg 1
+	// 20 vertical
 	// 30 grav turn
+	// 35 grav turn 2
 	// 40 coast
 	
 	set mode to 20.
@@ -76,21 +78,18 @@ function launch_atm {
 			print "gravity turn".
 		
 	
-			set down_angle_target to
-				min(
-					0 + ((altitude - altitude_turn_start) / (5 * altitude_turn_start)) * 60,
-					60).
-				
+			//set down_angle_target to
+			//	min(
+			//		0 + ((altitude - altitude_turn_start) / (5 * altitude_turn_start)) * 60,
+			//		60).
+			set down_angle_target to 70.
 				
 			// steering deflection: angle between velocity and target steering vectors
 			// clamp steering delfection
-			set steering_deflection to
-				max(
-					-steering_deflection_limit,
-					min(
-						steering_deflection_limit,
-						(down_angle_target - down_angle_vel)
-					)).
+			set steering_deflection to math_clamp(
+					down_angle_target - down_angle_vel,
+					steering_deflection_limit,
+					-steering_deflection_limit).
 				
 			set down_angle_steering to (steering_deflection + down_angle_vel).
 				
@@ -128,16 +127,14 @@ function launch_atm {
 	
 		print "======================================".
 		print "    alt target          " + launch_altitude. 
-		if mode = 20 {
+		if mode < 40 {
 		print "    wait for pres       " + grav_turn_pres.
 		print "    pres                " + calc_obt_pres(ship).
-		}
-		if mode < 40 {
 		print "    term vel            " + round(calc_obt_term_speed(ship), 1).
 		print "    vel                 " + round(ship:velocity:surface:mag, 1).
 		}
 		print "    th                  " + th.
-		if (mode = 30) and 0 {
+		if (mode = 30) {
 		print "    apoapsis target     " + round(launch_altitude,0).
 		print "    apoapsis            " + round(altitude,0).
 		print "    down angle vel      " + round(down_angle_vel,1).

@@ -47,6 +47,10 @@ function ves_radialin {
 	local vec is vcrs(obt_h_for(ves),obt_v_for(ves)).
 	return vec:direction.
 }
+function ves_get_soe {
+	parameter ves.
+	return -1 * abs(ves:body:mu / 2 / ves:obt:semimajoraxis).
+}
 function ves_pitch_and_th_from_acc {
 	// get pitch and throttle from...
 	parameter ves.

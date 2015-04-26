@@ -180,7 +180,7 @@ function go_to_suborbital_approach {
 	// need to determine cause of overshoot
 	lock distance_to_arrest_surf_speed to
 		ship:surfacespeed * time_to_arrest_surf_speed -
-		0.5 * accel_target * time_to_arrest_surf_speed^2 + 3000.
+		0.5 * accel_target * time_to_arrest_surf_speed^2 + 5800.
 	
 	lock time_to_reach to rx:mag / ship:surfacespeed.
 	

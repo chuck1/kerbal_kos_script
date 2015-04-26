@@ -249,8 +249,12 @@ function mvr_adjust_at_apoapsis {
 	
 	lock v_tang to vxcl(r0, ship:velocity:orbit).
 	
-	lock dir to (math_sign(dv0) * v_tang:normalized):direction.
-	
+	lock dir0 to (math_sign(dv0) * v_tang:normalized):direction.
+	lock dir  to R(
+		dir0:pitch,
+		dir0:yaw,
+		ship:facing:roll).
+
 	local err is 0.
 	
 	lock err to mvr_adjust_altitude - alt.
